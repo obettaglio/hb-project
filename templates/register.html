@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Register</h1>
+
+<form action='/user' class='register-form' method='post'>
+    <label>First Name: </label>
+    <input type='text' name='f_name'><br>
+    <label>Last Name: </label>
+    <input type='text' name='l_name'><br>
+    <label>Email: </label>
+    <input type='text' name='email'><br>
+    <label>Password: </label>
+    <input type='text' name='password'><br>
+    <label>Zipcode: </label>
+    <input type='text' name='zipcode'><br>
+    <label>District: </label>
+    <input type='text' name='district'><br>
+    <input type='submit' value='Register'>
+</form>
+
+<h3>Already registered with us? <a href='/login'>Log in here.</a></h3>
+
+{% endblock %}

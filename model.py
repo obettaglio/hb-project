@@ -146,8 +146,8 @@ class ExerciseResult(db.Model):
         """Provide helpful representation when printed."""
 
         return "<ExerciseResult exerciseresult_id=%s exercise_id=%s student_id=%s>" % (self.exerciseresult_id,
-                                                                              self.exercise_id,
-                                                                              self.student_id)
+                                                                                       self.exercise_id,
+                                                                                       self.student_id)
 
 
 class Video(db.Model):
@@ -194,6 +194,7 @@ def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///project'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
 
