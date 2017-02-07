@@ -13,7 +13,7 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 app = Flask(__name__)
 
-app.secret_key = "alkjsghfwalejfhbsaldfhuewhif"
+app.secret_key = 'alkjsghfwalejfhbsaldfhuewhif'
 
 app.jinja_env.undefined = StrictUndefined
 
@@ -22,7 +22,7 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/')
 def index():
-    """Homepage.
+    """Display homepage.
 
     If no user is in the session, redirect to login page."""
 
@@ -36,16 +36,16 @@ def index():
 
 @app.route('/login')
 def show_login_page():
-    """Login page."""
+    """Display login page."""
 
     return render_template('login.html')
 
 
-@app.route('login-success')
+@app.route('/login-success')
 def log_user_in():
     """Handle login form.
 
-    Put user_id into session and redirect to user page."""  # CHANGE REDIRECT #
+    Put user_id into session and redirect to homepage."""  # CHANGE REDIRECT #
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -56,25 +56,25 @@ def log_user_in():
         if password == user.password:
             # Add user id to Flask session
             session['logged_in_user'] = user.user_id
-            flash("Logged in.")
+            flash('Logged in.')
             # CHANGE REDIRECT #
-            return redirect(url_for('show_user_page', user_id=session['Logged in user']))
+            return redirect('/')
         else:
-            flash("Invalid password.")
-            return redirect("/login")
+            flash('Invalid password.')
+            return redirect('/login')
     else:
-        flash("This email does not have an account.")
-        return redirect("/login")
+        flash('This email does not have an account.')
+        return redirect('/login')
 
 
 @app.route('/register')
 def show_register_page():
-    """Registration page."""
+    """Display registration page."""
 
     return render_template('register.html')
 
 
-@app.route('register-success')
+@app.route('/register-success')
 def register_user():
     """Handle registration form.
 
@@ -90,8 +90,8 @@ def register_user():
     user = db.session.query(User).filter(User.email == email).first()
 
     if user:
-        flash("This email is already registered. Please log in.")
-        return redirect("/login")
+        flash('This email is already registered. Please log in.')
+        return redirect('/login')
     else:
         new_user = User(email=email, password=password,
                         f_name=f_name, l_name=l_name,
@@ -101,18 +101,25 @@ def register_user():
 
         session['logged_in_user'] = new_user.user_id
 
-        flash("Account created.")
-        return redirect("/")
+        flash('Account created.')
+        return redirect('/')
 
 
-@app.route("/logout")
+@app.route('/authorize')
+def show_authorize_form():
+    """Display Khan Academy authorization page."""
+
+    return render_template('authorize.html')
+
+
+@app.route('/logout')
 def logout():
     """Remove user_id from session and redirect to homepage."""
 
     del session['logged_in_user']
 
-    flash("Logged out")
-    return redirect("/")
+    flash('Logged out')
+    return redirect('/')
 
 
 #####
