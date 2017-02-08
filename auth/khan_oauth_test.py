@@ -10,11 +10,12 @@ import SimpleHTTPServer
 import SocketServer
 import time
 import webbrowser
+import os
 
 # You can get a CONSUMER_KEY and CONSUMER_SECRET for your app here:
 # http://www.khanacademy.org/api-apps/register
-CONSUMER_KEY = 'EbBgHCfhfKvQa6eV'
-CONSUMER_SECRET = 'WsHQfhP3MQ27fdvV'
+CONSUMER_KEY = os.environ['KHAN_CONSUMER_KEY']
+CONSUMER_SECRET = os.environ['KHAN_CONSUMER_SECRET']
 
 CALLBACK_BASE = '0.0.0.0'
 SERVER_URL = 'http://www.khanacademy.org'
@@ -22,8 +23,6 @@ SERVER_URL = 'http://www.khanacademy.org'
 DEFAULT_API_RESOURCE = '/api/v1/playlists'
 VERIFIER = None
 
-def handle(thing):
-    print "Hello"
 
 # Create the callback server that's used to set the oauth verifier after the
 # request token is authorized.
@@ -45,9 +44,6 @@ def create_callback_server():
 
         def log_request(self, code='-', size='-'):
             pass
-
-        # def handle(self):
-        #     print "YAY"
 
     server = SocketServer.TCPServer((CALLBACK_BASE, 5001), CallbackHandler)
     # server.handle = handle
@@ -99,36 +95,23 @@ def run_tests():
     callback_server = create_callback_server()
 
     # 1. Get a request token.
-    print "getting request token"
     request_token, secret_request_token = service.get_request_token(
         params={'oauth_callback': 'http://%s:%d/' %
                 (CALLBACK_BASE, callback_server.server_address[1])})
-    print request_token
 
     # 2. Authorize your request token.
-    print "authorizing token"
     authorize_url = service.get_authorize_url(request_token)
     webbrowser.open(authorize_url)
-    print authorize_url
-    import pdb
-    # pdb.set_trace()
 
     callback_server.handle_request()
-    # callback_server.get_request()
-    # print "get request"
-    # callback_server.verify_request()
-    # print "verify"
-    # callback_server.process_request()
     callback_server.server_close()
 
     # 3. Get an access token.
-    print "getting access token"
     session = service.get_auth_session(request_token, secret_request_token,
                                        params={'oauth_verifier': VERIFIER})
 
     # Repeatedly prompt user for a resource and make authenticated API calls.
     print
-    print "got to end"
     while(True):
         get_api_resource(session)
 

@@ -18,7 +18,7 @@ app.secret_key = 'alkjsghfwalejfhbsaldfhuewhif'
 app.jinja_env.undefined = StrictUndefined
 
 
-#####
+##### LOGIN, REGISTER, LOGOUT #####
 
 @app.route('/')
 def index():
@@ -113,13 +113,22 @@ def show_authorize_form():
 
 
 @app.route('/logout')
-def logout():
+def log_user_out():
     """Remove user_id from session and redirect to homepage."""
 
     del session['logged_in_user']
 
     flash('Logged out')
     return redirect('/')
+
+
+##### CLASSROOMS, EXAMS #####
+
+@app.route('/classes')
+def show_classes_list():
+    """Display list of classes taught by user."""
+
+    pass
 
 
 #####
