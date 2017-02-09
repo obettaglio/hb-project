@@ -20,7 +20,7 @@ app.secret_key = 'alkjsghfwalejfhbsaldfhuewhif'
 app.jinja_env.undefined = StrictUndefined
 
 
-##### LOGIN, REGISTER, LOGOUT #####
+##### LOGIN, REGISTER, AUTHORIZE, LOGOUT #####
 
 @app.route('/')
 def index():
@@ -33,7 +33,7 @@ def index():
 
 @app.route('/login')
 def show_login_page():
-    """Display login page."""
+    """Display login form."""
 
     return render_template('login.html')
 
@@ -64,7 +64,7 @@ def log_user_in():
 
 @app.route('/register')
 def show_register_page():
-    """Display registration page."""
+    """Display registration form."""
 
     return render_template('register.html')
 
@@ -141,7 +141,43 @@ def show_classes_list():
         return render_template('unauthorized-attempt.html')
 
 
-@app.route('/classes/<class_id>')   # returns string of a number
+@app.route('/classes/add-class')
+def show_new_class_form():
+    """Display form to add a new class."""
+
+    subjects_tup = db.session.query(Subject.name).all()
+    subjects = []
+
+    for subject in subjects_tup:
+        subject = subject[0]
+        subjects.append(subject)
+
+    return render_template('add-class.html',
+                           subjects=subjects)
+
+
+@app.route('/classes/add-class-validation', methods=['POST'])
+def add_new_class():
+    """Handle form to add a new class and redirect to classes page."""
+
+    user_id = session['logged_in_user']
+
+    name = request.form.get('name')
+    subject = request.form.get('subject')
+
+    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
+
+    new_class = Classroom(name=name,
+                          user_id=user_id,
+                          subject_code=subject_code)
+
+    db.session.add(new_class)
+    db.session.commit()
+
+    return redirect('/classes')
+
+
+@app.route('/classes/<class_id>')   # note: returns string of a number
 def show_class(class_id):
     """Display individual class data.
 

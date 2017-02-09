@@ -65,7 +65,7 @@ class Classroom(db.Model):
 
     __tablename__ = "classrooms"
 
-    class_id = db.Column(db.Integer, primary_key=True)
+    class_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(30), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
