@@ -3,7 +3,7 @@
 
 <h1>Add New Score</h1>
 
-<form action='/classes/{{ class_id }}/add-score' method='post' class='add-exam-form'>
+<form action='/classes/{{ class_id }}/{{ exam.exam_id }}/add-score' method='post' class='add-score-form'>
     <label>Exam Name: </label>
     <input type='text' name='exam-name' value='{{ exam.name }}'><br>
     <label>Student Name: </label>

@@ -212,7 +212,7 @@ def add_new_exam(class_id):
     db.session.add(exam)
     db.session.commit()
 
-    return redirect('/classes/<class_id>')
+    return redirect(url_for('show_class', class_id=class_id))
 
 
 @app.route('/classes/<class_id>/<exam_id>')
@@ -250,9 +250,6 @@ def add_new_score(class_id, exam_id):
     student_name = request.form.get('student-name')
     score = request.form.get('score')
 
-    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-    exam_id = exam.exam_id
-
     student_name = student_name.split(" ")
     f_name, l_name = student_name
     student = db.session.query(Student).filter((Student.f_name == f_name) &
@@ -265,7 +262,7 @@ def add_new_score(class_id, exam_id):
     db.session.add(examresult)
     db.session.commit()
 
-    return redirect('/classes/<class_id>/<exam_id>')
+    return redirect(url_for('show_exam', class_id=class_id, exam_id=exam_id))
 
 
 #####
