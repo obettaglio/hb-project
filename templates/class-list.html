@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Classes</h1>
+
+<h3>Select a Classroom:</h3>
+
+{% for classroom in classrooms %}
+
+<p><a href="/classes/{{ classroom.class_id }}">{{ classroom.name }}</a></p>
+
+{% endfor %}
+
+
+{% endblock %}

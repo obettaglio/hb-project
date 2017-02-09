@@ -8,7 +8,9 @@ from flask import (Flask, jsonify, render_template, redirect, request, flash,
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
-                   ExerciseResult, Video, VideoResult, connect_to_db, db)
+                   ExerciseResult, Video, VideoResult)
+
+from model import connect_to_db, db
 
 
 app = Flask(__name__)
@@ -24,14 +26,9 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Display homepage.
 
-    If no user is in the session, redirect to login page."""
+    Homepage contains links to Register and Login pages."""
 
-    # If a user is logged in, show homepage
-    if session['logged_in_user']:
-        return render_template('homepage.html')
-    # If no user is logged in, redirect to login page
-    else:
-        return redirect('/login')
+    return render_template('homepage.html')
 
 
 @app.route('/login')
@@ -41,11 +38,11 @@ def show_login_page():
     return render_template('login.html')
 
 
-@app.route('/login-success')
+@app.route('/login-validation', methods=['POST'])
 def log_user_in():
     """Handle login form.
 
-    Put user_id into session and redirect to homepage."""  # CHANGE REDIRECT #
+    Put user_id into session and redirect to homepage."""
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -54,11 +51,9 @@ def log_user_in():
 
     if user:
         if password == user.password:
-            # Add user id to Flask session
             session['logged_in_user'] = user.user_id
             flash('Logged in.')
-            # CHANGE REDIRECT #
-            return redirect('/')
+            return redirect('/classes')
         else:
             flash('Invalid password.')
             return redirect('/login')
@@ -74,7 +69,7 @@ def show_register_page():
     return render_template('register.html')
 
 
-@app.route('/register-success')
+@app.route('/register-success', methods=['POST'])
 def register_user():
     """Handle registration form.
 
@@ -102,7 +97,7 @@ def register_user():
         session['logged_in_user'] = new_user.user_id
 
         flash('Account created.')
-        return redirect('/')
+        return redirect('/classes')
 
 
 @app.route('/authorize')
@@ -127,6 +122,30 @@ def log_user_out():
 @app.route('/classes')
 def show_classes_list():
     """Display list of classes taught by user."""
+
+    # email = request.form.get('email')
+    if session.get('logged_in_user'):
+        user_id = session['logged_in_user']
+
+        user = db.session.query(User).filter(User.user_id == user_id).first()
+        print user
+
+        classrooms = db.session.query(Classroom).join(User)\
+                                                .filter(User.user_id == user_id).all()
+        print classrooms
+
+        return render_template('class-list.html',
+                               user=user,
+                               classrooms=classrooms)
+    else:
+        return render_template('unauthorized-attempt.html')
+
+
+@app.route('/classes/<class_id>')   # returns string of a number
+def show_class(class_id):
+    """Display individual class data.
+
+    Includes list of existing exams, visual analytic, and New Exam button."""
 
     pass
 

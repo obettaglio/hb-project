@@ -66,11 +66,19 @@ class Classroom(db.Model):
     __tablename__ = "classrooms"
 
     class_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
-    period = db.Column(db.Integer)
-    year = db.Column(db.Integer)
-    school = db.Column(db.String(50))
+    period = db.Column(db.Integer, nullable=True)
+    year = db.Column(db.Integer, nullable=True)
+    school = db.Column(db.String(50), nullable=True)
+
+    user = db.relationship('User',
+                           backref=db.backref("classrooms",
+                                              order_by=class_id))
+    subject = db.relationship('Subject',
+                              backref=db.backref("classrooms",
+                                                 order_by=class_id))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
