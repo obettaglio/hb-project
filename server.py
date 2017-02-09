@@ -38,7 +38,7 @@ def show_login_page():
     return render_template('login.html')
 
 
-@app.route('/login-validation', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def log_user_in():
     """Handle login form.
 
@@ -69,7 +69,7 @@ def show_register_page():
     return render_template('register.html')
 
 
-@app.route('/register-success', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def register_user():
     """Handle registration form.
 
@@ -143,7 +143,7 @@ def show_classes_list():
 
 @app.route('/classes/add-class')
 def show_new_class_form():
-    """Display form to add a new class."""
+    """Display form to add new class."""
 
     subjects_tup = db.session.query(Subject.name).all()
     subjects = []
@@ -156,13 +156,13 @@ def show_new_class_form():
                            subjects=subjects)
 
 
-@app.route('/classes/add-class-validation', methods=['POST'])
+@app.route('/classes/add-class', methods=['POST'])
 def add_new_class():
-    """Handle form to add a new class and redirect to classes page."""
+    """Handle form to add new class and redirect to classes page."""
 
     user_id = session['logged_in_user']
 
-    name = request.form.get('name')
+    name = request.form.get('class-name')
     subject = request.form.get('subject')
 
     subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
@@ -183,8 +183,59 @@ def show_class(class_id):
 
     Includes list of existing exams, visual analytic, and New Exam button."""
 
-    pass
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
+    return render_template('class-individual.html',
+                           classroom=classroom,
+                           exams=exams)
+
+
+@app.route('/classes/<class_id>/add-exam')
+def show_new_exam_form(class_id):
+    """Display form to add new exam under specified class."""
+
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
+    students = db.session.query(Student).filter(Student.class_id == class_id).all()
+
+    return render_template('add-exam.html',
+                           class_id=class_id,
+                           exams=exams,
+                           students=students)
+
+
+@app.route('/classes/<class_id>/add-exam', methods=['POST'])
+def add_new_exam(class_id):
+    """Handle form to add new exam."""
+
+    exam_name = request.form.get('exam-name')
+    total_points = request.form.get('total-points')
+    student_name = request.form.get('student-name')
+    score = request.form.get('score')
+
+    exam = db.session.query(Exam).filter(Exam.name == exam_name).first()
+    if exam == []:
+        exam = Exam(name=exam_name,
+                    class_id=class_id,
+                    total_points=total_points)
+        db.session.add(exam)
+        db.session.commit()
+
+    student_name = student_name.split(" ")
+    f_name, l_name = student_name
+    student = db.session.query(Student).filter((Student.f_name == f_name) &
+                                               (Student.l_name == l_name)).first()
+
+    exam_id = exam.exam_id
+    student_id = student.student_id
+
+    examresult = ExamResult(exam_id=exam_id,
+                            student_id=student_id,
+                            score=score)
+    db.session.add(examresult)
+    db.session.commit()
+
+    return redirect('/classes/<class_id>')
 
 #####
 

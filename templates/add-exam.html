@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Add New Exam</h1>
+
+<form action='/classes/{{ class_id }}/add-exam' method='post' class='add-exam-form'>
+    <label>Exam Name: </label>
+    {% if exams %}
+        <select name='exam-name'>
+        {% for exam in exams %}
+            <option value='{{ exam.name }}'>{{ exam.name }}<br>
+        {% endfor %}
+        </select><br>
+    {% else %}
+        <input type='text' name='exam-name'><br>
+    {% endif %}
+    <label>Student Name: </label>
+    <select name='student-name'>
+    {% for student in students %}
+        <option value='{{ student.f_name }} {{ student.l_name }}'>{{ student.f_name }} {{ student.l_name }}<br>
+    {% endfor %}
+    </select><br>
+    <label>Score:</label>
+    <input type='text' name='score'><br>
+    <input type='submit' value='Add Exam'>
+</form>
+
+{% endblock %}

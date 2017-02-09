@@ -97,6 +97,10 @@ class Exam(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'))
     total_points = db.Column(db.Integer, nullable=False)
 
+    classroom = db.relationship('Classroom',
+                                backref=db.backref("exams",
+                                                   order_by=exam_id))
+
     def __repr__(self):
         """Provide helpful representation when printed."""
 

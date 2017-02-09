@@ -31,6 +31,16 @@ def load_users():
 
         db.session.add(user)
 
+    # import psycopg2
+    # conn = psycopg2.connect("host='localhost' port='5432' dbname='project'")
+    # cur = conn.cursor()
+    # cur.execute("""truncate table "meta".temp_unicommerce_status;""")
+    # f = open(r'C:\Users\n\Desktop\data.csv', 'r')
+    # cur.copy_from(f, temp_unicommerce_status, sep=',')
+    # f.close()
+    # conn.commit()
+    # conn.close()
+
     db.session.commit()
 
 

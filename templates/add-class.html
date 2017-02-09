@@ -3,9 +3,9 @@
 
 <h1>Add New Class</h1>
 
-<form action='/classes/add-class-validation' method='post' class='add-class-form'>
+<form action='/classes/add-class' method='post' class='add-class-form'>
     <label>Class Name: </label>
-    <input type='text' name='name'><br>
+    <input type='text' name='class-name'><br>
     <label>Subject: </label>
     <select name='subject'>
     {% for subject in subjects %}
@@ -14,7 +14,5 @@
     </select><br>
     <input type='submit' value='Add Class'>
 </form>
-
-<h3>Not yet a user? <a href='/register'>Register here.</a></h3>
 
 {% endblock %}
