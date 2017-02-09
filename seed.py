@@ -32,12 +32,16 @@ def load_users():
         db.session.add(user)
 
     # import psycopg2
-    # conn = psycopg2.connect("host='localhost' port='5432' dbname='project'")
+    # conn = psycopg2.connect("dbname=project")
     # cur = conn.cursor()
-    # cur.execute("""truncate table "meta".temp_unicommerce_status;""")
-    # f = open(r'C:\Users\n\Desktop\data.csv', 'r')
-    # cur.copy_from(f, temp_unicommerce_status, sep=',')
+    # f = open('seed_data/users.csv')
+    # header = f.readline()
+    # line = f.readline()
+    # while line:
+    #     cur.execute("INSERT INTO users(email, password, f_name, l_name) VALUES(\'%s\', \'%s\', \'%s\', \'%s\');" % (tuple(line.split(",")[1:5])))
+    #     line = f.readline()
     # f.close()
+    # cur.close()
     # conn.commit()
     # conn.close()
 

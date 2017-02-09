@@ -195,38 +195,68 @@ def show_class(class_id):
 def show_new_exam_form(class_id):
     """Display form to add new exam under specified class."""
 
-    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
-    students = db.session.query(Student).filter(Student.class_id == class_id).all()
-
     return render_template('add-exam.html',
-                           class_id=class_id,
-                           exams=exams,
-                           students=students)
+                           class_id=class_id)
 
 
 @app.route('/classes/<class_id>/add-exam', methods=['POST'])
 def add_new_exam(class_id):
-    """Handle form to add new exam."""
+    """Handle form to add new exam under specified class."""
 
-    exam_name = request.form.get('exam-name')
+    name = request.form.get('exam-name')
     total_points = request.form.get('total-points')
+
+    exam = Exam(name=name,
+                class_id=class_id,
+                total_points=total_points)
+    db.session.add(exam)
+    db.session.commit()
+
+    return redirect('/classes/<class_id>')
+
+
+@app.route('/classes/<class_id>/<exam_id>')
+def show_exam(class_id, exam_id):
+    """Display individual exam data.
+
+    Includes list of exam scores, visual analytic, and Add Score button."""
+
+    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+    examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
+
+    return render_template('exam-individual.html',
+                           class_id=class_id,
+                           exam=exam,
+                           examresults=examresults)
+
+
+@app.route('/classes/<class_id>/<exam_id>/add-score')
+def show_new_score_form(class_id, exam_id):
+    """Display form to add new exam score under specified class."""
+
+    students = db.session.query(Student).filter(Student.class_id == class_id).all()
+    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+
+    return render_template('add-score.html',
+                           class_id=class_id,
+                           students=students,
+                           exam=exam)
+
+
+@app.route('/classes/<class_id>/<exam_id>/add-score', methods=['POST'])
+def add_new_score(class_id, exam_id):
+    """Handle form to add new exam score under specified class."""
+
     student_name = request.form.get('student-name')
     score = request.form.get('score')
 
-    exam = db.session.query(Exam).filter(Exam.name == exam_name).first()
-    if exam == []:
-        exam = Exam(name=exam_name,
-                    class_id=class_id,
-                    total_points=total_points)
-        db.session.add(exam)
-        db.session.commit()
+    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+    exam_id = exam.exam_id
 
     student_name = student_name.split(" ")
     f_name, l_name = student_name
     student = db.session.query(Student).filter((Student.f_name == f_name) &
                                                (Student.l_name == l_name)).first()
-
-    exam_id = exam.exam_id
     student_id = student.student_id
 
     examresult = ExamResult(exam_id=exam_id,
@@ -235,7 +265,8 @@ def add_new_exam(class_id):
     db.session.add(examresult)
     db.session.commit()
 
-    return redirect('/classes/<class_id>')
+    return redirect('/classes/<class_id>/<exam_id>')
+
 
 #####
 

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ exam.name }}</h1>
+
+{% if examresults %}
+  <h3>Scores:</h3>
+
+  <ul>
+    {% for examresult in examresults %}
+      <li>Student {{ examresult.student_id }}: {{ examresult.score }}</li>
+    {% endfor %}
+  </ul>
+
+{% endif %}
+
+<h3><a href='/classes/{{ class_id }}/{{ exam.exam_id }}/add-score'>Add a New Score</a></h3>
+
+{% endblock %}
