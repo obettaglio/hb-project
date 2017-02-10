@@ -50,7 +50,7 @@ class Subject(db.Model):
 
     __tablename__ = "subjects"
 
-    subject_code = db.Column(db.String(4), primary_key=True)
+    subject_code = db.Column(db.String(4), autoincrement=False, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
 
     def __repr__(self):

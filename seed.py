@@ -250,9 +250,6 @@ def load_videoresults():
     db.session.commit()
 
 
-
-
-
 # def set_val_user_id():
 #     """Set value for the next user_id after seeding database"""
 
@@ -311,17 +308,27 @@ def update_pkey_seqs():
         print "table name:", table_name
         print "primary key:", primary_key
 
+        # check to see if the primary key is autoincrementing
+        # if it isn't, skip to the next class
+        print inspect(cls).primary_key[0].__dict__["autoincrement"]
+        if inspect(cls).primary_key[0].__dict__["autoincrement"] is not True:
+            print "not an autoincrementing key - skipping"
+            continue
 
-        # get the highest id value currently in the table
-        result = db.session.query(func.max(getattr(cls, primary_key))).one()
-        max_id = int(result[0])
-        print "highest id:", max_id
+        # now we know we're dealing with an autoincrementing key, so get the
+        # highest id value currently in the table
+        result = db.session.query(func.max(getattr(cls, primary_key))).first()
+        if result[0]:
+            max_id = int(result[0])
+            print "highest id:", max_id
 
-        # set the next value to be max + 1
-        query = ("SELECT setval('" + table_name + "_" + primary_key +
-                 "_seq', :new_id)")
-        db.session.execute(query, {'new_id': max_id + 1})
-        db.session.commit()
+            # set the next value to be max + 1
+            query = ("SELECT setval('" + table_name + "_" + primary_key +
+                     "_seq', :new_id)")
+            db.session.execute(query, {'new_id': max_id + 1})
+            db.session.commit()
+
+    # we're done!
 
 
 def call_all_functions():
