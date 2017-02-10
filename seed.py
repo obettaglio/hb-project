@@ -11,6 +11,8 @@ from server import app
 
 from datetime import datetime
 
+from sqlalchemy.inspection import inspect
+
 
 def load_users():
     """Load users into database."""
@@ -248,19 +250,22 @@ def load_videoresults():
     db.session.commit()
 
 
-def set_val_user_id():
-    """Set value for the next user_id after seeding database"""
 
-    print "Setting max user ID value!"
 
-    # Get the Max user_id in the database
-    result = db.session.query(func.max(User.user_id)).one()
-    max_id = int(result[0])
 
-    # Set the value for the next user_id to be max_id + 1
-    query = "SELECT setval('users_user_id_seq', :new_id)"
-    db.session.execute(query, {'new_id': max_id + 1})
-    db.session.commit()
+# def set_val_user_id():
+#     """Set value for the next user_id after seeding database"""
+
+#     print "Setting max user ID value!"
+
+#     # Get the Max user_id in the database
+#     result = db.session.query(func.max(User.user_id)).one()
+#     max_id = int(result[0])
+
+#     # Set the value for the next user_id to be max_id + 1
+#     query = "SELECT setval('users_user_id_seq', :new_id)"
+#     db.session.execute(query, {'new_id': max_id + 1})
+#     db.session.commit()
 
 
 # def set_val_primary_key(class_name, pkey_name, table_name):
@@ -276,6 +281,47 @@ def set_val_user_id():
 #     query = "SELECT setval('users_user_id_seq', :new_id)"
 #     db.session.execute(query, {'new_id': max_id + 1})
 #     db.session.commit()
+
+
+def update_pkey_seqs():
+    """Set primary key for each table to start at one higher than the current
+    highest key. Helps when data has been manually seeded."""
+
+    # get a dictionary of {classname: class} for all classes in model.py
+    model_classes = db.Model._decl_class_registry
+
+    # loop over the classes
+    for class_name in model_classes:
+
+        # the dictionary will include a helper class we don't care about, so
+        # skip it
+        if class_name == "_sa_module_registry":
+            continue
+
+        print
+        print "working on class", class_name
+
+        # get the class itself out of the dictionary
+        cls = model_classes[class_name]
+
+        # get the name of the table associated with the class and its primary
+        # key
+        table_name = cls.__tablename__
+        primary_key = inspect(cls).primary_key[0].name
+        print "table name:", table_name
+        print "primary key:", primary_key
+
+
+        # get the highest id value currently in the table
+        result = db.session.query(func.max(getattr(cls, primary_key))).one()
+        max_id = int(result[0])
+        print "highest id:", max_id
+
+        # set the next value to be max + 1
+        query = ("SELECT setval('" + table_name + "_" + primary_key +
+                 "_seq', :new_id)")
+        db.session.execute(query, {'new_id': max_id + 1})
+        db.session.commit()
 
 
 def call_all_functions():
@@ -299,4 +345,5 @@ if __name__ == "__main__":
     db.create_all()
 
     call_all_functions()
-    set_val_user_id()
+    update_pkey_seqs()
+    # set_val_user_id()
