@@ -12,12 +12,12 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String(200), autoincrement=False, primary_key=True)
     email = db.Column(db.String(64), nullable=False, unique=True)
-    password = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=True)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
-    khan_id = db.Column(db.String(50), nullable=True)
+    khan_username = db.Column(db.String(50), nullable=True)
     num_students = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
     district = db.Column(db.String(100), nullable=True)
@@ -34,12 +34,12 @@ class Student(db.Model):
 
     __tablename__ = "students"
 
-    student_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String(64), nullable=False, unique=True)
+    student_id = db.Column(db.String(200), autoincrement=False, primary_key=True)
+    email = db.Column(db.String(100), nullable=False, unique=True)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
-    khan_id = db.Column(db.String(50), nullable=True)
-    class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'))
+    khan_username = db.Column(db.String(50), nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -70,7 +70,7 @@ class Classroom(db.Model):
 
     class_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(30), nullable=False, unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id = db.Column(db.String(200), db.ForeignKey('users.user_id'))
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
     period = db.Column(db.Integer, nullable=True)
     year = db.Column(db.Integer, nullable=True)
@@ -118,7 +118,7 @@ class ExamResult(db.Model):
 
     examresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     exam_id = db.Column(db.Integer, db.ForeignKey('exams.exam_id'))
-    student_id = db.Column(db.Integer, db.ForeignKey('students.student_id'))
+    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
     score = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -152,7 +152,7 @@ class ExerciseResult(db.Model):
 
     exerciseresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.exercise_id'))
-    student_id = db.Column(db.Integer, db.ForeignKey('students.student_id'))
+    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
     timestamp = db.Column(db.DateTime, nullable=False)
     num_correct = db.Column(db.Integer, nullable=True)
     num_done = db.Column(db.Integer, nullable=True)
@@ -190,7 +190,7 @@ class VideoResult(db.Model):
 
     videoresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    student_id = db.Column(db.Integer, db.ForeignKey('students.student_id'))
+    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
     timestamp = db.Column(db.DateTime, nullable=False)
     secs_watched = db.Column(db.Integer, nullable=True)
     last_sec_watched = db.Column(db.Integer, nullable=True)

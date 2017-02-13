@@ -1,13 +1,15 @@
-"""Utility file to seed project database"""
+"""Utility file to seed project database."""
+
+import json
 
 from sqlalchemy import func
+
+from server import app
 
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
 
 from model import connect_to_db, db
-
-from server import app
 
 from datetime import datetime
 
@@ -15,37 +17,31 @@ from sqlalchemy.inspection import inspect
 
 
 def load_users():
-    """Load users into database."""
+    """Load users from Khan Academy JSON into database."""
 
     print "Users"
 
     User.query.delete()
 
-    for row in open("seed_data/u.users"):
-        row = row.rstrip()
-        user_id, email, password, f_name, l_name = row.split("|")
+    user_string = open('seed_data/sample_users.json').read()
+    user_dict = json.loads(user_string)
+
+    for user in user_dict:
+        user_id = user['user_id']
+        email = user['email']
+        nickname = user['nickname'].split(" ")
+        f_name, l_name = nickname
+        khan_username = user['username']
+        num_students = user['students_count']
 
         user = User(user_id=user_id,
                     email=email,
-                    password=password,
                     f_name=f_name,
-                    l_name=l_name)
+                    l_name=l_name,
+                    khan_username=khan_username,
+                    num_students=num_students)
 
         db.session.add(user)
-
-    # import psycopg2
-    # conn = psycopg2.connect("dbname=project")
-    # cur = conn.cursor()
-    # f = open('seed_data/users.csv')
-    # header = f.readline()
-    # line = f.readline()
-    # while line:
-    #     cur.execute("INSERT INTO users(email, password, f_name, l_name) VALUES(\'%s\', \'%s\', \'%s\', \'%s\');" % (tuple(line.split(",")[1:5])))
-    #     line = f.readline()
-    # f.close()
-    # cur.close()
-    # conn.commit()
-    # conn.close()
 
     db.session.commit()
 
@@ -94,21 +90,27 @@ def load_classrooms():
 
 
 def load_students():
-    """Load students into database."""
+    """Load students from Khan Academy JSON into database."""
 
     print "Students"
 
     Student.query.delete()
 
-    for row in open("seed_data/u.students"):
-        row = row.rstrip()
-        student_id, email, f_name, l_name, class_id = row.split("|")
+    student_string = open('seed_data/sample_students.json').read()
+    student_dict = json.loads(student_string)
+
+    for student in student_dict:
+        student_id = student['user_id']
+        email = student['email']
+        nickname = student['nickname'].split(" ")
+        f_name, l_name = nickname
+        khan_username = student['username']
 
         student = Student(student_id=student_id,
                           email=email,
                           f_name=f_name,
                           l_name=l_name,
-                          class_id=class_id)
+                          khan_username=khan_username)
 
         db.session.add(student)
 
@@ -250,36 +252,6 @@ def load_videoresults():
     db.session.commit()
 
 
-# def set_val_user_id():
-#     """Set value for the next user_id after seeding database"""
-
-#     print "Setting max user ID value!"
-
-#     # Get the Max user_id in the database
-#     result = db.session.query(func.max(User.user_id)).one()
-#     max_id = int(result[0])
-
-#     # Set the value for the next user_id to be max_id + 1
-#     query = "SELECT setval('users_user_id_seq', :new_id)"
-#     db.session.execute(query, {'new_id': max_id + 1})
-#     db.session.commit()
-
-
-# def set_val_primary_key(class_name, pkey_name, table_name):
-#     """Set value for the next user_id after seeding database"""
-
-#     print "Setting max user ID value!"
-
-#     # Get the Max user_id in the database
-#     result = db.session.query(func.max(User.user_id)).one()
-#     max_id = int(result[0])
-
-#     # Set the value for the next user_id to be max_id + 1
-#     query = "SELECT setval('users_user_id_seq', :new_id)"
-#     db.session.execute(query, {'new_id': max_id + 1})
-#     db.session.commit()
-
-
 def update_pkey_seqs():
     """Set primary key for each table to start at one higher than the current
     highest key. Helps when data has been manually seeded."""
@@ -353,4 +325,3 @@ if __name__ == "__main__":
 
     call_all_functions()
     update_pkey_seqs()
-    # set_val_user_id()
