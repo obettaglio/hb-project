@@ -12,6 +12,8 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 from model import connect_to_db, db
 
+import ka_oauth
+
 
 app = Flask(__name__)
 
@@ -52,6 +54,7 @@ def log_user_in():
     if user:
         if password == user.password:
             session['logged_in_user'] = user.user_id
+            ka_oauth.run_tests(session)
             flash('Logged in.')
             return redirect('/classes')
         else:
@@ -75,29 +78,58 @@ def register_user():
 
     Add user to database and put user_id into session."""
 
-    email = request.form.get('email')
-    password = request.form.get('password')
-    f_name = request.form.get('f_name')
-    l_name = request.form.get('l_name')
-    zipcode = request.form.get('zipcode')
-    district = request.form.get('district')
+    ka_oauth.run_tests(session)
 
-    user = db.session.query(User).filter(User.email == email).first()
+    response = session['khan_user'].get('/api/v1/user')
+    response = response.json()
 
-    if user:
-        flash('This email is already registered. Please log in.')
-        return redirect('/login')
-    else:
-        new_user = User(email=email, password=password,
-                        f_name=f_name, l_name=l_name,
-                        zipcode=zipcode, district=district)
-        db.session.add(new_user)
-        db.session.commit()
+    user_id = response['user_id']
+    email = response['email']
+    password = response['username'][:3] + '123'
+    nickname = response['nickname'].split(' ')
+    f_name, l_name = nickname
+    khan_username = response['username']
+    num_students = response['students_count']
 
-        session['logged_in_user'] = new_user.user_id
+    user = User(user_id=user_id,
+                email=email,
+                password=password,
+                f_name=f_name,
+                l_name=l_name,
+                khan_username=khan_username,
+                num_students=num_students)
 
-        flash('Account created.')
-        return redirect('/classes')
+    db.session.add(user)
+    db.session.commit()
+
+    session['logged_in_user'] = user.user_id
+
+    flash('Account created.')
+    return redirect('/classes')
+
+    # email = request.form.get('email')
+    # password = request.form.get('password')
+    # f_name = request.form.get('f_name')
+    # l_name = request.form.get('l_name')
+    # zipcode = request.form.get('zipcode')
+    # district = request.form.get('district')
+
+    # user = db.session.query(User).filter(User.email == email).first()
+
+    # if user:
+    #     flash('This email is already registered. Please log in.')
+    #     return redirect('/login')
+    # else:
+    #     new_user = User(email=email, password=password,
+    #                     f_name=f_name, l_name=l_name,
+    #                     zipcode=zipcode, district=district)
+    #     db.session.add(new_user)
+    #     db.session.commit()
+
+    #     session['logged_in_user'] = new_user.user_id
+
+    #     flash('Account created.')
+    #     return redirect('/classes')
 
 
 @app.route('/authorize')
@@ -124,11 +156,15 @@ def show_classes_list():
     """Display list of classes taught by user."""
 
     # email = request.form.get('email')
-    if session.get('logged_in_user'):
+    if session.get('logged_in_user') and session.get('khan_user'):
         user_id = session['logged_in_user']
+        khan_id = session['khan_user']
 
         user = db.session.query(User).filter(User.user_id == user_id).first()
         print user
+
+        response = khan_id.get('/api/v1/classes', params=params)
+        response = response.json()
 
         classrooms = db.session.query(Classroom).join(User)\
                                                 .filter(User.user_id == user_id).all()

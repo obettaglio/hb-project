@@ -20,7 +20,7 @@ CONSUMER_SECRET = os.environ['KHAN_CONSUMER_SECRET']
 CALLBACK_BASE = '0.0.0.0'
 SERVER_URL = 'http://www.khanacademy.org'
 
-DEFAULT_API_RESOURCE = '/api/v1/playlists'
+DEFAULT_API_RESOURCE = '/api/v1/user'
 VERIFIER = None
 
 
@@ -69,11 +69,11 @@ def get_api_resource(session):
     end = time.time()
 
     print "\n"
-    print response.text
+    print response.json()
     print "\nTime: %ss\n" % (end - start)
 
 
-def run_tests():
+def run_tests(flask_session):
     global CONSUMER_KEY, CONSUMER_SECRET, SERVER_URL
 
     # Set consumer key, consumer secret, and server base URL from user input or
@@ -107,17 +107,16 @@ def run_tests():
     callback_server.server_close()
 
     # 3. Get an access token.
-    session = service.get_auth_session(request_token, secret_request_token,
-                                       params={'oauth_verifier': VERIFIER})
+    # session = service.get_auth_session(request_token, secret_request_token,
+    #                                    params={'oauth_verifier': VERIFIER})
 
     # Repeatedly prompt user for a resource and make authenticated API calls.
     print
-    while(True):
-        get_api_resource(session)
+    # while(True):
+    get_api_resource(session)
+    flask_session['khan_user'] = service.get_auth_session(request_token, secret_request_token,
+                                   params={'oauth_verifier': VERIFIER})
 
-
-def main():
-    run_tests()
 
 if __name__ == "__main__":
-    main()
+    run_tests()

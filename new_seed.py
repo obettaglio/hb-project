@@ -19,7 +19,7 @@ from sqlalchemy.inspection import inspect
 def load_users():
     """Load users from Khan Academy JSON into database."""
 
-    print "Users"
+    print 'Users'
 
     User.query.delete()
 
@@ -29,13 +29,15 @@ def load_users():
     for user in user_dict:
         user_id = user['user_id']
         email = user['email']
-        nickname = user['nickname'].split(" ")
+        password = user['username'] + '123'
+        nickname = user['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = user['username']
         num_students = user['students_count']
 
         user = User(user_id=user_id,
                     email=email,
+                    password=password,
                     f_name=f_name,
                     l_name=l_name,
                     khan_username=khan_username,
@@ -49,13 +51,13 @@ def load_users():
 def load_subjects():
     """Load subjects into database."""
 
-    print "Subjects"
+    print 'Subjects'
 
     Subject.query.delete()
 
-    for row in open("seed_data/u.subjects"):
+    for row in open('seed_data/u.subjects'):
         row = row.rstrip()
-        subject_code, name = row.split("|")
+        subject_code, name = row.split('|')
 
         subject = Subject(subject_code=subject_code,
                           name=name)
@@ -68,13 +70,13 @@ def load_subjects():
 def load_classrooms():
     """Load classrooms into database."""
 
-    print "Classrooms"
+    print 'Classrooms'
 
     Classroom.query.delete()
 
-    for row in open("seed_data/u.classrooms"):
+    for row in open('seed_data/u.classrooms'):
         row = row.rstrip()
-        class_id, name, user_id, subject_code, period, year, school = row.split("|")
+        class_id, name, user_id, subject_code, period, year, school = row.split('|')
 
         classroom = Classroom(class_id=class_id,
                               name=name,
@@ -92,7 +94,7 @@ def load_classrooms():
 def load_students():
     """Load students from Khan Academy JSON into database."""
 
-    print "Students"
+    print 'Students'
 
     Student.query.delete()
 
@@ -102,7 +104,7 @@ def load_students():
     for student in student_dict:
         student_id = student['user_id']
         email = student['email']
-        nickname = student['nickname'].split(" ")
+        nickname = student['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = student['username']
 
@@ -120,13 +122,13 @@ def load_students():
 def load_exams():
     """Load exams into database."""
 
-    print "Exams"
+    print 'Exams'
 
     Exam.query.delete()
 
-    for row in open("seed_data/u.exams"):
+    for row in open('seed_data/u.exams'):
         row = row.rstrip()
-        exam_id, name, class_id, total_points = row.split("|")
+        exam_id, name, class_id, total_points = row.split('|')
 
         exam = Exam(exam_id=exam_id,
                     name=name,
@@ -141,13 +143,13 @@ def load_exams():
 def load_examresults():
     """Load exam results into database."""
 
-    print "ExamResults"
+    print 'ExamResults'
 
     ExamResult.query.delete()
 
-    for row in open("seed_data/u.examresults"):
+    for row in open('seed_data/u.examresults'):
         row = row.rstrip()
-        examresult_id, exam_id, student_id, score = row.split("|")
+        examresult_id, exam_id, student_id, score = row.split('|')
 
         examresult = ExamResult(examresult_id=examresult_id,
                                 exam_id=exam_id,
@@ -162,13 +164,13 @@ def load_examresults():
 def load_exercises():
     """Load exercises into database."""
 
-    print "Exercises"
+    print 'Exercises'
 
     Exercise.query.delete()
 
-    for row in open("seed_data/u.exercises"):
+    for row in open('seed_data/u.exercises'):
         row = row.rstrip()
-        exercise_id, name, url = row.split("|")
+        exercise_id, name, url = row.split('|')
 
         exercise = Exercise(exercise_id=exercise_id,
                             name=name,
@@ -182,13 +184,13 @@ def load_exercises():
 def load_exerciseresults():
     """Load exercise results into database."""
 
-    print "ExerciseResults"
+    print 'ExerciseResults'
 
     ExerciseResult.query.delete()
 
-    for row in open("seed_data/u.exerciseresults"):
+    for row in open('seed_data/u.exerciseresults'):
         row = row.rstrip()
-        exerciseresult_id, exercise_id, student_id, timestamp, num_correct, num_done = row.split("|")
+        exerciseresult_id, exercise_id, student_id, timestamp, num_correct, num_done = row.split('|')
 
         if type(timestamp) != datetime:
             timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
@@ -208,13 +210,13 @@ def load_exerciseresults():
 def load_videos():
     """Load videos into database."""
 
-    print "Videos"
+    print 'Videos'
 
     Video.query.delete()
 
-    for row in open("seed_data/u.videos"):
+    for row in open('seed_data/u.videos'):
         row = row.rstrip()
-        video_id, name, url, length = row.split("|")
+        video_id, name, url, length = row.split('|')
 
         video = Video(video_id=video_id,
                       name=name,
@@ -229,13 +231,13 @@ def load_videos():
 def load_videoresults():
     """Load video results into database."""
 
-    print "VideoResults"
+    print 'VideoResults'
 
     VideoResult.query.delete()
 
-    for row in open("seed_data/u.videoresults"):
+    for row in open('seed_data/u.videoresults'):
         row = row.rstrip()
-        videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split("|")
+        videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
 
         if type(timestamp) != datetime:
             timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
