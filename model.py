@@ -17,6 +17,8 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
+    khan_id = db.Column(db.String(50), nullable=True)
+    num_students = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
     district = db.Column(db.String(100), nullable=True)
 
@@ -36,6 +38,7 @@ class Student(db.Model):
     email = db.Column(db.String(64), nullable=False, unique=True)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
+    khan_id = db.Column(db.String(50), nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'))
 
     def __repr__(self):
