@@ -1,19 +1,13 @@
 """Teacher app."""
 
 from jinja2 import StrictUndefined
-
 from flask import (Flask, jsonify, render_template, redirect, request, flash,
                    session, url_for)
-
 from flask_debugtoolbar import DebugToolbarExtension
-
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
-
 from model import connect_to_db, db
-
 import ka_oauth
-
 import random
 
 
@@ -22,6 +16,15 @@ app = Flask(__name__)
 app.secret_key = 'alkjsghfwalejfhbsaldfhuewhif'
 
 app.jinja_env.undefined = StrictUndefined
+
+CONSUMER_KEY = ka_oauth.os.environ['KHAN_CONSUMER_KEY']
+CONSUMER_SECRET = ka_oauth.os.environ['KHAN_CONSUMER_SECRET']
+
+CALLBACK_BASE = '0.0.0.0'
+SERVER_URL = 'http://www.khanacademy.org'
+
+DEFAULT_API_RESOURCE = '/api/v1/user'
+VERIFIER = None
 
 
 ##### LOGIN, REGISTER, AUTHORIZE, LOGOUT #####
@@ -46,16 +49,16 @@ def show_login_page():
 def log_user_in():
     """Handle login form.
 
-    Put user_id into session and redirect to homepage."""
+    Put user_email into session and redirect to homepage."""
 
     email = request.form.get('email')
     password = request.form.get('password')
 
-    user = db.session.query(User).filter(User.email == email).first()
+    user = db.session.query(User).filter(User.user_email == email).first()
 
     if user:
         if password == user.password:
-            session['logged_in_user'] = user.user_id
+            session['logged_in_user'] = user.user_email
             ka_oauth.run_tests(session)
             flash('Logged in.')
             return redirect('/classes')
@@ -78,23 +81,57 @@ def show_register_page():
 def register_user():
     """Handle registration form.
 
-    Add user to database and put user_id into session."""
+    Redirect user to Khan Academy's authorization page, and set callback URL."""
 
-    ka_oauth.run_tests(session)
+    # Create an OAuth1Service using rauth.
+    app.service = ka_oauth.rauth.OAuth1Service(
+           name='test',
+           consumer_key=ka_oauth.CONSUMER_KEY,
+           consumer_secret=ka_oauth.CONSUMER_SECRET,
+           request_token_url=ka_oauth.SERVER_URL + '/api/auth2/request_token',
+           access_token_url=ka_oauth.SERVER_URL + '/api/auth2/access_token',
+           authorize_url=ka_oauth.SERVER_URL + '/api/auth2/authorize',
+           base_url=ka_oauth.SERVER_URL + '/api/auth2')
 
-    response = session['khan_user'].get('/api/v1/user')
-    response = response.json()
+    # 1. Get a request token.
+    app.request_token, app.secret_request_token = app.service.get_request_token(
+        params={'oauth_callback': 'http://localhost:5000/authorize'})
 
-    user_id = response['user_id']
-    email = response['email']
-    password = response['username'][:3] + str(random.randint(100, 999))
-    nickname = response['nickname'].split(' ')
+    # 2. Authorize your request token.
+    authorize_url = app.service.get_authorize_url(app.request_token)
+
+    return redirect(authorize_url)
+
+
+@app.route('/authorize')
+def show_authorize_form():
+    """Handle Khan Academy authorization form.
+
+    Put access tokens in session, add user to database, and display success message."""
+
+    #  Read verifier param value from url
+    verifier = request.args.get('oauth_verifier')
+
+    # 3. Get an access token.
+    oauth_session = app.service.get_auth_session(app.request_token, app.secret_request_token,
+                                                 params={'oauth_verifier': verifier})
+
+    session['oauth_params'] = {'access_token': oauth_session.access_token,
+                               'access_token_secret': oauth_session.access_token_secret}
+
+    # 4. Make an authenticated API call
+    params = {}
+    response = oauth_session.get("http://www.khanacademy.org/api/v1/user", params=params)
+    user_dict = response.json()
+
+    user_email = user_dict['email']
+    password = user_dict['username'][:3] + str(random.randint(100, 999))
+    nickname = user_dict['nickname'].split(' ')
     f_name, l_name = nickname
-    khan_username = response['username']
-    num_students = response['students_count']
+    khan_username = user_dict['username']
+    num_students = user_dict['students_count']
 
-    user = User(user_id=user_id,
-                email=email,
+    user = User(user_email=user_email,
                 password=password,
                 f_name=f_name,
                 l_name=l_name,
@@ -104,48 +141,81 @@ def register_user():
     db.session.add(user)
     db.session.commit()
 
-    session['logged_in_user'] = user.user_id
-
-    # email temporary password
-
-    flash('Thank you for creating an account! Please check your email for a temporary login password.')
-    return redirect('/')
-
-    # email = request.form.get('email')
-    # password = request.form.get('password')
-    # f_name = request.form.get('f_name')
-    # l_name = request.form.get('l_name')
-    # zipcode = request.form.get('zipcode')
-    # district = request.form.get('district')
-
-    # user = db.session.query(User).filter(User.email == email).first()
-
-    # if user:
-    #     flash('This email is already registered. Please log in.')
-    #     return redirect('/login')
-    # else:
-    #     new_user = User(email=email, password=password,
-    #                     f_name=f_name, l_name=l_name,
-    #                     zipcode=zipcode, district=district)
-    #     db.session.add(new_user)
-    #     db.session.commit()
-
-    #     session['logged_in_user'] = new_user.user_id
-
-    #     flash('Account created.')
-    #     return redirect('/classes')
-
-
-@app.route('/authorize')
-def show_authorize_form():
-    """Display Khan Academy authorization page."""
-
     return render_template('authorize.html')
+
+
+# @app.route('/register', methods=['POST'])
+# def register_user():
+#     """Handle registration form.
+
+#     Add user to database and put user_id into session."""
+
+#     ka_oauth.run_tests(session)
+
+#     response = session['khan_user'].get('/api/v1/user')
+#     response = response.json()
+
+#     user_id = response['user_id']
+#     email = response['email']
+#     password = response['username'][:3] + str(random.randint(100, 999))
+#     nickname = response['nickname'].split(' ')
+#     f_name, l_name = nickname
+#     khan_username = response['username']
+#     num_students = response['students_count']
+
+#     user = User(user_id=user_id,
+#                 email=email,
+#                 password=password,
+#                 f_name=f_name,
+#                 l_name=l_name,
+#                 khan_username=khan_username,
+#                 num_students=num_students)
+
+#     db.session.add(user)
+#     db.session.commit()
+
+#     session['logged_in_user'] = user.user_id
+
+#     # email temporary password
+
+#     flash('Thank you for creating an account! Please check your email for a temporary login password.')
+#     return redirect('/')
+
+#     # email = request.form.get('email')
+#     # password = request.form.get('password')
+#     # f_name = request.form.get('f_name')
+#     # l_name = request.form.get('l_name')
+#     # zipcode = request.form.get('zipcode')
+#     # district = request.form.get('district')
+
+#     # user = db.session.query(User).filter(User.email == email).first()
+
+#     # if user:
+#     #     flash('This email is already registered. Please log in.')
+#     #     return redirect('/login')
+#     # else:
+#     #     new_user = User(email=email, password=password,
+#     #                     f_name=f_name, l_name=l_name,
+#     #                     zipcode=zipcode, district=district)
+#     #     db.session.add(new_user)
+#     #     db.session.commit()
+
+#     #     session['logged_in_user'] = new_user.user_id
+
+#     #     flash('Account created.')
+#     #     return redirect('/classes')
+
+
+# @app.route('/authorize')
+# def show_authorize_form():
+#     """Display Khan Academy authorization page."""
+
+#     return render_template('authorize.html')
 
 
 @app.route('/logout')
 def log_user_out():
-    """Remove user_id from session and redirect to homepage."""
+    """Remove user_email from session and redirect to homepage."""
 
     del session['logged_in_user']
 
@@ -161,17 +231,17 @@ def show_classes_list():
 
     # email = request.form.get('email')
     if session.get('logged_in_user') and session.get('khan_user'):
-        user_id = session['logged_in_user']
+        user_email = session['logged_in_user']
         khan_id = session['khan_user']
 
-        user = db.session.query(User).filter(User.user_id == user_id).first()
+        user = db.session.query(User).filter(User.user_email == user_email).first()
         print user
 
         response = khan_id.get('/api/v1/classes', params=params)
         response = response.json()
 
         classrooms = db.session.query(Classroom).join(User)\
-                                                .filter(User.user_id == user_id).all()
+                                                .filter(User.user_email == user_email).all()
         print classrooms
 
         return render_template('class-list.html',
@@ -200,7 +270,7 @@ def show_new_class_form():
 def add_new_class():
     """Handle form to add new class and redirect to classes page."""
 
-    user_id = session['logged_in_user']
+    user_email = session['logged_in_user']
 
     name = request.form.get('class-name')
     subject = request.form.get('subject')
@@ -208,7 +278,7 @@ def add_new_class():
     subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
 
     new_class = Classroom(name=name,
-                          user_id=user_id,
+                          user_email=user_email,
                           subject_code=subject_code)
 
     db.session.add(new_class)

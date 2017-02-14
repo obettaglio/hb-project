@@ -27,16 +27,15 @@ def load_users():
     user_dict = json.loads(user_string)
 
     for user in user_dict:
-        user_id = user['user_id']
-        email = user['email']
+        # user_id = user['user_id']
+        user_email = user['email']
         password = user['username'][:3] + '123'
         nickname = user['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = user['username']
         num_students = user['students_count']
 
-        user = User(user_id=user_id,
-                    email=email,
+        user = User(user_email=user_email,
                     password=password,
                     f_name=f_name,
                     l_name=l_name,
@@ -76,11 +75,11 @@ def load_classrooms():
 
     for row in open('seed_data/u.classrooms'):
         row = row.rstrip()
-        class_id, name, user_id, subject_code, period, year, school = row.split('|')
+        class_id, name, user_email, subject_code, period, year, school = row.split('|')
 
         classroom = Classroom(class_id=class_id,
                               name=name,
-                              user_id=user_id,
+                              user_email=user_email,
                               subject_code=subject_code,
                               period=period,
                               year=year,
@@ -147,11 +146,11 @@ def load_examresults():
 
     for row in open('seed_data/u.examresults'):
         row = row.rstrip()
-        examresult_id, exam_id, student_id, score = row.split('|')
+        examresult_id, exam_id, student_email, score = row.split('|')
 
         examresult = ExamResult(examresult_id=examresult_id,
                                 exam_id=exam_id,
-                                student_id=student_id,
+                                student_email=student_email,
                                 score=score)
 
         db.session.add(examresult)
@@ -281,7 +280,9 @@ def load_videoresults():
     #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
 
         if type(timestamp) != datetime:
-            timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
+            # timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
+            timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
+            # 2011-05-04T06:01:47Z
 
         videoresult = VideoResult(video_id=video_id,
                                   student_email=student_email,

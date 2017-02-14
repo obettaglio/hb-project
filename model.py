@@ -12,9 +12,8 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    user_id = db.Column(db.String(200), autoincrement=False, primary_key=True)
-    email = db.Column(db.String(64), nullable=False, unique=True)
-    password = db.Column(db.String(64), nullable=True)
+    user_email = db.Column(db.String(200), autoincrement=False, primary_key=True)
+    password = db.Column(db.String(64), nullable=False)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
     khan_username = db.Column(db.String(50), nullable=True)
@@ -25,8 +24,9 @@ class User(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<User user_id=%s email=%s>" % (self.user_id,
-                                               self.email)
+        return "<User user_email=%s name=%s %s>" % (self.user_email,
+                                                    self.f_name,
+                                                    self.l_name)
 
 
 class Student(db.Model):
@@ -43,8 +43,9 @@ class Student(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Student student_id=%s email=%s>" % (self.student_id,
-                                                     self.email)
+        return "<Student student_email=%s name=%s %s>" % (self.student_email,
+                                                          self.f_name,
+                                                          self.l_name)
 
 
 class Subject(db.Model):
@@ -69,7 +70,7 @@ class Classroom(db.Model):
 
     class_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(30), nullable=False, unique=True)
-    user_id = db.Column(db.String(200), db.ForeignKey('users.user_id'))
+    user_email = db.Column(db.String(200), db.ForeignKey('users.user_email'))
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
     period = db.Column(db.Integer, nullable=True)
     year = db.Column(db.Integer, nullable=True)
@@ -192,7 +193,7 @@ class VideoResult(db.Model):
 
     videoresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    student_email = db.Column(db.String(200), db.ForeignKey('students.student_id'))
+    student_email = db.Column(db.String(200), db.ForeignKey('students.student_email'))
     timestamp = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=True)
     secs_watched = db.Column(db.Integer, nullable=True)
