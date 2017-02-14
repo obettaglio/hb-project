@@ -9,6 +9,7 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 from model import connect_to_db, db
 import ka_oauth
 import random
+import requests
 
 
 app = Flask(__name__)
@@ -59,9 +60,19 @@ def log_user_in():
     if user:
         if password == user.password:
             session['logged_in_user'] = user.user_email
-            ka_oauth.run_tests(session)
-            flash('Logged in.')
-            return redirect('/classes')
+            # ka_oauth.run_tests(session)
+            if 'oauth_params' in session:
+                oauth_params = session['oauth_params']
+                if 'access_token' in oauth_params:
+                    flash('Logged in.')
+                    return redirect('/classes')
+                else:
+                    # no tokens, redo oauth
+                    pass
+            else:
+                # redo oauth
+                # raiseError
+                pass
         else:
             flash('Invalid password.')
             return redirect('/login')
@@ -141,7 +152,9 @@ def show_authorize_form():
     db.session.add(user)
     db.session.commit()
 
-    return render_template('authorize.html')
+    flash('Account created successfully! Please check your email for user information and temporary password.')
+    return redirect('/login')
+    # return render_template('authorize.html')
 
 
 # @app.route('/register', methods=['POST'])
@@ -230,15 +243,15 @@ def show_classes_list():
     """Display list of classes taught by user."""
 
     # email = request.form.get('email')
-    if session.get('logged_in_user') and session.get('khan_user'):
+    if session.get('logged_in_user') and session.get('oauth_params'):
         user_email = session['logged_in_user']
-        khan_id = session['khan_user']
+        oauth_params = session['oauth_params']
 
         user = db.session.query(User).filter(User.user_email == user_email).first()
         print user
 
-        response = khan_id.get('/api/v1/classes', params=params)
-        response = response.json()
+        # response = requests.get('https://www.khanacademy.org/api/v1/classes', params=session['oauth_params'])
+        # response = response.json()
 
         classrooms = db.session.query(Classroom).join(User)\
                                                 .filter(User.user_email == user_email).all()
