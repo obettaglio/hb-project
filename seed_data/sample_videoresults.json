@@ -1,0 +1,28 @@
+[
+    {
+        "completed": false,
+        "duration": 478,
+        "kind": "UserVideo",
+        "last_second_watched": 90,
+        "last_watched": "2011-05-04T06:01:47Z",
+        "points": 16,
+        "seconds_watched": 10,
+        "user": "you@gmail.com",
+        "video": {
+            "date_added": "2011-05-04T06:01:47Z",
+            "description": "(Ax+By)(Ax+By)",
+            "duration": 478,
+            "ka_url": "http://www.khanacademy.org/video/level-1-multiplying-expressions",
+            "keywords": "Algebra",
+            "kind": "Video",
+            "playlists": [
+                "Algebra"
+            ],
+            "readable_id": "level-1-multiplying-expressions",
+            "title": "Level 1 multiplying expressions",
+            "url": "http://www.youtube.com/watch?v=Sc0e6xrRJYY&feature=youtube_gdata_player",
+            "views": 43821,
+            "youtube_id": "Sc0e6xrRJYY"
+        }
+    }
+]

@@ -1,0 +1,584 @@
+[
+    {
+        "is_skill_check": false,
+        "uses_worked_examples": false,
+        "v_position": 17,
+        "relative_url": "/exercise/logarithms_1",
+        "has_custom_thumbnail": true,
+        "file_name": "",
+        "source_language": "en",
+        "related_video_readable_ids": [
+        "logarithms"
+        ],
+        "author_name": "Stacy Beaudoin",
+        "creation_date": "2016-03-02T15:41:27Z",
+        "translated_short_display_name": "Evaluate lo",
+        "uses_assessment_items": true,
+        "ka_url": "https://www.khanacademy.org/exercise/logarithms_1",
+        "short_display_name": "Evaluate lo",
+        "translated_title": "Evaluate logarithms",
+        "author_key": "ag5zfmtoYW4tYWNhZGVteXIXCxIIVXNlckRhdGEiCVRvbWVyIEdhbAw",
+        "translated_description_html": "Evaluate basic logarithmic expressions by using the fact that a^x=b is equivalent to log_a(b)=x.",
+        "id": "3021",
+        "concept_tags": [
+        "Tag:x9b9694b373905953"
+        ],
+        "is_quiz": false,
+        "display_name": "Evaluate logarithms",
+        "tracking_document_url": "",
+        "description_html": "Evaluate basic logarithmic expressions by using the fact that a^x=b is equivalent to log_a(b)=x.",
+        "do_not_publish": false,
+        "node_slug": "e/logarithms_1",
+        "translated_problem_types": [
+        {
+          "items": [
+            {
+              "sha": "74641c44ed98c84189eb2cd3834a1c0c18c8bc33",
+              "live": true,
+              "id": "xea3af86e353cb28d"
+            },
+            {
+              "sha": "6ac70adc277c3bd925268ce3e63985a1388d6943",
+              "live": true,
+              "id": "xf45902ae88d0d3e6"
+            },
+            {
+              "sha": "d50e717a14820e71c0293fbad8700fdb4d22dba9",
+              "live": true,
+              "id": "x62f11f9695aa7cfc"
+            },
+            {
+              "sha": "d71cb1b53adf94f39f5f6ca07f0a93b47254e75a",
+              "live": true,
+              "id": "x6c382e8660d4f7aa"
+            },
+            {
+              "sha": "da2ef15a739ad4d10dc4babbc3fa90fa03ee8818",
+              "live": true,
+              "id": "x776b24f8283b709f"
+            },
+            {
+              "sha": "780c44a91d154d03cb2eac109d6abed5681eafa3",
+              "live": true,
+              "id": "xd5e76b58706bfbf2"
+            },
+            {
+              "sha": "9d1f0ecbea9723893259a26ca8117dffb538ec84",
+              "live": true,
+              "id": "xe9bdf59dbb32c362"
+            },
+            {
+              "sha": "232f11b6831b32c50f63222d901abbe7060486d0",
+              "live": true,
+              "id": "x8439fa74637db8a7"
+            },
+            {
+              "sha": "bd6a4f158bb6c0f376e1bacf61d3e40e3d17ba5e",
+              "live": true,
+              "id": "x27a7432839151700"
+            },
+            {
+              "sha": "d32f87ecf682180b4652a2cae8fa1dcb1e941ed4",
+              "live": true,
+              "id": "xa98012c5b8a599c5"
+            },
+            {
+              "sha": "95b0f517899196d325f2d936e15cb950dd0fa87d",
+              "live": true,
+              "id": "xa39bc5d7bc5b05c9"
+            },
+            {
+              "sha": "3335891296c22c52dc4215e3c188389e79d045ce",
+              "live": true,
+              "id": "x28c0e8f4d9c41b4c"
+            },
+            {
+              "sha": "e024c0369564d80f4d531c69796d3eb809d4008d",
+              "live": true,
+              "id": "xebaf82f4d9314ae5"
+            },
+            {
+              "sha": "8cd1937c6b2958eadbc4cfeaba84d03b978484fa",
+              "live": true,
+              "id": "xd18fd002ff846eb2"
+            },
+            {
+              "sha": "e5009b5a9dd8d7d0cb0892acd9578950e5fd82dc",
+              "live": true,
+              "id": "xb5ee868b82f76f52"
+            },
+            {
+              "sha": "948a6ac08d5e28a4df545f62f9e6933af53783a0",
+              "live": true,
+              "id": "x1a6641ff75377fa2"
+            },
+            {
+              "sha": "18a78437067893593a42cb627bb0e02be8290403",
+              "live": true,
+              "id": "xdd4efafdbb8e1515"
+            },
+            {
+              "sha": "2ee51d57dc00a6fdd496e1e1b02e5dc8f4566636",
+              "live": true,
+              "id": "x454f6c834e1dace1"
+            },
+            {
+              "sha": "8cdde7ec8cb1181d946b85ac11cd187dc1b53552",
+              "live": true,
+              "id": "x341b6bd15223d641"
+            },
+            {
+              "sha": "10b70cc62696730cee63fbf49421f33d33584347",
+              "live": true,
+              "id": "x6f1a9ab7e0489ccd"
+            },
+            {
+              "sha": "22eecc6c18c1690a918ea23e8293bbf834a67cdc",
+              "live": true,
+              "id": "xea67b12411bb525b"
+            },
+            {
+              "sha": "b69e5eb25427fea693b17f74760c60b6d6b9c599",
+              "live": true,
+              "id": "x5222287f9547b1d0"
+            },
+            {
+              "sha": "fb56d67fd5caf15d5a84e1ccc02df23a5d3d3c05",
+              "live": true,
+              "id": "xa7073add58766169"
+            },
+            {
+              "sha": "ea0f7c9fe1571031f613e02f0f444aa5ee2d70c6",
+              "live": true,
+              "id": "xdb9be13a9d7474e5"
+            },
+            {
+              "sha": "35d6805cbd1b32ca7b25e88a66b40612f2d5f2a7",
+              "live": true,
+              "id": "xbde98104698ebb06"
+            },
+            {
+              "sha": "48ce5845661a658b7f08e1a8c3ac80364e019893",
+              "live": true,
+              "id": "x4ff7f07e01eb6280"
+            },
+            {
+              "sha": "01e83b1d1d202c4d6b1b3796c27c379970cbfce5",
+              "live": true,
+              "id": "x9ca0ea27466e4a2c"
+            },
+            {
+              "sha": "5897acf4e99f5fc893aa7c9a7081ad34d34c7573",
+              "live": true,
+              "id": "x3e68993e68ed4576"
+            },
+            {
+              "sha": "fcba038fdfb7d089c33b78bbc3bf0ab78bfa1dda",
+              "live": true,
+              "id": "x8b8344023b01dc4e"
+            },
+            {
+              "sha": "4cd7ef79e287b82f93cc5dc6a1764ec8db247ba5",
+              "live": true,
+              "id": "xa764f78020f7e98c"
+            },
+            {
+              "sha": "df62e3adbf8b27737a9eb4a42f0eaacf18899a75",
+              "live": true,
+              "id": "x0cddcadb436b5d89"
+            }
+          ],
+          "name": "Type 1"
+        }
+        ],
+        "progress_key": "e3021",
+        "suggested_completion_criteria": "num_correct_in_a_row_3",
+        "edit_slug": "edit/e/3021",
+        "summative": false,
+        "live": true,
+        "translated_description": "Evaluate basic logarithmic expressions by using the fact that a^x=b is equivalent to log_a(b)=x.",
+        "listed": true,
+        "alternate_slugs": [],
+        "pretty_display_name": "Evaluate logarithms",
+        "INTERN_USE": null,
+        "thumbnail_data": {
+        "url": "",
+        "skip_filter": false,
+        "title_text": "",
+        "gcs_name": "/ka_thumbnails/logarithms_1.png"
+        },
+        "translated_custom_description_tag": "",
+        "all_assessment_items": [
+        {
+          "sha": "74641c44ed98c84189eb2cd3834a1c0c18c8bc33",
+          "live": true,
+          "id": "xea3af86e353cb28d"
+        },
+        {
+          "sha": "6ac70adc277c3bd925268ce3e63985a1388d6943",
+          "live": true,
+          "id": "xf45902ae88d0d3e6"
+        },
+        {
+          "sha": "d50e717a14820e71c0293fbad8700fdb4d22dba9",
+          "live": true,
+          "id": "x62f11f9695aa7cfc"
+        },
+        {
+          "sha": "d71cb1b53adf94f39f5f6ca07f0a93b47254e75a",
+          "live": true,
+          "id": "x6c382e8660d4f7aa"
+        },
+        {
+          "sha": "da2ef15a739ad4d10dc4babbc3fa90fa03ee8818",
+          "live": true,
+          "id": "x776b24f8283b709f"
+        },
+        {
+          "sha": "780c44a91d154d03cb2eac109d6abed5681eafa3",
+          "live": true,
+          "id": "xd5e76b58706bfbf2"
+        },
+        {
+          "sha": "9d1f0ecbea9723893259a26ca8117dffb538ec84",
+          "live": true,
+          "id": "xe9bdf59dbb32c362"
+        },
+        {
+          "sha": "232f11b6831b32c50f63222d901abbe7060486d0",
+          "live": true,
+          "id": "x8439fa74637db8a7"
+        },
+        {
+          "sha": "bd6a4f158bb6c0f376e1bacf61d3e40e3d17ba5e",
+          "live": true,
+          "id": "x27a7432839151700"
+        },
+        {
+          "sha": "d32f87ecf682180b4652a2cae8fa1dcb1e941ed4",
+          "live": true,
+          "id": "xa98012c5b8a599c5"
+        },
+        {
+          "sha": "95b0f517899196d325f2d936e15cb950dd0fa87d",
+          "live": true,
+          "id": "xa39bc5d7bc5b05c9"
+        },
+        {
+          "sha": "3335891296c22c52dc4215e3c188389e79d045ce",
+          "live": true,
+          "id": "x28c0e8f4d9c41b4c"
+        },
+        {
+          "sha": "e024c0369564d80f4d531c69796d3eb809d4008d",
+          "live": true,
+          "id": "xebaf82f4d9314ae5"
+        },
+        {
+          "sha": "8cd1937c6b2958eadbc4cfeaba84d03b978484fa",
+          "live": true,
+          "id": "xd18fd002ff846eb2"
+        },
+        {
+          "sha": "e5009b5a9dd8d7d0cb0892acd9578950e5fd82dc",
+          "live": true,
+          "id": "xb5ee868b82f76f52"
+        },
+        {
+          "sha": "948a6ac08d5e28a4df545f62f9e6933af53783a0",
+          "live": true,
+          "id": "x1a6641ff75377fa2"
+        },
+        {
+          "sha": "18a78437067893593a42cb627bb0e02be8290403",
+          "live": true,
+          "id": "xdd4efafdbb8e1515"
+        },
+        {
+          "sha": "2ee51d57dc00a6fdd496e1e1b02e5dc8f4566636",
+          "live": true,
+          "id": "x454f6c834e1dace1"
+        },
+        {
+          "sha": "8cdde7ec8cb1181d946b85ac11cd187dc1b53552",
+          "live": true,
+          "id": "x341b6bd15223d641"
+        },
+        {
+          "sha": "10b70cc62696730cee63fbf49421f33d33584347",
+          "live": true,
+          "id": "x6f1a9ab7e0489ccd"
+        },
+        {
+          "sha": "22eecc6c18c1690a918ea23e8293bbf834a67cdc",
+          "live": true,
+          "id": "xea67b12411bb525b"
+        },
+        {
+          "sha": "b69e5eb25427fea693b17f74760c60b6d6b9c599",
+          "live": true,
+          "id": "x5222287f9547b1d0"
+        },
+        {
+          "sha": "fb56d67fd5caf15d5a84e1ccc02df23a5d3d3c05",
+          "live": true,
+          "id": "xa7073add58766169"
+        },
+        {
+          "sha": "ea0f7c9fe1571031f613e02f0f444aa5ee2d70c6",
+          "live": true,
+          "id": "xdb9be13a9d7474e5"
+        },
+        {
+          "sha": "35d6805cbd1b32ca7b25e88a66b40612f2d5f2a7",
+          "live": true,
+          "id": "xbde98104698ebb06"
+        },
+        {
+          "sha": "48ce5845661a658b7f08e1a8c3ac80364e019893",
+          "live": true,
+          "id": "x4ff7f07e01eb6280"
+        },
+        {
+          "sha": "01e83b1d1d202c4d6b1b3796c27c379970cbfce5",
+          "live": true,
+          "id": "x9ca0ea27466e4a2c"
+        },
+        {
+          "sha": "5897acf4e99f5fc893aa7c9a7081ad34d34c7573",
+          "live": true,
+          "id": "x3e68993e68ed4576"
+        },
+        {
+          "sha": "fcba038fdfb7d089c33b78bbc3bf0ab78bfa1dda",
+          "live": true,
+          "id": "x8b8344023b01dc4e"
+        },
+        {
+          "sha": "4cd7ef79e287b82f93cc5dc6a1764ec8db247ba5",
+          "live": true,
+          "id": "xa764f78020f7e98c"
+        },
+        {
+          "sha": "df62e3adbf8b27737a9eb4a42f0eaacf18899a75",
+          "live": true,
+          "id": "x0cddcadb436b5d89"
+        }
+        ],
+        "description": "Evaluate basic logarithmic expressions by using the fact that a^x=b is equivalent to log_a(b)=x.",
+        "translated_pretty_display_name": "Evaluate logarithms",
+        "custom_title_tag": "",
+        "deleted": false,
+        "backup_timestamp": "2013-09-29T10:20:26Z",
+        "concept_tags_info": [
+        {
+          "display_name": "Writing and evaluating logarithms",
+          "id": "Tag:x9b9694b373905953",
+          "slug": "writing-and-evaluating-logarithms"
+        }
+        ],
+        "problem_types": [
+        {
+          "items": [
+            {
+              "sha": "74641c44ed98c84189eb2cd3834a1c0c18c8bc33",
+              "live": true,
+              "id": "xea3af86e353cb28d"
+            },
+            {
+              "sha": "6ac70adc277c3bd925268ce3e63985a1388d6943",
+              "live": true,
+              "id": "xf45902ae88d0d3e6"
+            },
+            {
+              "sha": "d50e717a14820e71c0293fbad8700fdb4d22dba9",
+              "live": true,
+              "id": "x62f11f9695aa7cfc"
+            },
+            {
+              "sha": "d71cb1b53adf94f39f5f6ca07f0a93b47254e75a",
+              "live": true,
+              "id": "x6c382e8660d4f7aa"
+            },
+            {
+              "sha": "da2ef15a739ad4d10dc4babbc3fa90fa03ee8818",
+              "live": true,
+              "id": "x776b24f8283b709f"
+            },
+            {
+              "sha": "780c44a91d154d03cb2eac109d6abed5681eafa3",
+              "live": true,
+              "id": "xd5e76b58706bfbf2"
+            },
+            {
+              "sha": "9d1f0ecbea9723893259a26ca8117dffb538ec84",
+              "live": true,
+              "id": "xe9bdf59dbb32c362"
+            },
+            {
+              "sha": "232f11b6831b32c50f63222d901abbe7060486d0",
+              "live": true,
+              "id": "x8439fa74637db8a7"
+            },
+            {
+              "sha": "bd6a4f158bb6c0f376e1bacf61d3e40e3d17ba5e",
+              "live": true,
+              "id": "x27a7432839151700"
+            },
+            {
+              "sha": "d32f87ecf682180b4652a2cae8fa1dcb1e941ed4",
+              "live": true,
+              "id": "xa98012c5b8a599c5"
+            },
+            {
+              "sha": "95b0f517899196d325f2d936e15cb950dd0fa87d",
+              "live": true,
+              "id": "xa39bc5d7bc5b05c9"
+            },
+            {
+              "sha": "3335891296c22c52dc4215e3c188389e79d045ce",
+              "live": true,
+              "id": "x28c0e8f4d9c41b4c"
+            },
+            {
+              "sha": "e024c0369564d80f4d531c69796d3eb809d4008d",
+              "live": true,
+              "id": "xebaf82f4d9314ae5"
+            },
+            {
+              "sha": "8cd1937c6b2958eadbc4cfeaba84d03b978484fa",
+              "live": true,
+              "id": "xd18fd002ff846eb2"
+            },
+            {
+              "sha": "e5009b5a9dd8d7d0cb0892acd9578950e5fd82dc",
+              "live": true,
+              "id": "xb5ee868b82f76f52"
+            },
+            {
+              "sha": "948a6ac08d5e28a4df545f62f9e6933af53783a0",
+              "live": true,
+              "id": "x1a6641ff75377fa2"
+            },
+            {
+              "sha": "18a78437067893593a42cb627bb0e02be8290403",
+              "live": true,
+              "id": "xdd4efafdbb8e1515"
+            },
+            {
+              "sha": "2ee51d57dc00a6fdd496e1e1b02e5dc8f4566636",
+              "live": true,
+              "id": "x454f6c834e1dace1"
+            },
+            {
+              "sha": "8cdde7ec8cb1181d946b85ac11cd187dc1b53552",
+              "live": true,
+              "id": "x341b6bd15223d641"
+            },
+            {
+              "sha": "10b70cc62696730cee63fbf49421f33d33584347",
+              "live": true,
+              "id": "x6f1a9ab7e0489ccd"
+            },
+            {
+              "sha": "22eecc6c18c1690a918ea23e8293bbf834a67cdc",
+              "live": true,
+              "id": "xea67b12411bb525b"
+            },
+            {
+              "sha": "b69e5eb25427fea693b17f74760c60b6d6b9c599",
+              "live": true,
+              "id": "x5222287f9547b1d0"
+            },
+            {
+              "sha": "fb56d67fd5caf15d5a84e1ccc02df23a5d3d3c05",
+              "live": true,
+              "id": "xa7073add58766169"
+            },
+            {
+              "sha": "ea0f7c9fe1571031f613e02f0f444aa5ee2d70c6",
+              "live": true,
+              "id": "xdb9be13a9d7474e5"
+            },
+            {
+              "sha": "35d6805cbd1b32ca7b25e88a66b40612f2d5f2a7",
+              "live": true,
+              "id": "xbde98104698ebb06"
+            },
+            {
+              "sha": "48ce5845661a658b7f08e1a8c3ac80364e019893",
+              "live": true,
+              "id": "x4ff7f07e01eb6280"
+            },
+            {
+              "sha": "01e83b1d1d202c4d6b1b3796c27c379970cbfce5",
+              "live": true,
+              "id": "x9ca0ea27466e4a2c"
+            },
+            {
+              "sha": "5897acf4e99f5fc893aa7c9a7081ad34d34c7573",
+              "live": true,
+              "id": "x3e68993e68ed4576"
+            },
+            {
+              "sha": "fcba038fdfb7d089c33b78bbc3bf0ab78bfa1dda",
+              "live": true,
+              "id": "x8b8344023b01dc4e"
+            },
+            {
+              "sha": "4cd7ef79e287b82f93cc5dc6a1764ec8db247ba5",
+              "live": true,
+              "id": "xa764f78020f7e98c"
+            },
+            {
+              "sha": "df62e3adbf8b27737a9eb4a42f0eaacf18899a75",
+              "live": true,
+              "id": "x0cddcadb436b5d89"
+            }
+          ],
+          "name": "Type 1"
+        }
+        ],
+        "WHAT_TO_INTERN": {
+        "FrozenVideo": "frozenset(['author_key', 'description', 'description_html', 'date_modified', 'title', 'ka_user_license', 'keywords', 'content_id', 'readable_id'])",
+        "FrozenTopic": "frozenset(['content_id', 'description', 'title', 'date_modified', 'render_type', 'standalone_title', 'author_key'])",
+        "FrozenArticle": "frozenset(['author_key', 'description', 'description_html', 'title', 'date_modified', 'content_id', 'readable_id'])",
+        "FrozenExercise": "frozenset(['author_key', 'description', 'description_html', 'date_modified', 'author_name', 'suggested_completion_criteria', 'pretty_display_name', 'content_id', 'name'])"
+        },
+        "curated_related_videos": [
+        "1242982964"
+        ],
+        "covers": [
+        "multiplication_1"
+        ],
+        "h_position": 99,
+        "translated_display_name": "Evaluate logarithms",
+        "frozen_sha": "a8e2c9c6b943b708aada69750222b05c22dbd47b",
+        "deleted_mod_time": "2013-07-13T00:03:08Z",
+        "tags": [],
+        "name": "logarithms_1",
+        "kind": "Exercise",
+        "sha1": "c3f0376dd3f7c3c301686a4143297be58cdc224d",
+        "custom_description_tag": "",
+        "date_modified": "2017-01-23T15:53:51Z",
+        "prerequisites": [
+        "algebraically-finding-inverses",
+        "solve-exponential-equations-using-properties-of-exponents-advanced"
+        ],
+        "assessment_item_tags": [
+        "ag5zfmtoYW4tYWNhZGVteXIxCxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcYqbYvDA",
+        "ag5zfmtoYW4tYWNhZGVteXI2CxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcYgICAwIKTqAoM"
+        ],
+        "title": "Evaluate logarithms",
+        "translated_custom_title_tag": "",
+        "global_id": "e3021",
+        "seconds_per_fast_problem": 6,
+        "sha": "b981517deccd697381c13dc8996b499bf28e784e",
+        "image_url": "https://cdn.kastatic.org/ka-exercise-screenshots/logarithms_1.png",
+        "tutorial_only": false,
+        "current_revision_key": "b981517deccd697381c13dc8996b499bf28e784e",
+        "image_url_256": "https://cdn.kastatic.org/ka-exercise-screenshots/logarithms_1_256.png",
+        "content_id": "3021",
+        "content_kind": "Exercise"
+        }
+]

@@ -34,8 +34,7 @@ class Student(db.Model):
 
     __tablename__ = "students"
 
-    student_id = db.Column(db.String(200), autoincrement=False, primary_key=True)
-    email = db.Column(db.String(100), nullable=False, unique=True)
+    student_email = db.Column(db.String(200), autoincrement=False, primary_key=True)
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
     khan_username = db.Column(db.String(50), nullable=False)
@@ -118,15 +117,15 @@ class ExamResult(db.Model):
 
     examresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     exam_id = db.Column(db.Integer, db.ForeignKey('exams.exam_id'))
-    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
+    student_email = db.Column(db.String(200), db.ForeignKey('students.student_email'))
     score = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<ExamResult examresult_id=%s exam_id=%s student_id=%s>" % (self.score_id,
-                                                                           self.exam_id,
-                                                                           self.student_id)
+        return "<ExamResult examresult_id=%s exam_id=%s student_email=%s>" % (self.score_id,
+                                                                              self.exam_id,
+                                                                              self.student_email)
 
 
 class Exercise(db.Model):
@@ -136,7 +135,9 @@ class Exercise(db.Model):
 
     exercise_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(300), nullable=False)
     url = db.Column(db.String(200), nullable=False)
+    is_quiz = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -152,7 +153,7 @@ class ExerciseResult(db.Model):
 
     exerciseresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.exercise_id'))
-    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
+    student_email = db.Column(db.String(200), db.ForeignKey('students.student_email'))
     timestamp = db.Column(db.DateTime, nullable=False)
     num_correct = db.Column(db.Integer, nullable=True)
     num_done = db.Column(db.Integer, nullable=True)
@@ -160,9 +161,9 @@ class ExerciseResult(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<ExerciseResult exerciseresult_id=%s exercise_id=%s student_id=%s>" % (self.exerciseresult_id,
-                                                                                       self.exercise_id,
-                                                                                       self.student_id)
+        return "<ExerciseResult exerciseresult_id=%s exercise_id=%s student_email=%s>" % (self.exerciseresult_id,
+                                                                                          self.exercise_id,
+                                                                                          self.student_email)
 
 
 class Video(db.Model):
@@ -172,9 +173,10 @@ class Video(db.Model):
 
     video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    url = db.Column(db.String(200), nullable=False)
-    length = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(500), nullable=True)
+    url = db.Column(db.String(200), nullable=False)
+    youtube_url = db.Column(db.String(200), nullable=False)
+    length = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -190,17 +192,18 @@ class VideoResult(db.Model):
 
     videoresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    student_id = db.Column(db.String(200), db.ForeignKey('students.student_id'))
+    student_email = db.Column(db.String(200), db.ForeignKey('students.student_id'))
     timestamp = db.Column(db.DateTime, nullable=False)
+    points = db.Column(db.Integer, nullable=True)
     secs_watched = db.Column(db.Integer, nullable=True)
     last_sec_watched = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<VideoResult videoresult_id=%s video_id=%s student_id=%s>" % (self.videoresult_id,
-                                                                              self.video_id,
-                                                                              self.student_id)
+        return "<VideoResult videoresult_id=%s video_id=%s student_email=%s>" % (self.videoresult_id,
+                                                                                 self.video_id,
+                                                                                 self.student_email)
 
 
 #####

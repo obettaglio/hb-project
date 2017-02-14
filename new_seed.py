@@ -1,7 +1,5 @@
 """Utility file to seed project database."""
 
-import json
-
 from sqlalchemy import func
 
 from server import app
@@ -10,6 +8,8 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
                    ExerciseResult, Video, VideoResult)
 
 from model import connect_to_db, db
+
+import json
 
 from datetime import datetime
 
@@ -29,7 +29,7 @@ def load_users():
     for user in user_dict:
         user_id = user['user_id']
         email = user['email']
-        password = user['username'] + '123'
+        password = user['username'][:3] + '123'
         nickname = user['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = user['username']
@@ -102,14 +102,12 @@ def load_students():
     student_dict = json.loads(student_string)
 
     for student in student_dict:
-        student_id = student['user_id']
-        email = student['email']
+        student_email = student['email']
         nickname = student['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = student['username']
 
-        student = Student(student_id=student_id,
-                          email=email,
+        student = Student(student_email=student_email,
                           f_name=f_name,
                           l_name=l_name,
                           khan_username=khan_username)
@@ -162,19 +160,31 @@ def load_examresults():
 
 
 def load_exercises():
-    """Load exercises into database."""
+    """Load exercises from Khan Academy JSON into database."""
 
     print 'Exercises'
 
     Exercise.query.delete()
 
-    for row in open('seed_data/u.exercises'):
-        row = row.rstrip()
-        exercise_id, name, url = row.split('|')
+    exercise_string = open('seed_data/sample_exercises.json').read()
+    exercise_dict = json.loads(exercise_string)
+
+    for exercise in exercise_dict:
+        exercise_id = exercise['id']
+        name = exercise['title']
+        description = exercise['description']
+        url = exercise['ka_url']
+        is_quiz = exercise['is_quiz']
+
+    # for row in open('seed_data/u.exercises'):
+    #     row = row.rstrip()
+    #     exercise_id, name, url = row.split('|')
 
         exercise = Exercise(exercise_id=exercise_id,
                             name=name,
-                            url=url)
+                            description=description,
+                            url=url,
+                            is_quiz=is_quiz)
 
         db.session.add(exercise)
 
@@ -190,14 +200,14 @@ def load_exerciseresults():
 
     for row in open('seed_data/u.exerciseresults'):
         row = row.rstrip()
-        exerciseresult_id, exercise_id, student_id, timestamp, num_correct, num_done = row.split('|')
+        exerciseresult_id, exercise_id, student_email, timestamp, num_correct, num_done = row.split('|')
 
         if type(timestamp) != datetime:
             timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
 
         exerciseresult = ExerciseResult(exerciseresult_id=exerciseresult_id,
                                         exercise_id=exercise_id,
-                                        student_id=student_id,
+                                        student_email=student_email,
                                         timestamp=timestamp,
                                         num_correct=num_correct,
                                         num_done=num_done)
@@ -208,19 +218,32 @@ def load_exerciseresults():
 
 
 def load_videos():
-    """Load videos into database."""
+    """Load videos from Khan Academy JSON into database."""
 
     print 'Videos'
 
     Video.query.delete()
 
-    for row in open('seed_data/u.videos'):
-        row = row.rstrip()
-        video_id, name, url, length = row.split('|')
+    video_string = open('seed_data/sample_videos.json').read()
+    video_dict = json.loads(video_string)
+
+    for video in video_dict:
+        video_id = video['id']
+        name = video['title']
+        description = video['description']
+        url = video['ka_url']
+        youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
+        length = video['duration']
+
+    # for row in open('seed_data/u.videos'):
+    #     row = row.rstrip()
+    #     video_id, name, url, length = row.split('|')
 
         video = Video(video_id=video_id,
                       name=name,
+                      description=description,
                       url=url,
+                      youtube_url=youtube_url,
                       length=length)
 
         db.session.add(video)
@@ -235,17 +258,35 @@ def load_videoresults():
 
     VideoResult.query.delete()
 
-    for row in open('seed_data/u.videoresults'):
-        row = row.rstrip()
-        videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
+    videoresult_string = open('seed_data/sample_videoresults.json').read()
+    videoresult_dict = json.loads(videoresult_string)
+
+    for videoresult in videoresult_dict:
+        student_email = videoresult['user']
+        timestamp = videoresult['last_watched']
+        points = videoresult['points']
+        secs_watched = videoresult['seconds_watched']
+        last_sec_watched = videoresult['last_second_watched']
+
+        video = videoresult['video']
+        # name = video['title']
+        # description = video['description']
+        url = video['ka_url']
+        # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
+        # length = video['duration']
+        video_id = db.session.query(Video.video_id).filter(Video.url == url).first()
+
+    # for row in open('seed_data/u.videoresults'):
+    #     row = row.rstrip()
+    #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
 
         if type(timestamp) != datetime:
             timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
 
-        videoresult = VideoResult(videoresult_id=videoresult_id,
-                                  video_id=video_id,
-                                  student_id=student_id,
+        videoresult = VideoResult(video_id=video_id,
+                                  student_email=student_email,
                                   timestamp=timestamp,
+                                  points=points,
                                   secs_watched=secs_watched,
                                   last_sec_watched=last_sec_watched)
 

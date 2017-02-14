@@ -14,6 +14,8 @@ from model import connect_to_db, db
 
 import ka_oauth
 
+import random
+
 
 app = Flask(__name__)
 
@@ -85,7 +87,7 @@ def register_user():
 
     user_id = response['user_id']
     email = response['email']
-    password = response['username'][:3] + '123'
+    password = response['username'][:3] + str(random.randint(100, 999))
     nickname = response['nickname'].split(' ')
     f_name, l_name = nickname
     khan_username = response['username']
@@ -104,8 +106,10 @@ def register_user():
 
     session['logged_in_user'] = user.user_id
 
-    flash('Account created.')
-    return redirect('/classes')
+    # email temporary password
+
+    flash('Thank you for creating an account! Please check your email for a temporary login password.')
+    return redirect('/')
 
     # email = request.form.get('email')
     # password = request.form.get('password')
