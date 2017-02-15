@@ -86,8 +86,8 @@ class Classroom(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Classroom class_id=%s user_id=%s>" % (self.class_id,
-                                                       self.user_id)
+        return "<Classroom class_id=%s user_email=%s>" % (self.class_id,
+                                                          self.user_email)
 
 
 class Exam(db.Model):

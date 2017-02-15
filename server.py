@@ -7,7 +7,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
 from model import connect_to_db, db
-import ka_oauth
+# import ka_oauth
+import rauth
+import os
 import random
 import requests
 
@@ -18,8 +20,8 @@ app.secret_key = 'alkjsghfwalejfhbsaldfhuewhif'
 
 app.jinja_env.undefined = StrictUndefined
 
-CONSUMER_KEY = ka_oauth.os.environ['KHAN_CONSUMER_KEY']
-CONSUMER_SECRET = ka_oauth.os.environ['KHAN_CONSUMER_SECRET']
+CONSUMER_KEY = os.environ['KHAN_CONSUMER_KEY']
+CONSUMER_SECRET = os.environ['KHAN_CONSUMER_SECRET']
 
 CALLBACK_BASE = '0.0.0.0'
 SERVER_URL = 'http://www.khanacademy.org'
@@ -94,14 +96,14 @@ def register_user():
     Redirect user to Khan Academy's authorization page, and set callback URL."""
 
     # Create an OAuth1Service using rauth.
-    app.service = ka_oauth.rauth.OAuth1Service(
+    app.service = rauth.OAuth1Service(
            name='test',
-           consumer_key=ka_oauth.CONSUMER_KEY,
-           consumer_secret=ka_oauth.CONSUMER_SECRET,
-           request_token_url=ka_oauth.SERVER_URL + '/api/auth2/request_token',
-           access_token_url=ka_oauth.SERVER_URL + '/api/auth2/access_token',
-           authorize_url=ka_oauth.SERVER_URL + '/api/auth2/authorize',
-           base_url=ka_oauth.SERVER_URL + '/api/auth2')
+           consumer_key=CONSUMER_KEY,
+           consumer_secret=CONSUMER_SECRET,
+           request_token_url=SERVER_URL + '/api/auth2/request_token',
+           access_token_url=SERVER_URL + '/api/auth2/access_token',
+           authorize_url=SERVER_URL + '/api/auth2/authorize',
+           base_url=SERVER_URL + '/api/auth2')
 
     # 1. Get a request token.
     app.request_token, app.secret_request_token = app.service.get_request_token(
@@ -240,8 +242,10 @@ def log_user_out():
 ##### JSON ROUTES #####
 
 @app.route('/videoresults.json')
-def student_info():
-    """Return data about video results as JSON."""
+def videoresult_info():
+    """Return data about video results as JSON.
+
+    Sample data for d3 test."""
 
     # videoresults = open('seed_data/sample_videoresults.json').read()
     videoresults = [
