@@ -60,7 +60,6 @@ def log_user_in():
     if user:
         if password == user.password:
             session['logged_in_user'] = user.user_email
-            # ka_oauth.run_tests(session)
             if 'oauth_params' in session:
                 oauth_params = session['oauth_params']
                 if 'access_token' in oauth_params:
@@ -132,6 +131,8 @@ def show_authorize_form():
 
     # 4. Make an authenticated API call
     params = {}
+    # import pdb
+    # pdb.set_trace()
     response = oauth_session.get("http://www.khanacademy.org/api/v1/user", params=params)
     user_dict = response.json()
 
@@ -236,6 +237,35 @@ def log_user_out():
     return redirect('/')
 
 
+##### JSON ROUTES #####
+
+@app.route('/videoresults.json')
+def student_info():
+    """Return data about video results as JSON."""
+
+    # videoresults = open('seed_data/sample_videoresults.json').read()
+    videoresults = [
+        {
+            'video_id': 1,
+            'student_email': 'studentsally@gmail.com',
+            'timestamp': '2011-05-04T06:01:47Z',
+            'points': 16,
+            'secs_watched': 10,
+            'last_sec_watched': 90
+        },
+        {
+            'video_id': 1,
+            'student_email': 'studentsteve@gmail.com',
+            'timestamp': '2011-05-04T06:01:47Z',
+            'points': 5,
+            'secs_watched': 10,
+            'last_sec_watched': 90
+        }
+    ]
+
+    return jsonify(videoresults)
+
+
 ##### CLASSROOMS, EXAMS #####
 
 @app.route('/classes')
@@ -284,6 +314,7 @@ def add_new_class():
     """Handle form to add new class and redirect to classes page."""
 
     user_email = session['logged_in_user']
+    oauth_params = session['oauth_params']
 
     name = request.form.get('class-name')
     subject = request.form.get('subject')
@@ -296,6 +327,23 @@ def add_new_class():
 
     db.session.add(new_class)
     db.session.commit()
+
+    # class_id = db.session.get(Classroom.class_id).filter(Classroom.name == name).first()
+
+    # for student in students:
+    #     student_email = student['email']
+    #     nickname = student['nickname']
+    #     f_name, l_name = nickname
+    #     khan_username = student['username']
+    #     new_student = Student(student_email=student_email,
+    #                           f_name=f_name,
+    #                           l_name=l_name,
+    #                           khan_username=khan_username,
+    #                           class_id=class_id)
+
+    #     db.session.add(new_student)
+
+    # db.session.commit()
 
     return redirect('/classes')
 
