@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ classroom.name }}</h1>
+
+<a href='/student-roster'>Student Roster</a>
+
+{% if exams %}
+  <h3>Exams:</h3>
+
+    {% for exam in exams %}
+      <p><a href="/classes/{{ classroom.class_id }}/{{ exam.exam_id }}">{{ exam.name }}</a></p>
+    {% endfor %}
+
+{% endif %}
+
+<h3><a href='/classes/{{ classroom.class_id }}/add-exam'>Add a New Exam</a></h3>
+
+{% endblock %}

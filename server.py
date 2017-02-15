@@ -155,78 +155,10 @@ def show_authorize_form():
     db.session.add(user)
     db.session.commit()
 
-    flash('Account created successfully! Please check your email for user information and temporary password.')
+    # flash('Account created successfully! Please check your email for user information and temporary password.')
+    flash('Account created successfully! Please log in.\nTemporary password: ' + password)
     return redirect('/login')
     # return render_template('authorize.html')
-
-
-# @app.route('/register', methods=['POST'])
-# def register_user():
-#     """Handle registration form.
-
-#     Add user to database and put user_id into session."""
-
-#     ka_oauth.run_tests(session)
-
-#     response = session['khan_user'].get('/api/v1/user')
-#     response = response.json()
-
-#     user_id = response['user_id']
-#     email = response['email']
-#     password = response['username'][:3] + str(random.randint(100, 999))
-#     nickname = response['nickname'].split(' ')
-#     f_name, l_name = nickname
-#     khan_username = response['username']
-#     num_students = response['students_count']
-
-#     user = User(user_id=user_id,
-#                 email=email,
-#                 password=password,
-#                 f_name=f_name,
-#                 l_name=l_name,
-#                 khan_username=khan_username,
-#                 num_students=num_students)
-
-#     db.session.add(user)
-#     db.session.commit()
-
-#     session['logged_in_user'] = user.user_id
-
-#     # email temporary password
-
-#     flash('Thank you for creating an account! Please check your email for a temporary login password.')
-#     return redirect('/')
-
-#     # email = request.form.get('email')
-#     # password = request.form.get('password')
-#     # f_name = request.form.get('f_name')
-#     # l_name = request.form.get('l_name')
-#     # zipcode = request.form.get('zipcode')
-#     # district = request.form.get('district')
-
-#     # user = db.session.query(User).filter(User.email == email).first()
-
-#     # if user:
-#     #     flash('This email is already registered. Please log in.')
-#     #     return redirect('/login')
-#     # else:
-#     #     new_user = User(email=email, password=password,
-#     #                     f_name=f_name, l_name=l_name,
-#     #                     zipcode=zipcode, district=district)
-#     #     db.session.add(new_user)
-#     #     db.session.commit()
-
-#     #     session['logged_in_user'] = new_user.user_id
-
-#     #     flash('Account created.')
-#     #     return redirect('/classes')
-
-
-# @app.route('/authorize')
-# def show_authorize_form():
-#     """Display Khan Academy authorization page."""
-
-#     return render_template('authorize.html')
 
 
 @app.route('/logout')
@@ -272,84 +204,119 @@ def videoresult_info():
 
 ##### CLASSROOMS, EXAMS #####
 
-@app.route('/classes')
-def show_classes_list():
-    """Display list of classes taught by user."""
+@app.route('/classroom')
+def show_single_class():
+    """Display class taught by user.
 
-    # email = request.form.get('email')
-    if session.get('logged_in_user') and session.get('oauth_params'):
-        user_email = session['logged_in_user']
-        oauth_params = session['oauth_params']
+    Include list of existing exams, link to student roster, visual data, and New Exam button.
+    >> MVP: ONLY ONE CLASSROOM PER USER <<"""
 
-        user = db.session.query(User).filter(User.user_email == user_email).first()
-        print user
+    user_email = db.session.query(User.user_email).filter(User.user_email == session['logged_in_user']).first()
 
-        # response = requests.get('https://www.khanacademy.org/api/v1/classes', params=session['oauth_params'])
-        # response = response.json()
+    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+    class_id = classroom.class_id
 
-        classrooms = db.session.query(Classroom).join(User)\
-                                                .filter(User.user_email == user_email).all()
-        print classrooms
+    # students = db.session.query(Student).filter(Student.class_id == class_id).all()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
-        return render_template('class-list.html',
-                               user=user,
-                               classrooms=classrooms)
-    else:
-        return render_template('unauthorized-attempt.html')
+    return render_template('classroom.html',
+                           classroom=classroom,
+                           # students=students,
+                           exams=exams)
 
 
-@app.route('/classes/add-class')
-def show_new_class_form():
-    """Display form to add new class."""
+@app.route('/student-roster')
+def show_student_roster():
+    """Display student roster for class taught by user."""
 
-    subjects_tup = db.session.query(Subject.name).all()
-    subjects = []
+    user_email = db.session.query(User.user_email).filter(User.user_email == session['logged_in_user']).first()
 
-    for subject in subjects_tup:
-        subject = subject[0]
-        subjects.append(subject)
+    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+    class_id = classroom.class_id
 
-    return render_template('add-class.html',
-                           subjects=subjects)
+    students = db.session.query(Student).filter(Student.class_id == class_id).all()
+
+    return render_template('student-roster.html',
+                           classroom=classroom,
+                           students=students)
 
 
-@app.route('/classes/add-class', methods=['POST'])
-def add_new_class():
-    """Handle form to add new class and redirect to classes page."""
+# @app.route('/classes')
+# def show_classes_list():
+#     """Display list of classes taught by user."""
 
-    user_email = session['logged_in_user']
-    oauth_params = session['oauth_params']
+#     # email = request.form.get('email')
+#     if session.get('logged_in_user') and session.get('oauth_params'):
+#         user_email = session['logged_in_user']
+#         oauth_params = session['oauth_params']
 
-    name = request.form.get('class-name')
-    subject = request.form.get('subject')
+#         user = db.session.query(User).filter(User.user_email == user_email).first()
 
-    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
+#         # response = requests.get('https://www.khanacademy.org/api/v1/classes', params=session['oauth_params'])
+#         # response = response.json()
 
-    new_class = Classroom(name=name,
-                          user_email=user_email,
-                          subject_code=subject_code)
+#         classrooms = db.session.query(Classroom).join(User)\
+#                                                 .filter(User.user_email == user_email).all()
 
-    db.session.add(new_class)
-    db.session.commit()
+#         return render_template('class-list.html',
+#                                user=user,
+#                                classrooms=classrooms)
+#     else:
+#         return render_template('unauthorized-attempt.html')
 
-    # class_id = db.session.get(Classroom.class_id).filter(Classroom.name == name).first()
 
-    # for student in students:
-    #     student_email = student['email']
-    #     nickname = student['nickname']
-    #     f_name, l_name = nickname
-    #     khan_username = student['username']
-    #     new_student = Student(student_email=student_email,
-    #                           f_name=f_name,
-    #                           l_name=l_name,
-    #                           khan_username=khan_username,
-    #                           class_id=class_id)
+# @app.route('/classes/add-class')
+# def show_new_class_form():
+#     """Display form to add new class."""
 
-    #     db.session.add(new_student)
+#     subjects_tup = db.session.query(Subject.name).all()
+#     subjects = []
 
-    # db.session.commit()
+#     for subject in subjects_tup:
+#         subject = subject[0]
+#         subjects.append(subject)
 
-    return redirect('/classes')
+#     return render_template('add-class.html',
+#                            subjects=subjects)
+
+
+# @app.route('/classes/add-class', methods=['POST'])
+# def add_new_class():
+#     """Handle form to add new class and redirect to classes page."""
+
+#     user_email = session['logged_in_user']
+#     oauth_params = session['oauth_params']
+
+#     name = request.form.get('class-name')
+#     subject = request.form.get('subject')
+
+#     subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
+
+#     new_class = Classroom(name=name,
+#                           user_email=user_email,
+#                           subject_code=subject_code)
+
+#     db.session.add(new_class)
+#     db.session.commit()
+
+#     # class_id = db.session.get(Classroom.class_id).filter(Classroom.name == name).first()
+
+#     # for student in students:
+#     #     student_email = student['email']
+#     #     nickname = student['nickname']
+#     #     f_name, l_name = nickname
+#     #     khan_username = student['username']
+#     #     new_student = Student(student_email=student_email,
+#     #                           f_name=f_name,
+#     #                           l_name=l_name,
+#     #                           khan_username=khan_username,
+#     #                           class_id=class_id)
+
+#     #     db.session.add(new_student)
+
+#     # db.session.commit()
+
+#     return redirect('/classes')
 
 
 @app.route('/classes/<class_id>')   # note: returns string of a number

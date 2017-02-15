@@ -33,6 +33,7 @@ def load_users():
         nickname = user['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = user['username']
+        khan_id = user['user_id']
         num_students = user['students_count']
 
         user = User(user_email=user_email,
@@ -40,6 +41,7 @@ def load_users():
                     f_name=f_name,
                     l_name=l_name,
                     khan_username=khan_username,
+                    khan_id=khan_id,
                     num_students=num_students)
 
         db.session.add(user)
@@ -105,11 +107,13 @@ def load_students():
         nickname = student['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = student['username']
+        khan_id = student['user_id']
 
         student = Student(student_email=student_email,
                           f_name=f_name,
                           l_name=l_name,
-                          khan_username=khan_username)
+                          khan_username=khan_username,
+                          khan_id=khan_id)
 
         db.session.add(student)
 

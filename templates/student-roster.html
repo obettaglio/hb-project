@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ classroom.name }} Student Roster</h1>
+
+<table style="width:100%">
+  <tr>
+    <th>Name</th>
+    <th>Email</th> 
+    <th>Username</th>
+  </tr>
+
+{% if students %}
+    {% for student in students %}
+    <tr>
+      <td>{{ student.f_name }} {{ student.l_name }}</td>
+      <td>{{ student.email }}</td> 
+      <td>{{ student.khan_username }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+</table>
+<p>No students yet.</p>
+
+{% endif %}
+
+
+<h4>Add a New Student</h4>
+
+<form action='/add-student' id='add-student-form'>
+  <label>First Name: </label>
+    <input type='text' name='f_name'><br>
+  <label>Last Name: </label>
+    <input type='text' name='l_name'><br>
+  <label>Email: </label>
+    <input type='text' name='student_email'><br>
+  <label>Khan Academy Username: </label>
+    <input type='text' name='khan_username'><br>
+  <input type='submit' id='add-student-submit' value='Add Student'>
+</form>
+
+<h3><a href='/classroom'>Back to Classroom</a></h3>
+
+{% endblock %}
