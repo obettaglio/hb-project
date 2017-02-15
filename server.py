@@ -66,14 +66,12 @@ def log_user_in():
                 oauth_params = session['oauth_params']
                 if 'access_token' in oauth_params:
                     flash('Logged in.')
-                    return redirect('/classes')
+                    return redirect('/classroom')
                 else:
                     # no tokens, redo oauth
                     pass
             else:
-                # redo oauth
-                # raiseError
-                pass
+                return redirect('/classroom')
         else:
             flash('Invalid password.')
             return redirect('/login')
@@ -179,27 +177,30 @@ def videoresult_info():
 
     Sample data for d3 test."""
 
-    # videoresults = open('seed_data/sample_videoresults.json').read()
-    videoresults = [
-        {
-            'video_id': 1,
-            'student_email': 'studentsally@gmail.com',
-            'timestamp': '2011-05-04T06:01:47Z',
-            'points': 16,
-            'secs_watched': 10,
-            'last_sec_watched': 90
-        },
-        {
-            'video_id': 1,
-            'student_email': 'studentsteve@gmail.com',
-            'timestamp': '2011-05-04T06:01:47Z',
-            'points': 5,
-            'secs_watched': 10,
-            'last_sec_watched': 90
-        }
-    ]
+    videoresults = open('seed_data/sample_videoresults.json').read()
 
-    return jsonify(videoresults)
+    return videoresults
+
+    # videoresults = [
+    #     {
+    #         'video_id': 1,
+    #         'student_email': 'studentsally@gmail.com',
+    #         'timestamp': '2011-05-04T06:01:47Z',
+    #         'points': 16,
+    #         'secs_watched': 10,
+    #         'last_sec_watched': 90
+    #     },
+    #     {
+    #         'video_id': 1,
+    #         'student_email': 'studentsteve@gmail.com',
+    #         'timestamp': '2011-05-04T06:01:47Z',
+    #         'points': 5,
+    #         'secs_watched': 10,
+    #         'last_sec_watched': 90
+    #     }
+    # ]
+
+    # return jsonify(videoresults)
 
 
 ##### CLASSROOMS, EXAMS #####
@@ -212,17 +213,18 @@ def show_single_class():
     >> MVP: ONLY ONE CLASSROOM PER USER <<"""
 
     user_email = db.session.query(User.user_email).filter(User.user_email == session['logged_in_user']).first()
-
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
 
-    # students = db.session.query(Student).filter(Student.class_id == class_id).all()
-    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
+    if classroom is not None:
+        class_id = classroom.class_id
+        exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
-    return render_template('classroom.html',
-                           classroom=classroom,
-                           # students=students,
-                           exams=exams)
+        return render_template('classroom.html',
+                               classroom=classroom,
+                               exams=exams)
+
+    else:
+        return redirect('/classes/add-class')
 
 
 @app.route('/student-roster')
@@ -241,9 +243,50 @@ def show_student_roster():
                            students=students)
 
 
+@app.route('/classes/create-class')
+def show_new_class_form():
+    """Display form to create class.
+
+    >> MVP: ONLY ONE CLASSROOM PER USER <<"""
+
+    subjects_tup = db.session.query(Subject.name).all()
+    subjects = []
+
+    for subject in subjects_tup:
+        subject = subject[0]
+        subjects.append(subject)
+
+    return render_template('create-class.html',
+                           subjects=subjects)
+
+
+@app.route('/classes/create-class', methods=['POST'])
+def add_new_class():
+    """Handle form to create class and redirect to classroom page."""
+
+    user_email = session['logged_in_user']
+    # oauth_params = session['oauth_params']
+
+    name = request.form.get('class-name')
+    subject = request.form.get('subject')
+
+    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
+
+    new_class = Classroom(name=name,
+                          user_email=user_email,
+                          subject_code=subject_code)
+
+    db.session.add(new_class)
+    db.session.commit()
+
+    return redirect('/classroom')
+
+
 # @app.route('/classes')
 # def show_classes_list():
-#     """Display list of classes taught by user."""
+#     """Display list of classes taught by user.
+
+#     >> POST-MVP <<"""
 
 #     # email = request.form.get('email')
 #     if session.get('logged_in_user') and session.get('oauth_params'):
@@ -267,7 +310,9 @@ def show_student_roster():
 
 # @app.route('/classes/add-class')
 # def show_new_class_form():
-#     """Display form to add new class."""
+#     """Display form to add new class.
+
+#     >> POST-MVP <<"""
 
 #     subjects_tup = db.session.query(Subject.name).all()
 #     subjects = []
@@ -282,10 +327,12 @@ def show_student_roster():
 
 # @app.route('/classes/add-class', methods=['POST'])
 # def add_new_class():
-#     """Handle form to add new class and redirect to classes page."""
+#     """Handle form to add new class and redirect to classes page.
+
+#     >> POST-MVP <<"""
 
 #     user_email = session['logged_in_user']
-#     oauth_params = session['oauth_params']
+#     # oauth_params = session['oauth_params']
 
 #     name = request.form.get('class-name')
 #     subject = request.form.get('subject')

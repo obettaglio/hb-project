@@ -360,8 +360,8 @@ def call_all_functions():
     load_students()
     load_exams()
     load_examresults()
-    load_exercises()
-    load_exerciseresults()
+    # load_exercises()
+    # load_exerciseresults()
     load_videos()
     load_videoresults()
 
