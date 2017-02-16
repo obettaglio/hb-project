@@ -3,7 +3,7 @@
 <head>
     <title>Project</title>
     <link rel="stylesheet" href='/static/index.css'>
-    {% block head %} HEAD HERE {% endblock %}
+    {% block head %}{% endblock %}
 </head>
 <body>
 
@@ -17,7 +17,13 @@
       {% endif %}
     {% endwith %}
 
+    <div id='flash-msgs'></div>
+
     {% block content %} CONTENT HERE {% endblock %}
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src='/static/js/create-class.js'></script>
+<script src='/static/js/exam-info.js'></script>
 
 </body>
 </html>

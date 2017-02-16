@@ -39,7 +39,7 @@ class Student(db.Model):
     f_name = db.Column(db.String(50), nullable=False)
     l_name = db.Column(db.String(50), nullable=False)
     khan_username = db.Column(db.String(50), nullable=False)
-    khan_id = db.Column(db.String(200), nullable=False)
+    khan_id = db.Column(db.String(200), nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'), nullable=True)
 
     def __repr__(self):

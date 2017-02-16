@@ -1,19 +1,25 @@
 // Creating a class and student roster
 
-function addClass(results) {
-    // create class via AJAX request,
-    // display add-student-form  >> TO DO <<
+function showAddStudentForm(result) {
+    // flash success message,
+    // disable create-class-submit,
+    // display add-student-header and add-student-form
 
-    console.dir(results);
-    alert('Successfully added new class.');
-    $('create-class-submit').attr('hidden', true);
-    $('add-student-to-new-class-form').attr('hidden', false);
+    console.dir(result);
+    $('#flash-msgs').append("<h3 class='msg'>Created class.</h3>");
+    setTimeout(function() {
+        $('.msg').remove();
+    }, 2000);
+
+    $('#create-class-submit').css('visibility', 'hidden');
+    $('#add-student-header').css('visibility', 'visible');
+    $('#add-student-form').css('visibility', 'visible');
 }
 
 function getClassInfo(evt) {
     // prevent submit button from redirecting,
-    // get data from JSON,  >> TO DO <<
-    // call callbackFunction
+    // send data to route via post request,
+    // call showAddStudentForm
 
     evt.preventDefault();
 
@@ -22,9 +28,50 @@ function getClassInfo(evt) {
         "subject": $("#subject-field").val()
     };
 
-    $.get("/student-info.json",  // results
-          formInputs,
-          addClass);
+    $.post("/create-class",  // post route
+           formInputs,
+           showAddStudentForm
+           );
 }
 
-$('#create-class-form').on('submit', getClassInfo);
+function resetAddStudentForm(result) {
+    // flash success message,
+    // clear add-student-form
+
+    console.dir(result);
+    $('#flash-msgs').append("<h3 class='msg'>Added student.</h3>");
+    setTimeout(function() {
+        $('.msg').remove();
+    }, 2000);
+
+    $('#complete-class').css('visibility', 'visible');
+
+    $('#f-name-field').val('');
+    $('#l-name-field').val('');
+    $('#student-email-field').val('');
+    $('#khan-username-field').val('');
+}
+
+function getStudentInfo(evt) {
+    // prevent submit button from redirecting,
+    // send data to route via post request,
+    // call resetAddStudentForm
+
+    evt.preventDefault();
+
+    var formInputs = {
+        "f-name": $("#f-name-field").val(),
+        "l-name": $("#l-name-field").val(),
+        "student-email": $("#student-email-field").val(),
+        "khan-username": $("#khan-username-field").val()
+    };
+
+    $.post("/add-student",  // post route
+           formInputs,
+           resetAddStudentForm
+           );
+}
+
+
+$('#create-class-submit').on('click', getClassInfo);
+$('#add-student-submit').on('click', getStudentInfo);

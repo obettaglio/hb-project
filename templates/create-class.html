@@ -1,17 +1,12 @@
 {% extends 'base.html' %}
 
-{% block head %}
-
-<script src="https://code.jquery.com/jquery.js"></script>
-<script src='static/js/create-class.js'></script>
-
-{% endblock %}
-
 {% block content %}
 
-<h1>Create Class</h1>
+<h1>Welcome!</h1>
 
-<form action='/classes/create-class' method='post' id='create-class-form'>
+<h3 id='create-class-header'>Step 1: Create a Class</h3>
+
+<form id='create-class-form'>
     <label>Class Name: </label>
     <input type='text' id='class-name-field' name='class-name'><br>
     <label>Subject: </label>
@@ -23,12 +18,22 @@
     <input type='submit' id='create-class-submit' value='Add Class'>
 </form>
 
-<h3>Create Student Roster</h3>
+<h3 id='add-student-header'>Step 2: Create a Student Roster</h3>
 
-<form action='/classes/create-class' method='post' id='add-student-to-new-class-form' hidden>
-    <label>Student Name: </label>
-    <input type='text' class='student-name' name='student-name'><br>
-    <input type='submit' id='add-student-to-new-class-submit' value='Add Student to Roster'>
+<form id='add-student-form'>
+    <label>First Name: </label>
+    <input type='text' id='f-name-field' name='f-name'><br>
+    <label>Last Name: </label>
+    <input type='text' id='l-name-field' name='l-name'><br>
+    <label>Email: </label>
+    <input type='text' id='student-email-field' name='student-email'><br>
+    <label>Khan Academy Username: </label>
+    <input type='text' id='khan-username-field' name='khan-username'><br>
+    <input type='submit' id='add-student-submit' value='Add Student to Roster'>
 </form>
+
+<p></p>
+
+<h3 id='complete-class'>Step 3: <a href='/classroom'>Complete Classroom</a></h3>
 
 {% endblock %}
