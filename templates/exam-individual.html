@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
+
+<h4><a href='/classroom'>Back to Classroom</a></h4>
+
+{% if examresults %}
+  <h3>Scores:</h3>
+
+  <ul>
+    {% for examresult in examresults %}
+      <li>Student {{ examresult.student_email }}: {{ examresult.score }}</li>
+    {% endfor %}
+  </ul>
+
+{% endif %}
+
+<h3><a href='' id='add-score-button'>Add a New Score</a></h3>
+
+<form id='add-score-form'>
+    <label>Student: </label>
+    <select id='student-email-field' name='student-name'>
+    {% for student in students %}
+        <option value='{{ student.email }}'>{{ student.f_name }} {{ student.l_name }}<br>
+    {% endfor %}
+    </select><br>
+    <label>Score: </label>
+    <input type='text' id='score-field' name='score'><br>
+    <input type='submit' id='add-score-submit' value='Add Score'>
+</form>
+
+{% endblock %}

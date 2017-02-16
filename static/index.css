@@ -1,6 +1,7 @@
 #add-student-header,
 #add-student-form,
 #complete-class,
-#add-exam-form {
+#add-student-form,
+#add-score-form {
     visibility: hidden;
 }

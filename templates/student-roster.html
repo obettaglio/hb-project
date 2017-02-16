@@ -3,7 +3,7 @@
 
 <h1>{{ classroom.name }} Student Roster</h1>
 
-<table style="width:100%">
+<table style="width:75%">
   <tr>
     <th>Name</th>
     <th>Email</th> 
@@ -27,9 +27,9 @@
 {% endif %}
 
 
-<h4>Add a New Student</h4>
+<h3><a href='' id='add-student-button'>Add a New Student</a></h3>
 
-<form action='/add-student' id='add-student-form'>
+<form id='add-student-form'>
   <label>First Name: </label>
     <input type='text' name='f_name'><br>
   <label>Last Name: </label>
