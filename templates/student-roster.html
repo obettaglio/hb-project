@@ -3,7 +3,9 @@
 
 <h1>{{ classroom.name }} Student Roster</h1>
 
-<table style="width:75%">
+<h3><a href='/classroom'>Back to Classroom</a></h3>
+
+<table id='student-roster-table' style="width:75%">
   <tr>
     <th>Name</th>
     <th>Email</th> 
@@ -14,7 +16,7 @@
     {% for student in students %}
     <tr>
       <td>{{ student.f_name }} {{ student.l_name }}</td>
-      <td>{{ student.email }}</td> 
+      <td>{{ student.student_email }}</td> 
       <td>{{ student.khan_username }}</td>
     </tr>
     {% endfor %}
@@ -27,20 +29,18 @@
 {% endif %}
 
 
-<h3><a href='' id='add-student-button'>Add a New Student</a></h3>
+<h3><a href='' id='add-student-to-roster-button'>Add a New Student</a></h3>
 
-<form id='add-student-form'>
+<form id='add-student-to-roster-form'>
   <label>First Name: </label>
-    <input type='text' name='f_name'><br>
+    <input type='text' id='f-name-field' name='f-name'><br>
   <label>Last Name: </label>
-    <input type='text' name='l_name'><br>
+    <input type='text' id='l-name-field' name='l-name'><br>
   <label>Email: </label>
-    <input type='text' name='student_email'><br>
+    <input type='text' id='student-email-field' name='student-email'><br>
   <label>Khan Academy Username: </label>
-    <input type='text' name='khan_username'><br>
-  <input type='submit' id='add-student-submit' value='Add Student'>
+    <input type='text' id='khan-username-field' name='khan-username'><br>
+  <input type='submit' id='add-student-to-roster-submit' value='Add Student'>
 </form>
-
-<h3><a href='/classroom'>Back to Classroom</a></h3>
 
 {% endblock %}

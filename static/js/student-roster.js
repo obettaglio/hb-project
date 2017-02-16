@@ -5,14 +5,33 @@ function showAddStudentForm(evt) {
 
     evt.preventDefault();
 
-    $('#add-student-form').css('visibility', 'visible');
+    $('#add-student-to-roster-form').css('visibility', 'visible');
 }
 
 function resetAddStudentForm(result) {
     // flash success message,
-    // clear add-student-form
+    // clear add-student-form,
+    // update student-roster-table with result
 
     console.dir(result);
+
+    $('#flash-msgs').append("<h3 class='msg'>Added student.</h3>");
+    setTimeout(function() {
+        $('.msg').remove();
+    }, 2000);
+
+    $('#student-roster-table').append("<tr> \
+      <td>" + result.full_name + "</td> \
+      <td>" + result.student_email + "</td> \
+      <td>" + result.khan_username + "</td> \
+    </tr>");
+
+    $('#f-name-field').val('');
+    $('#l-name-field').val('');
+    $('#student-email-field').val('');
+    $('#khan-username-field').val('');
+
+    // location.reload();
 }
 
 function getStudentInfo(evt) {
@@ -20,16 +39,13 @@ function getStudentInfo(evt) {
     // send data to route via post request,
     // call resetAddStudentForm
 
-    // REDO //
-
     evt.preventDefault();
 
-    var exam_id = $('#exam-id').attr('data-exam');
-
     var formInputs = {
-        exam_id,
+        'f_name': $('#f-name-field').val(),
+        'l_name': $('#l-name-field').val(),
         'student_email': $('#student-email-field').val(),
-        'score': $('#score-field').val()
+        'khan_username': $('#khan-username-field').val()
     };
 
     $.post('/classroom/add-student',  // post route
@@ -38,5 +54,5 @@ function getStudentInfo(evt) {
            );
 }
 
-$('#add-student-button').on('click', showAddStudentForm);
-$('#add-student-submit').on('click', getStudentInfo)
+$('#add-student-to-roster-button').on('click', showAddStudentForm);
+$('#add-student-to-roster-submit').on('click', getStudentInfo);

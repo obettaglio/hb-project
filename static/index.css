@@ -1,7 +1,8 @@
-#add-student-header,
-#add-student-form,
+#add-student-to-new-class-header,
+#add-student-to-new-class-form,
 #complete-class,
-#add-student-form,
+#add-student-to-roster-form,
+#add-exam-form,
 #add-score-form {
     visibility: hidden;
 }

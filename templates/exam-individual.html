@@ -5,10 +5,11 @@
 
 <h4><a href='/classroom'>Back to Classroom</a></h4>
 
-{% if examresults %}
-  <h3>Scores:</h3>
+<h3>Scores:</h3>
 
-  <ul>
+{% if examresults %}
+
+  <ul id='score-list'>
     {% for examresult in examresults %}
       <li>Student {{ examresult.student_email }}: {{ examresult.score }}</li>
     {% endfor %}
@@ -22,7 +23,7 @@
     <label>Student: </label>
     <select id='student-email-field' name='student-name'>
     {% for student in students %}
-        <option value='{{ student.email }}'>{{ student.f_name }} {{ student.l_name }}<br>
+        <option value='{{ student.student_email }}'>{{ student.f_name }} {{ student.l_name }}<br>
     {% endfor %}
     </select><br>
     <label>Score: </label>

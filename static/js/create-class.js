@@ -12,8 +12,8 @@ function showAddStudentForm(result) {
     }, 2000);
 
     $('#create-class-submit').css('visibility', 'hidden');
-    $('#add-student-header').css('visibility', 'visible');
-    $('#add-student-form').css('visibility', 'visible');
+    $('#add-student-to-new-class-header').css('visibility', 'visible');
+    $('#add-student-to-new-class-form').css('visibility', 'visible');
 }
 
 function getClassInfo(evt) {
@@ -24,11 +24,11 @@ function getClassInfo(evt) {
     evt.preventDefault();
 
     var formInputs = {
-        "class-name": $("#class-name-field").val(),
+        "class_name": $("#class-name-field").val(),
         "subject": $("#subject-field").val()
     };
 
-    $.post("/create-class",  // post route
+    $.post("/classroom/create-class",  // post route
            formInputs,
            showAddStudentForm
            );
@@ -60,13 +60,13 @@ function getStudentInfo(evt) {
     evt.preventDefault();
 
     var formInputs = {
-        "f-name": $("#f-name-field").val(),
-        "l-name": $("#l-name-field").val(),
-        "student-email": $("#student-email-field").val(),
-        "khan-username": $("#khan-username-field").val()
+        "f_name": $("#f-name-field").val(),
+        "l_name": $("#l-name-field").val(),
+        "student_email": $("#student-email-field").val(),
+        "khan_username": $("#khan-username-field").val()
     };
 
-    $.post("/add-student",  // post route
+    $.post("classroom/add-student",  // post route
            formInputs,
            resetAddStudentForm
            );
@@ -74,4 +74,4 @@ function getStudentInfo(evt) {
 
 
 $('#create-class-submit').on('click', getClassInfo);
-$('#add-student-submit').on('click', getStudentInfo);
+$('#add-student-to-new-class-submit').on('click', getStudentInfo);

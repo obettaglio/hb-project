@@ -233,10 +233,10 @@ def show_single_class():
                                exams=exams)
 
     else:
-        return redirect('/create-class')
+        return redirect('/classroom/create-class')
 
 
-@app.route('/create-class')
+@app.route('/classroom/create-class')
 def show_create_class_form():
     """Display form to create class.
 
@@ -261,14 +261,14 @@ def show_create_class_form():
                                subjects=subjects)
 
 
-@app.route('/create-class', methods=['POST'])
+@app.route('/classroom/create-class', methods=['POST'])
 def create_class():
     """Handle form to create class and redirect to classroom page."""
 
     user_email = session['logged_in_user']
     # oauth_params = session['oauth_params']
 
-    name = request.form.get('class-name')
+    name = request.form.get('class_name')
     subject = request.form.get('subject')
 
     subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
@@ -283,7 +283,7 @@ def create_class():
     return 'Created class.'
 
 
-@app.route('/student-roster')
+@app.route('/classroom/student-roster')
 def show_student_roster():
     """Display student roster for class taught by user."""
 
@@ -299,67 +299,42 @@ def show_student_roster():
                            students=students)
 
 
-@app.route('/add-student', methods=['POST'])
+@app.route('/classroom/add-student', methods=['POST'])
 def add_student_to_roster():
     """Handle form to add student to class roster."""
 
     user_email = session['logged_in_user']
-    # class_id = int(db.session.query(Classroom.class_id).filter(Classroom.user_email == user_email).first())
     classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
     class_id = classroom.class_id
 
-    f_name = request.form.get('f-name')
-    l_name = request.form.get('l-name')
-    student_email = request.form.get('student-email')
-    khan_username = request.form.get('khan-username')
+    f_name = request.form.get('f_name')
+    l_name = request.form.get('l_name')
+    student_email = request.form.get('student_email')
+    khan_username = request.form.get('khan_username')
 
-    new_student = Student(student_email=student_email,
-                          f_name=f_name,
-                          l_name=l_name,
-                          khan_username=khan_username,
-                          class_id=class_id)
+    student_email_tup = (student_email,)
+    student_emails_list = db.session.query(Student.student_email).all()
 
-    db.session.add(new_student)
-    db.session.commit()
+    if student_email_tup not in student_emails_list:
+        new_student = Student(student_email=student_email,
+                              f_name=f_name,
+                              l_name=l_name,
+                              khan_username=khan_username,
+                              class_id=class_id)
 
-    return 'Added student to roster.'
+        db.session.add(new_student)
+        db.session.commit()
 
-
-@app.route('/classroom/add-exam')
-def show_new_exam_form():
-    """Display form to add new exam under specified class."""
-
-    user_email = session['logged_in_user']
-    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-
-    if classroom is not None:
-        return render_template('add-exam.html',
-                               classroom=classroom)
+        full_name = f_name + " " + l_name
+        new_student_dict = {'full_name': full_name,
+                            'student_email': student_email,
+                            'khan_username': khan_username}
 
     else:
-        return redirect('/create-class')
+        # update student's class_id using SQLAlchemy --look up how--
+        pass
 
-
-@app.route('/classroom/add-exam', methods=['POST'])
-def add_new_exam():
-    """Handle form to add new exam under specified class."""
-
-    user_email = session['logged_in_user']
-    classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
-
-    name = request.form.get('exam-name')
-    total_points = request.form.get('total-points')
-
-    exam = Exam(name=name,
-                class_id=class_id,
-                total_points=total_points)
-    db.session.add(exam)
-    db.session.commit()
-
-    exam_id = exam.exam_id
-
-    return redirect(url_for('show_exam', exam_id=exam_id))
+    return jsonify(new_student_dict)
 
 
 @app.route('/classroom/<exam_id>')
@@ -384,6 +359,49 @@ def show_exam(exam_id):
                            students=students)
 
 
+@app.route('/classroom/add-exam')
+def show_new_exam_form():
+    """Display form to add new exam under specified class."""
+
+    user_email = session['logged_in_user']
+    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+
+    if classroom is not None:
+        return render_template('add-exam.html',
+                               classroom=classroom)
+
+    else:
+        return redirect('/classroom/create-class')
+
+
+@app.route('/classroom/add-exam', methods=['POST'])
+def add_new_exam():
+    """Handle form to add new exam under specified class."""
+
+    user_email = session['logged_in_user']
+    classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
+    class_id = classroom.class_id
+
+    name = request.form.get('exam_name')
+    total_points = request.form.get('total_points')
+
+    new_exam = Exam(name=name,
+                    class_id=class_id,
+                    total_points=total_points)
+
+    db.session.add(new_exam)
+    db.session.commit()
+
+    exam_id = new_exam.exam_id
+
+    new_exam_dict = {'exam_id': exam_id,
+                     'exam_name': name,
+                     'class_id': class_id,
+                     'total_points': total_points}
+
+    return jsonify(new_exam_dict)
+
+
 @app.route('/classroom/add-score', methods=['POST'])
 def add_new_score():
     """Handle form to add new score for specified exam."""
@@ -404,10 +422,14 @@ def add_new_score():
     examresult = ExamResult(exam_id=exam_id,
                             student_email=student_email,
                             score=score)
+
     db.session.add(examresult)
     db.session.commit()
 
-    return 'Added score to exam.'
+    new_examresult_dict = {'student_email': student_email,
+                           'score': score}
+
+    return jsonify(new_examresult_dict)
 
 
 # @app.route('/classroom/<exam_id>/add-score')

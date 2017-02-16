@@ -10,17 +10,19 @@ function showAddScoreForm(evt) {
 
 function resetAddScoreForm(result) {
     // flash success message,
-    // clear add-score-form
-
-    // LOOK OVER FOR MISTAKES //
+    // clear add-score-form,
+    // update score-list with result
 
     console.dir(result);
+
     $('#flash-msgs').append("<h3 class='msg'>Added score.</h3>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);
 
-    $('#student-email-field').val('');
+    $('#score-list').append("<li>Student " + result.student_email + ": " + result.score + "</li>");
+
+    $('#student-email-field').val('');  // clear val() for dropdown?
     $('#score-field').val('');
 }
 
@@ -46,4 +48,4 @@ function getScoreInfo(evt) {
 }
 
 $('#add-score-button').on('click', showAddScoreForm);
-$('#add-score-submit').on('click', getScoreInfo)
+$('#add-score-submit').on('click', getScoreInfo);
