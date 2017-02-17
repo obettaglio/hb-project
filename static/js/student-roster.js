@@ -1,14 +1,14 @@
 // Adding a student to the roster
 
-function showAddStudentForm(evt) {
-    // display add-student-form
+function showAddStudentToRosterForm(evt) {
+    // display add-student-to-roster-form
 
     evt.preventDefault();
 
     $('#add-student-to-roster-form').css('visibility', 'visible');
 }
 
-function resetAddStudentForm(result) {
+function resetAddStudentToRosterForm(result) {
     // flash success message,
     // clear add-student-form,
     // update student-roster-table with result
@@ -37,7 +37,7 @@ function resetAddStudentForm(result) {
 function getStudentInfo(evt) {
     // prevent submit button from redirecting,
     // send data to route via post request,
-    // call resetAddStudentForm
+    // call resetAddStudentToRosterForm
 
     evt.preventDefault();
 
@@ -50,9 +50,9 @@ function getStudentInfo(evt) {
 
     $.post('/classroom/add-student',  // post route
            formInputs,
-           resetAddStudentForm
+           resetAddStudentToRosterForm
            );
 }
 
-$('#add-student-to-roster-button').on('click', showAddStudentForm);
+$('#add-student-to-roster-button').on('click', showAddStudentToRosterForm);
 $('#add-student-to-roster-submit').on('click', getStudentInfo);

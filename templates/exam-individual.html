@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% block head %}KhanClassroom - {{ exam.name }}{% endblock %}
+
 {% block content %}
 
 <h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
@@ -7,17 +10,34 @@
 
 <h3>Scores:</h3>
 
+<table id='scores-table' style="width:40%">
+  <tr>
+    <th>Student</th>
+    <th>Score</th>
+  </tr>
+
 {% if examresults %}
 
-  <ul id='score-list'>
     {% for examresult in examresults %}
-      <li>Student {{ examresult.student_email }}: {{ examresult.score }}</li>
+
+    <tr>
+      <td>{{ examresult.student_email }}</td>
+      <td>{{ examresult.score }}</td>
+    </tr>
+
     {% endfor %}
-  </ul>
+
+</table>
+
+{% else %}
+
+</table>
+<p>No scores yet.</p>
 
 {% endif %}
 
-<h3><a href='' id='add-score-button'>Add a New Score</a></h3>
+<br>
+<h4><a href='' id='add-score-button'>Add a New Score</a></h4>
 
 <form id='add-score-form'>
     <label>Student: </label>

@@ -20,7 +20,10 @@ function resetAddScoreForm(result) {
         $('.msg').remove();
     }, 2000);
 
-    $('#score-list').append("<li>Student " + result.student_email + ": " + result.score + "</li>");
+    $('#scores-table').append("<tr> \
+      <td>" + result.student_email + "</td> \
+      <td>" + result.score + "</td> \
+    </tr>");
 
     $('#student-email-field').val('');  // clear val() for dropdown?
     $('#score-field').val('');

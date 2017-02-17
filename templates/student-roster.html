@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
+
+{% block head %}KhanClassroom - Student Roster{% endblock %}
+
 {% block content %}
 
 <h1>{{ classroom.name }} Student Roster</h1>
 
-<h3><a href='/classroom'>Back to Classroom</a></h3>
+<h4><a href='/classroom'>Back to Classroom</a></h4>
 
+<br>
 <table id='student-roster-table' style="width:75%">
   <tr>
     <th>Name</th>
@@ -13,23 +17,28 @@
   </tr>
 
 {% if students %}
+
     {% for student in students %}
+
     <tr>
       <td>{{ student.f_name }} {{ student.l_name }}</td>
       <td>{{ student.student_email }}</td> 
       <td>{{ student.khan_username }}</td>
     </tr>
+
     {% endfor %}
+
 </table>
 
 {% else %}
+
 </table>
 <p>No students yet.</p>
 
 {% endif %}
 
-
-<h3><a href='' id='add-student-to-roster-button'>Add a New Student</a></h3>
+<br>
+<h4><a href='' id='add-student-to-roster-button'>Add a New Student</a></h4>
 
 <form id='add-student-to-roster-form'>
   <label>First Name: </label>

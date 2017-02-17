@@ -1,8 +1,18 @@
 #add-student-to-new-class-header,
 #add-student-to-new-class-form,
-#complete-class,
 #add-student-to-roster-form,
 #add-exam-form,
 #add-score-form {
     visibility: hidden;
+}
+
+#complete-class {
+    display: none;
+}
+
+#khan-register-submit {
+    color: #000;
+    background-color: #ffb200;
+    border: 2px outset #b37d00;
+    width: 180px;
 }

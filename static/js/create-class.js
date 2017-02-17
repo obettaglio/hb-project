@@ -1,11 +1,12 @@
 // Creating a class and student roster
 
-function showAddStudentForm(result) {
+function showAddStudentToNewClassForm(result) {
     // flash success message,
     // disable create-class-submit,
     // display add-student-header and add-student-form
 
     console.dir(result);
+
     $('#flash-msgs').append("<h3 class='msg'>Created class.</h3>");
     setTimeout(function() {
         $('.msg').remove();
@@ -19,7 +20,7 @@ function showAddStudentForm(result) {
 function getClassInfo(evt) {
     // prevent submit button from redirecting,
     // send data to route via post request,
-    // call showAddStudentForm
+    // call showAddStudentToNewClassForm
 
     evt.preventDefault();
 
@@ -30,11 +31,11 @@ function getClassInfo(evt) {
 
     $.post("/classroom/create-class",  // post route
            formInputs,
-           showAddStudentForm
+           showAddStudentToNewClassForm
            );
 }
 
-function resetAddStudentForm(result) {
+function resetAddStudentToNewClassForm(result) {
     // flash success message,
     // clear add-student-form
 
@@ -44,7 +45,7 @@ function resetAddStudentForm(result) {
         $('.msg').remove();
     }, 2000);
 
-    $('#complete-class').css('visibility', 'visible');
+    $('#complete-class').show();
 
     $('#f-name-field').val('');
     $('#l-name-field').val('');
@@ -55,7 +56,7 @@ function resetAddStudentForm(result) {
 function getStudentInfo(evt) {
     // prevent submit button from redirecting,
     // send data to route via post request,
-    // call resetAddStudentForm
+    // call resetAddStudentToNewClassForm
 
     evt.preventDefault();
 
@@ -66,9 +67,9 @@ function getStudentInfo(evt) {
         "khan_username": $("#khan-username-field").val()
     };
 
-    $.post("classroom/add-student",  // post route
+    $.post("/classroom/add-student",  // post route
            formInputs,
-           resetAddStudentForm
+           resetAddStudentToNewClassForm
            );
 }
 

@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+
+{% block head %}KhanClassroom - Register{% endblock %}
+
 {% block content %}
 
-<h1>Register</h1>
+<h1>Register with KhanClassroom</h1>
 
-<form action='/register' method='post' class='khan_register-button'>
-    <input type='submit' value='Sign in to Khan Academy'>
+<br>
+<p>We keep it simple. Just connect your Khan Academy account!</p>
+
+<form action='/register' method='post' id='khan-register-form'>
+    <input type='submit' id='khan-register-submit' value='Sign in to Khan Academy'>
 </form>
 
 <!-- <form action='/register' method='post' class='register-form'>
@@ -23,6 +29,7 @@
     <input type='submit' value='Register'>
 </form> -->
 
-<h3>Already registered with us? <a href='/login'>Log in here.</a></h3>
+<br>
+<h4>Already registered with us? <a href='/login'>Log in here.</a></h4>
 
 {% endblock %}

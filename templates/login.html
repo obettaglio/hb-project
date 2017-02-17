@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
+
+{% block head %}KhanClassroom - Login{% endblock %}
+
 {% block content %}
 
-<h1>Login</h1>
+<h1>Sign in to KhanClassroom</h1>
 
-<form action='/login' method='post' class='login-form'>
+<br>
+<form action='/login' method='post' id='login-form'>
     <label>Email: </label>
     <input type='text' name='email'><br>
     <label>Password: </label>
@@ -11,6 +15,7 @@
     <input type='submit' value='Login'>
 </form>
 
-<h3>Not yet a user? <a href='/register'>Register here.</a></h3>
+<br>
+<h4>Not yet a user? <a href='/register'>Register here.</a></h4>
 
 {% endblock %}
