@@ -4,51 +4,65 @@
 
 {% block content %}
 
-<h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
+<div class="row">
+  <div class='col-lg-12'>
 
-<h4><a href='/classroom'>Back to Classroom</a></h4>
+    <h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
 
-<h3>Scores:</h3>
+    <h4><a href='/classroom'>Back to Classroom</a></h4>
 
-<table id='scores-table' style="width:40%">
-  <tr>
-    <th>Student</th>
-    <th>Score</th>
-  </tr>
+  </div>
+  <div class='col-lg-4'>
 
-{% if examresults %}
+    <h3>Scores:</h3>
 
-    {% for examresult in examresults %}
+    <table id='scores-table' style="width:80%">
+      <tr>
+        <th>Student</th>
+        <th>Score</th>
+      </tr>
 
-    <tr>
-      <td>{{ examresult.student_email }}</td>
-      <td>{{ examresult.score }}</td>
-    </tr>
+    {% if examresults %}
 
-    {% endfor %}
+        {% for examresult in examresults %}
 
-</table>
+        <tr>
+          <td>{{ examresult.student_email }}</td>
+          <td>{{ examresult.score }}</td>
+        </tr>
 
-{% else %}
+        {% endfor %}
 
-</table>
-<p>No scores yet.</p>
+    </table>
 
-{% endif %}
+    {% else %}
 
-<br>
-<h4><a href='' id='add-score-button'>Add a New Score</a></h4>
+    </table>
+    <p>No scores yet.</p>
 
-<form id='add-score-form'>
-    <label>Student: </label>
-    <select id='student-email-field' name='student-name'>
-    {% for student in students %}
-        <option value='{{ student.student_email }}'>{{ student.f_name }} {{ student.l_name }}<br>
-    {% endfor %}
-    </select><br>
-    <label>Score: </label>
-    <input type='text' id='score-field' name='score'><br>
-    <input type='submit' id='add-score-submit' value='Add Score'>
-</form>
+    {% endif %}
+
+    <br>
+    <h4><a href='' id='add-score-button'>Add a New Score</a></h4>
+
+    <form id='add-score-form'>
+        <label>Student: </label>
+        <select id='student-email-field' name='student-name'>
+        {% for student in students %}
+            <option value='{{ student.student_email }}'>{{ student.f_name }} {{ student.l_name }}<br>
+        {% endfor %}
+        </select><br>
+        <label>Score: </label>
+        <input type='text' id='score-field' name='score'><br>
+        <input type='submit' id='add-score-submit' value='Add Score'>
+    </form>
+
+  </div>
+  <div class='col-lg-8'>
+
+    <iframe src="/d3-test-easy" width="700" height="335" seamless frameBorder="0" scrolling="no"></iframe>
+
+  </div>
+</div>
 
 {% endblock %}

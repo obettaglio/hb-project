@@ -187,14 +187,21 @@ def jsonify_videoresult_info():
     Sample data for d3 test."""
 
     videoresults = open('seed_data/sample_videoresults.json').read()
-    return videoresults
+    return jsonify(videoresults)
+
+
+@app.route('/d3-test-easy')
+def show_d3_test_easy():
+    """Display d3 test easy graph!!!!!!"""
+
+    return render_template('d3-test-easy.html')
 
 
 @app.route('/d3-test')
 def show_d3_test():
     """Display d3 test graph!!!!!!"""
 
-    return render_template('d3-test-easy.html')
+    return render_template('d3-test.html')
 
 
 ##### CLASSROOMS, EXAMS #####
