@@ -87,11 +87,11 @@ d3.json("/videoresults.json", function(error, data) {
 
     data.forEach(function(d) {
         d.points = +d.points;
-        d.student_email = d.student_email;
+        d.user = d.user;
     });
     
   // scale the range of the data
-  x.domain(data.map(function(d) { return d.student_email; }));
+  x.domain(data.map(function(d) { return d.user; }));
   y.domain([0, d3.max(data, function(d) { return d.points; })]);
 
   // add axis
@@ -121,7 +121,7 @@ d3.json("/videoresults.json", function(error, data) {
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.student_email); })
+      .attr("x", function(d) { return x(d.user); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.points); })
       .attr("height", function(d) { return height - y(d.points); });

@@ -9,3 +9,7 @@ python-gflags==2.0
 
 # Useful for local development, e.g. by tools/devshell.py
 ipython
+
+pycipher==0.5.2
+argon2_cffi
+passlib

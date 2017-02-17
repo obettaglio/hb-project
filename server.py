@@ -11,7 +11,7 @@ from model import connect_to_db, db
 import rauth
 import os
 import random
-import requests
+# import requests
 
 
 app = Flask(__name__)
@@ -94,14 +94,13 @@ def register_user():
     Redirect user to Khan Academy's authorization page, and set callback URL."""
 
     # Create an OAuth1Service using rauth.
-    app.service = rauth.OAuth1Service(
-           name='test',
-           consumer_key=CONSUMER_KEY,
-           consumer_secret=CONSUMER_SECRET,
-           request_token_url=SERVER_URL + '/api/auth2/request_token',
-           access_token_url=SERVER_URL + '/api/auth2/access_token',
-           authorize_url=SERVER_URL + '/api/auth2/authorize',
-           base_url=SERVER_URL + '/api/auth2')
+    app.service = rauth.OAuth1Service(name='test',
+                                      consumer_key=CONSUMER_KEY,
+                                      consumer_secret=CONSUMER_SECRET,
+                                      request_token_url=SERVER_URL + '/api/auth2/request_token',
+                                      access_token_url=SERVER_URL + '/api/auth2/access_token',
+                                      authorize_url=SERVER_URL + '/api/auth2/authorize',
+                                      base_url=SERVER_URL + '/api/auth2')
 
     # 1. Get a request token.
     app.request_token, app.secret_request_token = app.service.get_request_token(
@@ -169,7 +168,7 @@ def log_user_out():
     return redirect('/')
 
 
-##### JSON ROUTES #####
+##### JSON ROUTES (AND D3!!!!!) #####
 
 @app.route('/student-info.json')
 def jsonify_student_info():
@@ -190,26 +189,12 @@ def jsonify_videoresult_info():
     videoresults = open('seed_data/sample_videoresults.json').read()
     return videoresults
 
-    # videoresults = [
-    #     {
-    #         'video_id': 1,
-    #         'student_email': 'studentsally@gmail.com',
-    #         'timestamp': '2011-05-04T06:01:47Z',
-    #         'points': 16,
-    #         'secs_watched': 10,
-    #         'last_sec_watched': 90
-    #     },
-    #     {
-    #         'video_id': 1,
-    #         'student_email': 'studentsteve@gmail.com',
-    #         'timestamp': '2011-05-04T06:01:47Z',
-    #         'points': 5,
-    #         'secs_watched': 10,
-    #         'last_sec_watched': 90
-    #     }
-    # ]
 
-    # return jsonify(videoresults)
+@app.route('/d3-test')
+def show_d3_test():
+    """Display d3 test graph!!!!!!"""
+
+    return render_template('d3-test-easy.html')
 
 
 ##### CLASSROOMS, EXAMS #####
@@ -332,6 +317,8 @@ def add_student_to_roster():
 
     else:
         # update student's class_id using SQLAlchemy --look up how--
+        # db.session.execute(update(Student, values={Student.class_id: class_id}))
+        # db.session.commit()
         pass
 
     return jsonify(new_student_dict)
