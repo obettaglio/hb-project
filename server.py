@@ -168,16 +168,26 @@ def log_user_out():
     return redirect('/')
 
 
-##### JSON ROUTES (AND D3!!!!!) #####
+##### JSON, D3 #####
 
 @app.route('/student-info.json')
 def jsonify_student_info():
     """Return data about students in database as JSON.
 
-    Sample data for create-class.js AJAX request."""
+    Sample data for d3 test."""
 
     student_info = open('seed_data/sample_students.json').read()
-    return student_info
+    return jsonify(student_info)
+
+
+@app.route('/examresults.json')
+def jsonify_examresult_info():
+    """Return data about exam results as JSON.
+
+    Sample data for d3 test."""
+
+    examresults = open('seed_data/sample_examresults.json').read()
+    return jsonify(examresults)
 
 
 @app.route('/videoresults.json')
