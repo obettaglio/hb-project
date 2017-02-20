@@ -87,19 +87,19 @@ function analyze(error, studentInfo, examResults, videoResults) {
   displayD3(allResults);
 }
 
-var n = 3; // The number of series.
+var n = 1; // The number of series.
 var m = 4; // The number of values per series.
 
-function displayD3(dataArray){
+function displayD3(dataArray) {
 
   // The xz array has m elements, representing the x-values shared by all series.
   // The yz array has n elements, representing the y-values of each of the n series.
   // Each yz[i] is an array of m non-negative numbers representing a y-value for xz[i].
   // The y01z array has the same structure as yz, but with stacked [y₀, y₁] instead of y.
 
-var examScores = [],
-    videoPoints = [],
-    videoSecondsWatched = [];
+  var examScores = [],
+      videoPoints = [],
+      videoSecondsWatched = [];
 
   for (i = 0; i < m; ++i) {
     examScores[i] = dataArray[i].exam_score;
@@ -116,39 +116,23 @@ var examScores = [],
   }
   console.log(videoSecondsWatched);
 
-var allResults = [examScores, videoPoints, videoSecondsWatched];
-
-
-  // var exam_score = [],
-  //     points = [],
-  //     seconds_watched = [];
-
-  // for (i = 0; i < m; ++i) {
-  //   exam_score[i] = dataArray[i].exam_score;
-  // }
-  // console.log(exam_score);
-
-  // for (i = 0; i < m; ++i) {
-  //   points[i] = dataArray[i].points;
-  // }
-  // console.log(points);
-
-  // for (i = 0; i < m; ++i) {
-  //   seconds_watched[i] = dataArray[i].seconds_watched;
-  // }
-  // console.log(seconds_watched);
+  var allResults = [examScores, videoPoints, videoSecondsWatched];
+  console.log(allResults);
 
   var xz = d3.range(m),
-      yz = d3.range(n).map(function() { return allResults; });
-    console.log(yz);
-  //     yz1 = d3.range(0).map(function() { return examScores; });
-  // console.log(yz1);
+      // yz = d3.range(n).map(function() { return allResults; }),
+      yz = d3.range(n).map(function() { return allResults; }),
+  //     yz1 = d3.range(0).map(function() { return examScores; }),
   //     yz2 = d3.range(1).map(function() { return videoPoints; }),
   //     yz3 = d3.range(2).map(function() { return videoSecondsWatched; }),
-
       y01z = d3.stack().keys(d3.range(n))(d3.transpose(yz)),
       yMax = d3.max(yz, function(y) { return d3.max(y); }),
       y1Max = d3.max(y01z, function(y) { return d3.max(y, function(d) { return d[1]; }); });
+
+  console.log(yz);
+  console.log(y01z);
+  console.log(yMax);
+  console.log(y1Max);
 
   var svg = d3.select("svg"),
       margin = {top: 40, right: 10, bottom: 20, left: 10},
@@ -266,36 +250,35 @@ var allResults = [examScores, videoPoints, videoSecondsWatched];
 
 // bumps();
 
-  // function bumps(m) {
-  //   // debugger;
-  //   var values = [];
+// function bumps(m) {
+//   // debugger;
+//   var values = [];
 
-  //   // Initialize with uniform random values in [0.1, 0.2).
-  //   for (i = 0; i < m; ++i) {
-  //     values[i] = 0.1 + 0.1 * Math.random();
-  //   }
-  //   console.log(values);
+//   // Initialize with uniform random values in [0.1, 0.2).
+//   for (i = 0; i < m; ++i) {
+//     values[i] = 0.1 + 0.1 * Math.random();
+//   }
+//   console.log(values);
 
-  //   // Add five random bumps.
-  //   for (j = 0; j < 5; ++j) {
-  //     x = 1 / (0.1 + Math.random());
-  //     y = 2 * Math.random() - 0.5;
-  //     z = 10 / (0.1 + Math.random());
-  //     for (i = 0; i < m; i++) {
-  //       w = (i / m - y) * z;
-  //       values[i] += x * Math.exp(-w * w);
-  //     }
-  //   }
+//   // Add five random bumps.
+//   for (j = 0; j < 5; ++j) {
+//     x = 1 / (0.1 + Math.random());
+//     y = 2 * Math.random() - 0.5;
+//     z = 10 / (0.1 + Math.random());
+//     for (i = 0; i < m; i++) {
+//       w = (i / m - y) * z;
+//       values[i] += x * Math.exp(-w * w);
+//     }
+//   }
 
-  //   // Ensure all values are positive.
-  //   for (i = 0; i < m; ++i) {
-  //     // values[i] = i*i;
-  //     values[i] = Math.max(0, values[i]);
-  //   }
+//   // Ensure all values are positive.
+//   for (i = 0; i < m; ++i) {
+//     // values[i] = i*i;
+//     values[i] = Math.max(0, values[i]);
+//   }
 
-  //   console.log(values);
-  //   return values;
-  // }
-// })
+//   console.log(values);
+//   return values;
+// }
 
 </script>
