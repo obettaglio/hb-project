@@ -2,8 +2,22 @@
 #add-student-to-new-class-form,
 #add-student-to-roster-form,
 #add-exam-form,
-#add-score-form {
+#add-score-form,
+.register-on-homepage,
+.login-on-homepage {
     visibility: hidden;
+}
+
+#register-on-homepage-button,
+#login-on-homepage-button {
+    color: #000;
+    background-color: #ffb200;
+    padding: 14px 25px;
+    border: 2px outset #b37d00;
+    border-radius: 15px;
+    text-align: center; 
+    text-decoration: none;
+    display: inline-block;
 }
 
 #complete-class {
