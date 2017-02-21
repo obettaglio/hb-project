@@ -170,18 +170,19 @@ def log_user_out():
 
 ##### JSON, D3 #####
 
-@app.route('/exam-data.json')
-def jsonify_exam_data():
-    """Query database for exam data filtering by exam_id. Return data as JSON.
+@app.route('/exam-bar-data.json')
+def jsonify_exam_bar_data():
+    """Query database for data filtering by exam_id. Return data for bar graph as JSON.
 
-    Data consists of exam details and all associated examresult data."""
+    Data consists of examresult and videoresult details listed by student_email:
+        student_name, exam_score, num_videos, avg_points, and avg_secs_watched."""
 
     exam_id = request.args.get('exam_id')
-    results = {}
 
     # left join by exam_id to get examresult data and student_email
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-    print examresults
+
+    results = {}
 
     # for loop iterating through list by examresult.student_email
     for examresult in examresults:
@@ -205,13 +206,67 @@ def jsonify_exam_data():
     return jsonify(results)
 
 
-@app.route('/exam-stacked-grouped-d3')
-def show_stacked_grouped_d3():
-    """Display stacked/grouped d3 graph."""
+@app.route('/exam-bubble-data.json')
+def jsonify_exam_bubble_data():
+    """Query database for exam data filtering by exam_id. Return data as JSON.
+
+    Data consists of exam details and all associated examresult data."""
 
     exam_id = request.args.get('exam_id')
 
-    return render_template('exam-stacked-grouped-d3.html',
+    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+    student_results = {}
+    video_results = {}
+    results = {'student_results': student_results,
+               'video_results': video_results}
+
+    for examresult in examresults:
+        student_email, exam_score = examresult
+
+        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+        student_name = student_name[0] + ' ' + student_name[1]
+
+        exam_percentage = float(exam_score) / total_points
+
+        all_video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
+        print all_video_ids
+
+        student_videos = []
+
+        for video_id in all_video_ids:
+            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+            # video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()
+            student_videos.append(video_name)
+            video_results[video_name] = video_results.get(video_name, 0) + 1
+
+        print student_videos
+
+        student_results[student_email] = {'student_name': student_name,
+                                          'exam_percentage': exam_percentage,
+                                          'student_videos': student_videos}
+
+    return jsonify(results)
+
+
+@app.route('/exam-bar-d3')
+def show_exam_bar_d3():
+    """Display d3 stacked/grouped bar graph."""
+
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-bar-d3.html',
+                           exam_id=exam_id)
+
+
+@app.route('/exam-bubble-d3')
+def show_exam_bubble_d3():
+    """Display d3 bubble graph."""
+
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-bubble-d3.html',
                            exam_id=exam_id)
 
 

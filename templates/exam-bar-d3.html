@@ -25,7 +25,7 @@ label {
 <script>
 
 
-d3.json('/exam-data.json?exam_id={{ exam_id }}', function(error, data) {
+d3.json('/exam-bar-data.json?exam_id={{ exam_id }}', function(error, data) {
   if (error) { console.log(error); }
 
   examData = [];
