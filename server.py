@@ -170,48 +170,94 @@ def log_user_out():
 
 ##### JSON, D3 #####
 
-@app.route('/student-info.json')
-def jsonify_student_info():
-    """Return data about students in database as JSON.
+@app.route('/exam-data.json')
+def jsonify_exam_data():
+    """Query database for exam data filtering by exam_id. Return data as JSON.
 
-    Sample data for d3 test."""
+    Data consists of exam details and all associated examresult data."""
 
-    student_info = open('seed_data/sample_students.json').read()
-    return jsonify(student_info)
+    exam_id = request.args.get('exam_id')
+    results = {}
 
+    # left join by exam_id to get examresult data and student_email
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+    print examresults
 
-@app.route('/examresults.json')
-def jsonify_examresult_info():
-    """Return data about exam results as JSON.
+    # for loop iterating through list by examresult.student_email
+    for examresult in examresults:
+        student_email, exam_score = examresult
 
-    Sample data for d3 test."""
+        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+        student_name = student_name[0] + ' ' + student_name[1]
 
-    examresults = open('seed_data/sample_examresults.json').read()
-    return jsonify(examresults)
+        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
 
+        num_videos = videoresults_query.count()
+        avg_points = sum([vr.points for vr in videoresults_query.all()])/float(num_videos)
+        avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
 
-@app.route('/videoresults.json')
-def jsonify_videoresult_info():
-    """Return data about video results as JSON.
+        results[student_email] = {'student_name': student_name,
+                                  'exam_score': exam_score,
+                                  'num_videos': num_videos,
+                                  'avg_points': avg_points,
+                                  'avg_secs_watched': avg_secs_watched}
 
-    Sample data for d3 test."""
-
-    videoresults = open('seed_data/sample_videoresults.json').read()
-    return jsonify(videoresults)
-
-
-@app.route('/d3-test-easy')
-def show_d3_test_easy():
-    """Display d3 test easy graph!!!!!!"""
-
-    return render_template('d3-test-easy.html')
+    return jsonify(results)
 
 
-@app.route('/d3-test')
-def show_d3_test():
-    """Display d3 test graph!!!!!!"""
+@app.route('/exam-stacked-grouped-d3')
+def show_stacked_grouped_d3():
+    """Display stacked/grouped d3 graph."""
 
-    return render_template('d3-test.html')
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-stacked-grouped-d3.html',
+                           exam_id=exam_id)
+
+
+# @app.route('/student-info.json')
+# def jsonify_student_info():
+#     """Return data about students in database as JSON.
+
+#     Sample data for d3 test."""
+
+#     student_info = open('seed_data/sample_students.json').read()
+#     return jsonify(student_info)
+#     # return student_info
+
+
+# @app.route('/examresults.json')
+# def jsonify_examresult_info():
+#     """Return data about exam results as JSON.
+
+#     Sample data for d3 test."""
+
+#     examresults = open('seed_data/sample_examresults.json').read()
+#     return jsonify(examresults)
+
+
+# @app.route('/videoresults.json')
+# def jsonify_videoresult_info():
+#     """Return data about video results as JSON.
+
+#     Sample data for d3 test."""
+
+#     videoresults = open('seed_data/sample_videoresults.json').read()
+#     return jsonify(videoresults)
+
+
+# @app.route('/d3-test')
+# def show_d3_test():
+#     """Display d3 test graph!!!!!!"""
+
+#     return render_template('d3-test.html')
+
+
+# @app.route('/d3-test-easy')
+# def show_d3_test_easy():
+#     """Display d3 test easy graph!!!!!!"""
+
+#     return render_template('d3-test-easy.html')
 
 
 ##### CLASSROOMS, EXAMS #####
