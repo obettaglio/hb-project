@@ -14,11 +14,17 @@
     {
         "examresult_id": 3,
         "exam_id": 1,
+        "student_email": "khanstudentsusie@gmail.com",
+        "score": 81
+    },
+    {
+        "examresult_id": 4,
+        "exam_id": 1,
         "student_email": "khanstudentsamuel@gmail.com",
         "score": 98
     },
     {
-        "examresult_id": 4,
+        "examresult_id": 5,
         "exam_id": 1,
         "student_email": "khanstudentsandra@gmail.com",
         "score": 92

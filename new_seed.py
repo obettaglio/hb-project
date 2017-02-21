@@ -23,7 +23,7 @@ def load_users():
 
     User.query.delete()
 
-    user_string = open('seed_data/sample_users.json').read()
+    user_string = open('static/data/sample_users.json').read()
     user_dict = json.loads(user_string)
 
     for user in user_dict:
@@ -56,7 +56,7 @@ def load_subjects():
 
     Subject.query.delete()
 
-    for row in open('seed_data/u.subjects'):
+    for row in open('static/data/u.subjects'):
         row = row.rstrip()
         subject_code, name = row.split('|')
 
@@ -75,7 +75,7 @@ def load_classrooms():
 
     Classroom.query.delete()
 
-    for row in open('seed_data/u.classrooms'):
+    for row in open('static/data/u.classrooms'):
         row = row.rstrip()
         class_id, name, user_email, subject_code, period, year, school = row.split('|')
 
@@ -99,7 +99,7 @@ def load_students():
 
     Student.query.delete()
 
-    student_string = open('seed_data/sample_students.json').read()
+    student_string = open('static/data/sample_students.json').read()
     student_dict = json.loads(student_string)
 
     for student in student_dict:
@@ -127,7 +127,7 @@ def load_exams():
 
     Exam.query.delete()
 
-    for row in open('seed_data/u.exams'):
+    for row in open('static/data/u.exams'):
         row = row.rstrip()
         exam_id, name, class_id, total_points = row.split('|')
 
@@ -148,9 +148,14 @@ def load_examresults():
 
     ExamResult.query.delete()
 
-    for row in open('seed_data/u.examresults'):
-        row = row.rstrip()
-        examresult_id, exam_id, student_email, score = row.split('|')
+    examresult_string = open('static/data/sample_examresults.json').read()
+    examresult_dict = json.loads(examresult_string)
+
+    for examresult in examresult_dict:
+        examresult_id = examresult['examresult_id']
+        exam_id = examresult['exam_id']
+        student_email = examresult['student_email']
+        score = examresult['score']
 
         examresult = ExamResult(examresult_id=examresult_id,
                                 exam_id=exam_id,
@@ -161,6 +166,19 @@ def load_examresults():
 
     db.session.commit()
 
+    # for row in open('static/data/u.examresults'):
+    #     row = row.rstrip()
+    #     examresult_id, exam_id, student_email, score = row.split('|')
+
+    #     examresult = ExamResult(examresult_id=examresult_id,
+    #                             exam_id=exam_id,
+    #                             student_email=student_email,
+    #                             score=score)
+
+    #     db.session.add(examresult)
+
+    # db.session.commit()
+
 
 def load_exercises():
     """Load exercises from Khan Academy JSON into database."""
@@ -169,7 +187,7 @@ def load_exercises():
 
     Exercise.query.delete()
 
-    exercise_string = open('seed_data/sample_exercises.json').read()
+    exercise_string = open('static/data/sample_exercises.json').read()
     exercise_dict = json.loads(exercise_string)
 
     for exercise in exercise_dict:
@@ -179,7 +197,7 @@ def load_exercises():
         url = exercise['ka_url']
         is_quiz = exercise['is_quiz']
 
-    # for row in open('seed_data/u.exercises'):
+    # for row in open('static/data/u.exercises'):
     #     row = row.rstrip()
     #     exercise_id, name, url = row.split('|')
 
@@ -201,7 +219,7 @@ def load_exerciseresults():
 
     ExerciseResult.query.delete()
 
-    for row in open('seed_data/u.exerciseresults'):
+    for row in open('static/data/u.exerciseresults'):
         row = row.rstrip()
         exerciseresult_id, exercise_id, student_email, timestamp, num_correct, num_done = row.split('|')
 
@@ -227,7 +245,7 @@ def load_videos():
 
     Video.query.delete()
 
-    video_string = open('seed_data/sample_videos.json').read()
+    video_string = open('static/data/sample_videos.json').read()
     video_dict = json.loads(video_string)
 
     for video in video_dict:
@@ -238,7 +256,7 @@ def load_videos():
         youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
         length = video['duration']
 
-    # for row in open('seed_data/u.videos'):
+    # for row in open('static/data/u.videos'):
     #     row = row.rstrip()
     #     video_id, name, url, length = row.split('|')
 
@@ -261,7 +279,7 @@ def load_videoresults():
 
     VideoResult.query.delete()
 
-    videoresult_string = open('seed_data/sample_videoresults.json').read()
+    videoresult_string = open('static/data/sample_videoresults.json').read()
     videoresult_dict = json.loads(videoresult_string)
 
     for videoresult in videoresult_dict:
@@ -279,7 +297,7 @@ def load_videoresults():
         # length = video['duration']
         video_id = db.session.query(Video.video_id).filter(Video.url == url).first()
 
-    # for row in open('seed_data/u.videoresults'):
+    # for row in open('static/data/u.videoresults'):
     #     row = row.rstrip()
     #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
 

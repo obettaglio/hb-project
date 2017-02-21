@@ -30,3 +30,9 @@
     border: 2px outset #b37d00;
     width: 180px;
 }
+
+#graph-view-button-group {
+    display: block;
+    margin: auto;
+    width: 50%;
+}

@@ -122,6 +122,11 @@ function displayD3(dataArray, n, m) {
           .tickSize(0)
           .tickPadding(6));
 
+  // svg.append("text")      // text label for the x axis
+  //       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+  //       .style("text-anchor", "middle")
+  //       .text("Date");
+
   d3.selectAll("input")
       .on("change", changed);
 

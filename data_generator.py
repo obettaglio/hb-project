@@ -6,16 +6,14 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 from model import db, connect_to_db
 from server import app
 
-f_names = ["Meggie", "Leslie", "Kiko", "Stephanie", "Lindsey", "Anne",
-           "Erica", "Gina", "Ryan", "Dennis", "Ethan", "Todd", "Mark", "Jack",
-           "Joel", "Henry", "Ronan", "Sam", "Gansey", "Kyle"]
+f_names = ["Meggie", "Leslie", "Agne", "Kelly", "Katie", "Ahmad", "Dennis",
+           "Ariella", "Matthew", "Ethan", "William", "Catherine", "Jason",
+           "Serena", "Joel", "Henry", "Conor", "Samuel", "Danielle", "Tony"]
 
 l_names = ["Smith", "Johnson", "Inge", "Glassman", "Weinberg", "Carroll",
            "Mahnken", "Yeh", "Goodman", "Winchester", "Burton", "Conrad",
            "Chen", "Boyette", "Lonne", "Fischbach", "Wickham", "Horvatic",
            "Yoder", "Hardin"]
-
-# genders = ["f", "m", "tw", "tm", "nb_gf", "pref"]
 
 lorems = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce " +
           "auctor ex vitae nulla tempor, fermentum.", "Lorem ipsum dolor sit " +
@@ -31,20 +29,36 @@ lorems = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce " +
           ]
 
 
-def mock_users():
+def generate_students():
 
-    file = open("static/data/user_data.txt", "r+")
+    file = open("static/data/u.students", "r+")
     for f_name in f_names:
         for l_name in l_names:
-            khan_username = f_name[:2].lower() + l_name[:5]
-            user_email = khan_username + "@mockuser.com"
-            password = khan_username + str(123)
-            # age = random.randrange(15, 50)
-            # gender = random.choice(genders)
+            khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
+            student_email = khan_username + "@genstudent.com"
+            # password = khan_username + str(123)
 
-            line = "|".join([user_email, password, f_name, l_name, khan_username])
+            line = "|".join([student_email, f_name, l_name, khan_username])
 
             file.write(line + "\n")
+
+    file.close()
+
+
+def generate_examresults():
+
+    file = open("static/data/u.examresults", "r+")
+    # for f_name in f_names:
+    #     for l_name in l_names:
+    #         khan_username = "khanst" + f_name[:2].lower() + l_name[:5]
+    #         student_email = khan_username + "@mockuser.com"
+    #         # password = khan_username + str(123)
+    #         # age = random.randrange(15, 50)
+    #         # gender = random.choice(genders)
+
+    #         line = "|".join([student_email, f_name, l_name, khan_username])
+
+    #         file.write(line + "\n")
 
     file.close()
 
