@@ -36,3 +36,13 @@
     margin: auto;
     width: 50%;
 }
+
+.homepage-main,
+form#login-form,
+p.register-on-homepage {
+    color: white;
+}
+
+#homepage-title {
+    font-weight: bold;
+}
