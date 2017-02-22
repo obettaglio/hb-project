@@ -1,4 +1,5 @@
 // Adding a score to an exam
+// Changing chart display according to user command
 
 function showAddScoreForm(evt) {
     // display add-score-form
@@ -50,24 +51,18 @@ function getScoreInfo(evt) {
            );
 }
 
-function showBarChart(evt) {
-    // display bar chart
+function changeChartDisplay(evt, chart) {
 
     evt.preventDefault();
 
-    $('#d3-chart').attr('src', '/exam-bar-d3?exam_id={{ exam.exam_id }}');
-}
-
-function showBubbleChart(evt) {
-    // display bubble chart
-
-    evt.preventDefault();
-
-    $('#d3-chart').attr('src', '/exam-bubble-d3?exam_id={{ exam.exam_id }}');
+    $('.exam-chart').hide();
+    chart.show();
 }
 
 $('#add-score-button').on('click', showAddScoreForm);
 $('#add-score-submit').on('click', getScoreInfo);
 
-$('#bar-button').on('click', showBarChart);
-$('#bubble-button').on('click', showBubbleChart);
+$('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'))});
+$('#bubble-button').on('click', function(evt) {changeChartDisplay(evt, $('#bubble-chart'))});
+$('#pie-button').on('click', function(evt) {changeChartDisplay(evt, $('#pie-chart'))});
+$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#scatterplot-chart'))});

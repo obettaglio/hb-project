@@ -172,7 +172,7 @@ def log_user_out():
 
 @app.route('/exam-bar-data.json')
 def jsonify_exam_bar_data():
-    """Query database for data filtering by exam_id. Return data for bar graph as JSON.
+    """Query database for data filtering by exam_id. Return data for bar chart as JSON.
 
     Data consists of examresult and videoresult details listed by student_email:
         student_name, exam_score, num_videos, avg_points, and avg_secs_watched."""
@@ -206,25 +206,26 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
-@app.route('/fake-bubble.json')
-def jsonify_fake_stuff():
+# @app.route('/fake-bubble.json')
+# def jsonify_fake_stuff():
 
-    exam_id = request.args.get('exam_id')
+#     exam_id = request.args.get('exam_id')
 
-    data_dict = {}
+#     data_dict = {}
 
-    videos = jsonify_exam_bubble_data(exam_id)
+#     videos = jsonify_exam_bubble_data(exam_id)
 
-    data_dict['children'] = videos
+#     data_dict['children'] = videos
 
-    return jsonify(data_dict)
+#     return jsonify(data_dict)
 
 
 @app.route('/exam-bubble-data.json')
 def jsonify_exam_bubble_data():
-    """Query database for exam data filtering by exam_id. Return data as JSON.
+    """Query database for data filtering by exam_id. Return data for bubble chart as JSON.
 
-    Data consists of exam details and all associated examresult data."""
+    Data consists of examresult and videoresult details listed by video_name:
+        video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
 
     exam_id = request.args.get('exam_id')
     # exam_id = exam_id
@@ -307,7 +308,7 @@ def jsonify_exam_bubble_data():
 
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
-    """Display d3 stacked/grouped bar graph."""
+    """Display d3 stacked/grouped bar chart."""
 
     exam_id = request.args.get('exam_id')
 
@@ -317,11 +318,21 @@ def show_exam_bar_d3():
 
 @app.route('/exam-bubble-d3')
 def show_exam_bubble_d3():
-    """Display d3 bubble graph."""
+    """Display d3 bubble chart."""
 
     # exam_id = request.args.get('exam_id')
 
     return render_template('exam-bubble-d3-static.html')
+                           # exam_id=exam_id)
+
+
+@app.route('/exam-pie-d3')
+def show_exam_pie_d3():
+    """Display d3 pie chart."""
+
+    # exam_id = request.args.get('exam_id')
+
+    return render_template('exam-pie-d3.html')
                            # exam_id=exam_id)
 
 

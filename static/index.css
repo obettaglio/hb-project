@@ -45,3 +45,9 @@ p.register-on-homepage {
 #homepage-title {
     font-weight: bold;
 }
+
+#bubble-chart,
+#pie-chart,
+#scatterplot-chart {
+    display: none;
+}
