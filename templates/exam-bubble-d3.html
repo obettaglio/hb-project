@@ -23,14 +23,73 @@ var pack = d3.pack()
     .size([width, width])
     .padding(1.5);
 
-d3.csv("/static/data/flare.csv", function(d) {
-  d.value = +d.value;
-  if (d.value) return d;
+// d3.json("/exam-bubble-data.json?exam_id={{ exam_id }}", function(d) {
+
+//   console.log(d);
+//   console.log(d3.keys(d));
+
+//   // videoNamesArray = d3.keys(d);
+//   // console.log(videoNamesArray);
+
+//   for (i = 0; i < d3.keys(d).length; i++) {
+//     d.class = d3.keys(d)[i];
+//     console.log(d.class);
+
+//     d.package = d[d.class];
+//     console.log(d.package);
+//   }
+// });
+
+d3.json("/exam-bubble-data.json?exam_id={{ exam_id }}", function(d) {
+// d3.csv("/static/data/flare.csv", function(d) {
+
+  console.log(d);
+
+  d.forEach(function(video) {
+        d.total_views = +video.total_views;
+        d.video_name = video.video_name;
+        console.log(d.total_views);
+        console.log(d.video_name);
+    });
+
+  var node = svg.selectAll(".node")
+    .data(d)
+    .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+  node.append("circle")
+      .attr("id", function(video) { console.log(video.video_name); return video.video_name; })
+      .attr("r", function(d) { return d.total_views * 20; })
+      .style("fill", function(d) { return 'red'; });
+
+  node.append("clipPath")
+      .attr("id", function(d) { return "clip-" + d.video_name; })
+    .append("use")
+      .attr("xlink:href", function(d) { return "#" + d.video_name; });
+
+  node.append("text")
+      .attr("clip-path", function(d) { return "url(#clip-" + d.video_name + ")"; })
+    .selectAll("tspan")
+    .data(function(d) { return d.video_name; })
+    .enter().append("tspan")
+      .attr("x", 0)
+      .attr("y", function(d, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
+      .text(function(d) { return d; });
+
+  node.append("title")
+      .text(function(d) { return d.video_name + "\n" + format(d.total_views); });
+// });
+
+  d.total_views = +d.total_views;
+  console.log(d.total_views);
+
+  if (d.total_views) return d;
 }, function(error, classes) {
   if (error) throw error;
 
   var root = d3.hierarchy({children: classes})
-      .sum(function(d) { return d.value; })
+      .sum(function(d) { return d.total_views; })
       .each(function(d) {
         if (id = d.data.id) {
           var id, i = id.lastIndexOf(".");
@@ -47,26 +106,26 @@ d3.csv("/static/data/flare.csv", function(d) {
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
   node.append("circle")
-      .attr("id", function(d) { return d.id; })
-      .attr("r", function(d) { return d.r; })
-      .style("fill", function(d) { return color(d.package); });
+      .attr("id", function(video) { return video.video_name; })
+      .attr("r", function(d) { return d.total_views * 100; })
+      .style("fill", function(d) { return 'red'; });
 
   node.append("clipPath")
-      .attr("id", function(d) { return "clip-" + d.id; })
+      .attr("id", function(d) { return "clip-" + d.video_name; })
     .append("use")
-      .attr("xlink:href", function(d) { return "#" + d.id; });
+      .attr("xlink:href", function(d) { return "#" + d.video_name; });
 
   node.append("text")
-      .attr("clip-path", function(d) { return "url(#clip-" + d.id + ")"; })
+      .attr("clip-path", function(d) { return "url(#clip-" + d.video_name + ")"; })
     .selectAll("tspan")
-    .data(function(d) { return d.class.split(/(?=[A-Z][^A-Z])/g); })
+    .data(function(d) { return d.video_name; })
     .enter().append("tspan")
       .attr("x", 0)
       .attr("y", function(d, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
       .text(function(d) { return d; });
 
   node.append("title")
-      .text(function(d) { return d.id + "\n" + format(d.value); });
+      .text(function(d) { return d.video_name + "\n" + format(d.total_views); });
 });
 
 </script>

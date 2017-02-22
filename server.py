@@ -206,6 +206,20 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
+@app.route('/fake-bubble.json')
+def jsonify_fake_stuff():
+
+    exam_id = request.args.get('exam_id')
+
+    data_dict = {}
+
+    videos = jsonify_exam_bubble_data(exam_id)
+
+    data_dict['children'] = videos
+
+    return jsonify(data_dict)
+
+
 @app.route('/exam-bubble-data.json')
 def jsonify_exam_bubble_data():
     """Query database for exam data filtering by exam_id. Return data as JSON.
@@ -213,14 +227,28 @@ def jsonify_exam_bubble_data():
     Data consists of exam details and all associated examresult data."""
 
     exam_id = request.args.get('exam_id')
+    # exam_id = exam_id
 
     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
-    student_results = {}
+    # student_results = {}
     video_results = {}
-    results = {'student_results': student_results,
-               'video_results': video_results}
+    # video_names_set = set()
+    # results = {'student_results': student_results,
+    #            'video_results': video_results}
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A_views'
+        elif exam_percentage >= 0.8:
+            return 'B_views'
+        elif exam_percentage >= 0.7:
+            return 'C_views'
+        elif exam_percentage >= 0.6:
+            return 'D_views'
+        else:
+            return 'F_views'
 
     for examresult in examresults:
         student_email, exam_score = examresult
@@ -229,25 +257,52 @@ def jsonify_exam_bubble_data():
         student_name = student_name[0] + ' ' + student_name[1]
 
         exam_percentage = float(exam_score) / total_points
+        # exam_percentage_range = int(exam_percentage * 10) * 10
 
         all_video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
-        print all_video_ids
 
-        student_videos = []
+        # student_videos = []
 
         for video_id in all_video_ids:
             video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
-            # video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()
-            student_videos.append(video_name)
-            video_results[video_name] = video_results.get(video_name, 0) + 1
+            video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()[0]
+            # student_videos.append(video_name)
+            # video_results[video_name] = video_results.get(video_name, 0) + 1
 
-        print student_videos
+            if video_name not in video_results:
+                video_results[video_name] = {'video_name': video_name,
+                                             'video_url': video_url,
+                                             'total_views': 0,
+                                             'A_views': 0,
+                                             'B_views': 0,
+                                             'C_views': 0,
+                                             'D_views': 0,
+                                             'F_views': 0}
 
-        student_results[student_email] = {'student_name': student_name,
-                                          'exam_percentage': exam_percentage,
-                                          'student_videos': student_videos}
+            # if video_name not in video_names_set:
+            #     video_result = {'title': video_name,
+            #                     'url': video_url,
+            #                     'total_views': 0,
+            #                     'A_views': 0,
+            #                     'B_views': 0,
+            #                     'C_views': 0,
+            #                     'D_views': 0,
+            #                     'F_views': 0}
 
-    return jsonify(results)
+                # video_results.append(video_result)
+
+            grade_range_key = convert_percent_to_grade(exam_percentage)
+
+            video_results[video_name]['total_views'] += 1
+            video_results[video_name][grade_range_key] += 1
+
+        # student_results[student_email] = {'student_name': student_name,
+        #                                   'exam_percentage_range': exam_percentage_range,
+        #                                   'student_videos': student_videos}
+
+    return jsonify(video_results.values())
+    # return video_results.values()
+    # return jsonify(video_results)
 
 
 @app.route('/exam-bar-d3')
@@ -264,10 +319,10 @@ def show_exam_bar_d3():
 def show_exam_bubble_d3():
     """Display d3 bubble graph."""
 
-    exam_id = request.args.get('exam_id')
+    # exam_id = request.args.get('exam_id')
 
-    return render_template('exam-bubble-d3.html',
-                           exam_id=exam_id)
+    return render_template('exam-bubble-d3-static.html')
+                           # exam_id=exam_id)
 
 
 # @app.route('/student-info.json')

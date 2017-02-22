@@ -174,7 +174,7 @@ class Video(db.Model):
 
     __tablename__ = "videos"
 
-    video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    video_id = db.Column(db.String(50), autoincrement=False, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(500), nullable=True)
     url = db.Column(db.String(200), nullable=False)
@@ -194,7 +194,7 @@ class VideoResult(db.Model):
     __tablename__ = "videoresults"
 
     videoresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
+    video_id = db.Column(db.String(50), db.ForeignKey('videos.video_id'))
     student_email = db.Column(db.String(200), db.ForeignKey('students.student_email'))
     timestamp = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=True)

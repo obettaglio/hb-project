@@ -50,5 +50,24 @@ function getScoreInfo(evt) {
            );
 }
 
+function showBarChart(evt) {
+    // display bar chart
+
+    evt.preventDefault();
+
+    $('#d3-chart').attr('src', '/exam-bar-d3?exam_id={{ exam.exam_id }}');
+}
+
+function showBubbleChart(evt) {
+    // display bubble chart
+
+    evt.preventDefault();
+
+    $('#d3-chart').attr('src', '/exam-bubble-d3?exam_id={{ exam.exam_id }}');
+}
+
 $('#add-score-button').on('click', showAddScoreForm);
 $('#add-score-submit').on('click', getScoreInfo);
+
+$('#bar-button').on('click', showBarChart);
+$('#bubble-button').on('click', showBubbleChart);

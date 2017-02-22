@@ -63,13 +63,14 @@
     <!-- https://bl.ocks.org/mbostock/4063318
     https://bl.ocks.org/mbostock/4062085 -->
 
-    <iframe src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="1000px" height="700px" seamless frameBorder="0" scrolling="no"></iframe>
+    <iframe id='d3-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="1000px" height="700px" seamless frameBorder="0" scrolling="no"></iframe>
     <!-- <iframe src="/d3-test" seamless frameBorder="0" scrolling="no" onload="resizeIframe(this)"></iframe> -->
     <!-- <iframe id='iframe1' src="/d3-test" frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" height="100%" width="100%"></iframe> -->
     <div id="graph-view-button-group" class="btn-group" role="group" aria-label="...">
-      <a class="btn btn-default" href="/" role="button">Stacked/Grouped Bar</a>
-      <a class="btn btn-default" href="/" role="button">Pie</a>
-      <a class="btn btn-default" href="/" role="button">Scatterplot</a>
+      <a class="btn btn-default" id='bar-button' href="/" role="button">Bar</a>
+      <a class="btn btn-default" id='bubble-button' href="/" role="button">Bubble</a>
+      <a class="btn btn-default" id='pie-button' href="/" role="button">Pie</a>
+      <a class="btn btn-default" id='scatterplot-button' href="/" role="button">Scatterplot</a>
     </div>
 
   </div>

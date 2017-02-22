@@ -21,7 +21,7 @@
 # Specialized password hashing libraries exist to solve these problems.
 # They provide hash functions which:
 #
-# - "salt" a passowrd before hashing it (salting adds lots random characters,
+# - "salt" a password before hashing it (salting adds lots of random characters,
 #   so that shorter or common passwords will still be hard to break)
 #
 # - are designed in ways that are very difficult to execute in parallel,
