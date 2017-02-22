@@ -11,7 +11,9 @@ from model import connect_to_db, db
 
 import json
 
-from datetime import datetime
+import random
+
+from datetime import datetime, timedelta
 
 from sqlalchemy.inspection import inspect
 
@@ -272,48 +274,96 @@ def load_videos():
     db.session.commit()
 
 
+# def load_videoresults():
+#     """Load video results into database."""
+
+#     print 'VideoResults'
+
+#     VideoResult.query.delete()
+
+#     videoresult_string = open('static/data/sample_videoresults.json').read()
+#     videoresult_dict = json.loads(videoresult_string)
+
+#     for videoresult in videoresult_dict:
+#         student_email = videoresult['user']
+#         timestamp = videoresult['last_watched']
+#         points = videoresult['points']
+#         secs_watched = videoresult['seconds_watched']
+#         last_sec_watched = videoresult['last_second_watched']
+
+#         video = videoresult['video']
+#         # name = video['title']
+#         # description = video['description']
+#         url = video['ka_url']
+#         # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
+#         # length = video['duration']
+#         video_id = db.session.query(Video.video_id).filter(Video.url == url).first()
+
+#     # for row in open('static/data/u.videoresults'):
+#     #     row = row.rstrip()
+#     #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
+
+#         if type(timestamp) != datetime:
+#             # timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
+#             timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
+#             # 2011-05-04T06:01:47Z
+
+#         videoresult = VideoResult(video_id=video_id,
+#                                   student_email=student_email,
+#                                   timestamp=timestamp,
+#                                   points=points,
+#                                   secs_watched=secs_watched,
+#                                   last_sec_watched=last_sec_watched)
+
+#         db.session.add(videoresult)
+
+#     db.session.commit()
+
+
 def load_videoresults():
-    """Load video results into database."""
+    """Load video results into database.
+
+    Generate data drawing from existing student and video data."""
 
     print 'VideoResults'
 
     VideoResult.query.delete()
 
-    videoresult_string = open('static/data/sample_videoresults.json').read()
-    videoresult_dict = json.loads(videoresult_string)
+    student_emails = db.session.query(Student.student_email).all()
+    videos = db.session.query(Video).all()
 
-    for videoresult in videoresult_dict:
-        student_email = videoresult['user']
-        timestamp = videoresult['last_watched']
-        points = videoresult['points']
-        secs_watched = videoresult['seconds_watched']
-        last_sec_watched = videoresult['last_second_watched']
+    def generate_random_date(start, end):
+        """Return a random datetime between two datetime objects."""
 
-        video = videoresult['video']
-        # name = video['title']
-        # description = video['description']
-        url = video['ka_url']
-        # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
-        # length = video['duration']
-        video_id = db.session.query(Video.video_id).filter(Video.url == url).first()
+        delta = end - start
+        int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+        random_second = random.randrange(int_delta)
 
-    # for row in open('static/data/u.videoresults'):
-    #     row = row.rstrip()
-    #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
+        return start + timedelta(seconds=random_second)
 
-        if type(timestamp) != datetime:
-            # timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
-            timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
-            # 2011-05-04T06:01:47Z
+    d1 = datetime.strptime('1/1/2017 1:30 PM', '%m/%d/%Y %I:%M %p')
+    d2 = datetime.strptime('2/1/2017 4:50 AM', '%m/%d/%Y %I:%M %p')
 
-        videoresult = VideoResult(video_id=video_id,
-                                  student_email=student_email,
-                                  timestamp=timestamp,
-                                  points=points,
-                                  secs_watched=secs_watched,
-                                  last_sec_watched=last_sec_watched)
+    for video in videos:
+        total_secs = video.length
 
-        db.session.add(videoresult)
+        for student_email in student_emails:
+            video_id = video.video_id
+            timestamp = generate_random_date(d1, d2)
+            points = random.randint(1, 30)
+            secs_watched = random.randint(1, total_secs)
+            last_sec_watched = random.randint(secs_watched, total_secs)
+
+            videoresult = VideoResult(video_id=video_id,
+                                      student_email=student_email,
+                                      timestamp=timestamp,
+                                      points=points,
+                                      secs_watched=secs_watched,
+                                      last_sec_watched=last_sec_watched)
+
+            # randomly decide whether or not to add result
+            if bool(random.getrandbits(1)):
+                db.session.add(videoresult)
 
     db.session.commit()
 

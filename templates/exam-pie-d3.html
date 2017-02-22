@@ -3,6 +3,15 @@
 
 <head>
   <title>Pie Chart</title>
+
+  <style>
+
+  text {
+    font: 10px sans-serif;
+    text-anchor: middle;
+  }
+
+  </style>
 </head>
 
 <body>
@@ -11,6 +20,7 @@
   </div>
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script>
+
     var canvas = d3.select('#wrapper')
       .append('svg')
       .attr({
@@ -18,71 +28,74 @@
         'height': 500
       });
 
-    var data = [{
-      "label": "0-2",
-      "value": 10
-    }, {
-      "label": "3-7",
-      "value": 15
-    }, {
-      "label": "8-15",
-      "value": 70
-    }, {
-      "label": "16-20",
-      "value": 5
-    }];
+    // var data = [{
+    //   "label": "0-2",
+    //   "value": 10
+    // }, {
+    //   "label": "3-7",
+    //   "value": 15
+    // }, {
+    //   "label": "8-15",
+    //   "value": 70
+    // }, {
+    //   "label": "16-20",
+    //   "value": 5
+    // }];
 
-    var color = d3.scale.category20c();
+    d3.json('/exam-pie-data.json?exam_id={{ exam_id }}', function(error, data) {
 
-    var arc = d3.svg.arc()
-      .innerRadius(0)
-      .outerRadius(150);
+      var color = d3.scale.category20c();
 
-    var arcOver = d3.svg.arc()
-      .innerRadius(0)
-      .outerRadius(200 + 10);
+      var arc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(150);
 
-    var pie = d3.layout.pie()
-      .value(function(d) {
-        return d.value;
+      var arcOver = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(200 + 10);
+
+      var pie = d3.layout.pie()
+        .value(function(d) {
+          return d.value;
+        });
+
+      var renderarcs = canvas.append('g')
+        .attr('transform', 'translate(440,250)')
+        .selectAll('.arc')
+        .data(pie(data))
+        .enter()
+        .append('g')
+        .attr('class', "arc");
+
+      renderarcs.append('path')
+        .attr('d', arc)
+        .attr('fill', function(d, i) {
+          return color(i);
+        })
+        .on("mouseover", function(d) {
+          d3.select(this).transition()
+            .duration(1000)
+            .attr("d", arcOver);
+        })
+        .on("mouseout", function(d) {
+          d3.select(this).transition()
+            .duration(1000)
+            .attr("d", arc);
+        });
+
+      renderarcs.append('text')
+        .attr('transform', function(d) {
+          var c = arc.centroid(d);
+          console.log(c);
+          return "translate(" + c[0] + "," + c[1] + ")";
+        })
+        // .text(function(d) {
+        //   return d.value + "%";
+        .text(function(d) {
+          return d.data.label;  // want to return data label
+        });
       });
 
-
-    var renderarcs = canvas.append('g')
-      .attr('transform', 'translate(440,250)')
-      .selectAll('.arc')
-      .data(pie(data))
-      .enter()
-      .append('g')
-      .attr('class', "arc");
-
-    renderarcs.append('path')
-      .attr('d', arc)
-      .attr('fill', function(d, i) {
-        return color(i);
-      })
-      .on("mouseover", function(d) {
-        d3.select(this).transition()
-          .duration(1000)
-          .attr("d", arcOver);
-      })
-      .on("mouseout", function(d) {
-        d3.select(this).transition()
-          .duration(1000)
-          .attr("d", arc);
-      });
-
-    renderarcs.append('text')
-      .attr('transform', function(d) {
-        var c = arc.centroid(d);
-        console.log(c);
-        return "translate(" + c[0] + "," + c[1] + ")";
-      })
-      // .text(function(d) {
-      //   return d.value + "%";
-      .text(function(d) {
-        return d.label;
-      });
   </script>
 </body>
 

@@ -194,8 +194,12 @@ def jsonify_exam_bar_data():
         videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
 
         num_videos = videoresults_query.count()
-        avg_points = sum([vr.points for vr in videoresults_query.all()])/float(num_videos)
-        avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
+        if num_videos:
+            avg_points = sum([vr.points for vr in videoresults_query.all()])/float(num_videos)
+            avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
+        else:
+            avg_points = 0
+            avg_secs_watched = 0
 
         results[student_email] = {'student_name': student_name,
                                   'exam_score': exam_score,
@@ -306,6 +310,66 @@ def jsonify_exam_bubble_data():
     # return jsonify(video_results)
 
 
+@app.route('/exam-pie-data.json')
+def jsonify_exam_pie_data():
+    """Query database for data filtering by exam_id. Return data for pie chart as JSON.
+
+    Data consists of array of dictionaries containing:
+        num_videos_range: num_students."""
+
+    exam_id = request.args.get('exam_id')
+    # exam_id = exam_id
+
+    # total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+    results = {'0-4': {'label': '0-4',
+                       'value': 0},
+               '5-9': {'label': '5-9',
+                       'value': 0},
+               '10-14': {'label': '10-14',
+                         'value': 0},
+               '15+': {'label': '15+',
+                       'value': 0}}
+
+    # def convert_percent_to_grade(exam_percentage):
+    #     if exam_percentage >= 0.9:
+    #         return 'A_views'
+    #     elif exam_percentage >= 0.8:
+    #         return 'B_views'
+    #     elif exam_percentage >= 0.7:
+    #         return 'C_views'
+    #     elif exam_percentage >= 0.6:
+    #         return 'D_views'
+    #     else:
+    #         return 'F_views'
+
+    def convert_num_videos_to_range(num_videos):
+        if num_videos <= 4:
+            return '0-4'
+        elif num_videos <= 9:
+            return '5-9'
+        elif num_videos <= 14:
+            return '10-14'
+        else:
+            return '15+'
+
+    for examresult in examresults:
+        student_email, exam_score = examresult
+
+        # exam_percentage = float(exam_score) / total_points
+        # grade_range = convert_percent_to_grade(exam_percentage)
+
+        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
+        num_videos = videoresults_query.count()
+
+        num_videos_range = convert_num_videos_to_range(num_videos)
+
+        results[num_videos_range]['value'] += 1
+
+    return jsonify(results.values())
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -330,10 +394,10 @@ def show_exam_bubble_d3():
 def show_exam_pie_d3():
     """Display d3 pie chart."""
 
-    # exam_id = request.args.get('exam_id')
+    exam_id = request.args.get('exam_id')
 
-    return render_template('exam-pie-d3.html')
-                           # exam_id=exam_id)
+    return render_template('exam-pie-d3.html',
+                           exam_id=exam_id)
 
 
 # @app.route('/student-info.json')
