@@ -15,6 +15,17 @@
   }
 </style>
 <script>
+// var data = [
+//   {"bubble1": [{'label': 'A',
+//                 'value': 10},
+//                {'label': 'B',
+//                 'value': 20}]},
+//   {"bubble2": [{'label': 'A',
+//                 'value': 20},
+//                {'label': 'B',
+//                 'value': 50}]}
+// ];
+
 var data = [
   ["bubble1", [10, 20]],
   ["bubble2", [5, 7]],
@@ -32,6 +43,9 @@ var data = [
 
 var color = d3.scale.ordinal().range(["#f1eef6","#bdc9e1","#74a9cf","#0570b0"]),
     diameter = 500;
+
+// var color = d3.scale.category20c(),
+//     diameter = 500;
 
 var bubble = d3.layout.pack()
       .value(function(d) { return d3.sum(d[1]); })

@@ -425,6 +425,16 @@ def show_exam_bubble_d3():
                            # exam_id=exam_id)
 
 
+@app.route('/exam-bubble-pie-d3')
+def show_exam_bubble_pie_d3():
+    """Display d3 bubble pie chart."""
+
+    # exam_id = request.args.get('exam_id')
+
+    return render_template('exam-bubble-pie-d3.html')
+                           # exam_id=exam_id)
+
+
 @app.route('/exam-pie-d3')
 def show_exam_pie_d3():
     """Display d3 pie chart."""
