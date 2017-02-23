@@ -2,10 +2,12 @@
 #add-student-to-new-class-form,
 #add-student-to-roster-form,
 #add-exam-form,
-#add-score-form,
-.register-on-homepage,
-.login-on-homepage {
+#add-score-form {
     visibility: hidden;
+}
+
+.login-on-homepage {
+    display: none;
 }
 
 #register-on-homepage-button,
@@ -50,4 +52,8 @@ p.register-on-homepage {
 #pie-chart,
 #scatterplot-chart {
     display: none;
+}
+
+.flashes {
+    min-height: 39px;
 }

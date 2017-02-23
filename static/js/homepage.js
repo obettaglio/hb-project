@@ -12,7 +12,8 @@ function showLoginOnHomepage(evt) {
     // display login-on-homepage
 
     evt.preventDefault();
-
+    // $('.login-container').html($('.login-on-homepage').clone());
+    // $('.login-on-homepage').show()
     $('.login-on-homepage').css('visibility', 'visible');
 }
 

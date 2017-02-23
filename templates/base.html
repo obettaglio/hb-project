@@ -56,15 +56,15 @@
 
   <div class="container">
     {% with messages = get_flashed_messages() %}
+    <div class='flashes'>
       {% if messages %}
-        <div class=flashes>
         {% for message in messages %}
           <h4>{{ message }}</h4>
         {% endfor %}
-        </div>
       {% endif %}
-      {% endwith %}
-      <div id='flash-msgs'></div>
+    </div>
+    {% endwith %}
+    <div id='flash-msgs'></div>
   </div>
 
   <div class="container">
@@ -83,6 +83,15 @@
     //   obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     // }
   </script>
-
+  <script type="text/javascript">
+    $(document).ready(function() {
+      if ($('.flashes h4').length) {
+        setTimeout(function() {
+          console.log('emptying flashes!')
+          // $('.flashes').empty();
+        }, 2000);
+      }
+    });
+  </script>
 </body>
 </html>
