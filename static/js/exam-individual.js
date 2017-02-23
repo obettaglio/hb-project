@@ -16,18 +16,22 @@ function resetAddScoreForm(result) {
 
     console.dir(result);
 
-    $('#flash-msgs').append("<h3 class='msg'>Added score.</h3>");
+    $('#flash-msgs').append("<h4 class='msg'>Added score.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);
 
+    $('#no-scores').hide();
+
     $('#scores-table').append("<tr> \
-      <td>" + result.student_email + "</td> \
+      <td>" + result.student_name + "</td> \
       <td>" + result.score + "</td> \
     </tr>");
 
     $('#student-email-field').val('');  // clear val() for dropdown?
     $('#score-field').val('');
+
+    $('#exam-chart-div').load(document.URL +  ' #exam-chart-div');
 }
 
 function getScoreInfo(evt) {
@@ -52,6 +56,9 @@ function getScoreInfo(evt) {
 }
 
 function changeChartDisplay(evt, chart) {
+    // prevent button from redirecting,
+    // hide all charts,
+    // show desired chart
 
     evt.preventDefault();
 

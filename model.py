@@ -126,7 +126,7 @@ class ExamResult(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<ExamResult examresult_id=%s exam_id=%s student_email=%s>" % (self.score_id,
+        return "<ExamResult examresult_id=%s exam_id=%s student_email=%s>" % (self.examresult_id,
                                                                               self.exam_id,
                                                                               self.student_email)
 

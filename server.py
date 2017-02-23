@@ -179,12 +179,10 @@ def jsonify_exam_bar_data():
 
     exam_id = request.args.get('exam_id')
 
-    # left join by exam_id to get examresult data and student_email
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
     results = {}
 
-    # for loop iterating through list by examresult.student_email
     for examresult in examresults:
         student_email, exam_score = examresult
 
@@ -210,26 +208,14 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
-# @app.route('/fake-bubble.json')
-# def jsonify_fake_stuff():
-
-#     exam_id = request.args.get('exam_id')
-
-#     data_dict = {}
-
-#     videos = jsonify_exam_bubble_data(exam_id)
-
-#     data_dict['children'] = videos
-
-#     return jsonify(data_dict)
-
-
 @app.route('/exam-bubble-data.json')
 def jsonify_exam_bubble_data():
     """Query database for data filtering by exam_id. Return data for bubble chart as JSON.
 
     Data consists of examresult and videoresult details listed by video_name:
         video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
+
+    ## NOT BEING USED ##
 
     exam_id = request.args.get('exam_id')
     # exam_id = exam_id
@@ -637,8 +623,6 @@ def show_exam(exam_id):
 
     Includes list of exam scores, visual analytic, and Add Score button."""
 
-    # IN PROCESS
-
     user_email = session['logged_in_user']
     classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
     class_id = classroom.class_id
@@ -646,6 +630,21 @@ def show_exam(exam_id):
     students = db.session.query(Student).filter(Student.class_id == class_id).all()
     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
     examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
+
+    new_examresults = {}
+
+    for examresult in examresults:
+        student_email = examresult.student_email
+        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+        student_name = student_name[0] + " " + student_name[1]
+        new_examresults[student_email] = {'student_name': student_name,
+                                          'exam_score': examresult.score}
+
+    examresults = new_examresults.values()
+
+    # To order by exam_score in descending order:
+    # examresults.sort()
+    # examresults.reverse()
 
     return render_template('exam-individual.html',
                            exam=exam,
@@ -720,7 +719,10 @@ def add_new_score():
     db.session.add(examresult)
     db.session.commit()
 
-    new_examresult_dict = {'student_email': student_email,
+    student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+    student_name = student_name[0] + " " + student_name[1]
+
+    new_examresult_dict = {'student_name': student_name,
                            'score': score}
 
     return jsonify(new_examresult_dict)

@@ -110,12 +110,14 @@ def load_students():
         f_name, l_name = nickname
         khan_username = student['username']
         khan_id = student['user_id']
+        class_id = 1
 
         student = Student(student_email=student_email,
                           f_name=f_name,
                           l_name=l_name,
                           khan_username=khan_username,
-                          khan_id=khan_id)
+                          khan_id=khan_id,
+                          class_id=class_id)
 
         db.session.add(student)
 

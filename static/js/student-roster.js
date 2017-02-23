@@ -15,10 +15,12 @@ function resetAddStudentToRosterForm(result) {
 
     console.dir(result);
 
-    $('#flash-msgs').append("<h3 class='msg'>Added student.</h3>");
+    $('#flash-msgs').append("<h4 class='msg'>Added student.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);
+
+    $('#no-students').hide();
 
     $('#student-roster-table').append("<tr> \
       <td>" + result.full_name + "</td> \

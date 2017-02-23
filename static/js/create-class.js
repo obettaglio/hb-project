@@ -7,7 +7,7 @@ function showAddStudentToNewClassForm(result) {
 
     console.dir(result);
 
-    $('#flash-msgs').append("<h3 class='msg'>Created class.</h3>");
+    $('#flash-msgs').append("<h4 class='msg'>Created class.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);
@@ -40,7 +40,7 @@ function resetAddStudentToNewClassForm(result) {
     // clear add-student-form
 
     console.dir(result);
-    $('#flash-msgs').append("<h3 class='msg'>Added student.</h3>");
+    $('#flash-msgs').append("<h4 class='msg'>Added student.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);

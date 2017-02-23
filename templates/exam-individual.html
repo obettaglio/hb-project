@@ -27,8 +27,8 @@
         {% for examresult in examresults %}
 
         <tr>
-          <td>{{ examresult.student_email }}</td>
-          <td>{{ examresult.score }}</td>
+          <td>{{ examresult.student_name }}</td>
+          <td>{{ examresult.exam_score }}</td>
         </tr>
 
         {% endfor %}
@@ -38,7 +38,7 @@
     {% else %}
 
     </table>
-    <p>No scores yet.</p>
+    <p id='no-scores'>No scores yet.</p>
 
     {% endif %}
 
@@ -70,10 +70,12 @@
       <a class="btn btn-default" id='scatterplot-button' href="/" role="button">Scatterplot</a>
     </div>
 
-    <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-    <iframe id='bubble-chart' class='exam-chart' src="/exam-bubble-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-    <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-    <iframe id='scatterplot-chart' class='exam-chart' src="/exam-scatterplot-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+    <div id='exam-chart-div'>
+      <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+      <iframe id='bubble-chart' class='exam-chart' src="/exam-bubble-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+      <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+      <iframe id='scatterplot-chart' class='exam-chart' src="/exam-scatterplot-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+    </div>
 
   </div>
 </div>
