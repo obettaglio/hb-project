@@ -318,7 +318,6 @@ def jsonify_exam_pie_data():
         num_videos_range: num_students."""
 
     exam_id = request.args.get('exam_id')
-    # exam_id = exam_id
 
     # total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
@@ -370,6 +369,56 @@ def jsonify_exam_pie_data():
     return jsonify(results.values())
 
 
+@app.route('/exam-scatterplot-data.json')
+def jsonify_exam_scatterplot_data():
+    """Query database for data filtering by exam_id. Return data for scatterplot chart as JSON.
+
+    Data consists of examresult and videoresult details listed by video_name:
+        video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
+
+    exam_id = request.args.get('exam_id')
+
+    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+    results = {}
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A'
+        elif exam_percentage >= 0.8:
+            return 'B'
+        elif exam_percentage >= 0.7:
+            return 'C'
+        elif exam_percentage >= 0.6:
+            return 'D'
+        else:
+            return 'F'
+
+    for examresult in examresults:
+        student_email, exam_score = examresult
+
+        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+        student_name = student_name[0] + ' ' + student_name[1]
+
+        exam_percentage = float(exam_score) / total_points
+        grade_range = convert_percent_to_grade(exam_percentage)
+
+        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
+
+        num_videos = videoresults_query.count()
+        if num_videos:
+            avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
+        else:
+            avg_secs_watched = 0
+
+        results[student_email] = {'avgSecsWatched': avg_secs_watched,
+                                  'numVideos': num_videos,
+                                  'gradeRange': grade_range}
+
+    return jsonify(results.values())
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -397,6 +446,16 @@ def show_exam_pie_d3():
     exam_id = request.args.get('exam_id')
 
     return render_template('exam-pie-d3.html',
+                           exam_id=exam_id)
+
+
+@app.route('/exam-scatterplot-d3')
+def show_exam_scatterplot_d3():
+    """Display d3 scatterplot chart."""
+
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-scatterplot-d3.html',
                            exam_id=exam_id)
 
 
