@@ -296,6 +296,19 @@ def jsonify_exam_bubble_data():
     # return jsonify(video_results)
 
 
+@app.route('/exam-bubble-pie-data.json')
+def jsonify_exam_bubble_pie_data():
+    """Query database for data filtering by exam_id. Return data for bubble pie chart as JSON.
+
+    Data consists of array of dictionaries containing:
+        title: video_name, data: dictionary containing:
+            label: grade_range, value: num_students."""
+
+    ## TO DO ##
+
+    pass
+
+
 @app.route('/exam-pie-data.json')
 def jsonify_exam_pie_data():
     """Query database for data filtering by exam_id. Return data for pie chart as JSON.
