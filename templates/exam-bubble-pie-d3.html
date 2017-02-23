@@ -4,16 +4,25 @@
   <title>Bubble Pie Chart</title>
 
   <style>
+
     body {
       font-family: sans-serif;
     }
+
+    text {
+      font: 10px sans-serif;
+      text-anchor: middle;
+    }
+
     g.arc path {
       stroke: #828282;
       stroke-width: 0.5;
     }
+
     g.arc text {
       font-size: 10px;
     }
+
   </style>
 </head>
 
@@ -36,81 +45,86 @@
   //   ["bubble12", [50, 50]],
   // ];
 
-  var data = [
-    {'title': 'video1',
-     'data': [{'label': 'A',
-               'value': 10},
-              {'label': 'B',
-               'value': 20}]},
-    {'title': 'video2',
-     'data': [{'label': 'A',
-               'value': 20},
-              {'label': 'B',
-               'value': 50}]}
-  ];
+  // var data = [
+  //   {'title': 'video1',
+  //    'data': [{'label': 'A',
+  //              'value': 10},
+  //             {'label': 'B',
+  //              'value': 20}]},
+  //   {'title': 'video2',
+  //    'data': [{'label': 'A',
+  //              'value': 20},
+  //             {'label': 'B',
+  //              'value': 50}]}
+  // ];
 
-  var color = d3.scale.category20c(),
-      diameter = 500;
+  d3.json('/exam-bubble-pie-data.json?exam_id={{ exam_id }}', function(error, data) {
 
-  function makeBubbleValuesArray(data) {
-    var valuesArray = [];
-    for (var j = 0; j < data['data'].length; j++) {
-      var value = data['data'][j]['value'];
-      valuesArray.push(value);
+    var color = d3.scale.category20c(),
+        width = 860,
+        height = 600;
+
+    function makeBubbleValuesArray(data) {
+      var valuesArray = [];
+      for (var j = 0; j < data['data'].length; j++) {
+        var value = data['data'][j]['value'];
+        valuesArray.push(value);
+      }
+      return valuesArray;
     }
-    return valuesArray;
-  }
 
-  var bubble = d3.layout.pack()
-        .value(function(d, i) { return d3.sum(makeBubbleValuesArray(d)); })
-        .sort(null)
-        .size([diameter, diameter])
-        .padding(1.5),
-      arc = d3.svg.arc().innerRadius(0),
-      pie = d3.layout.pie();
+    var bubble = d3.layout.pack()
+          .value(function(d, i) { return d3.sum(makeBubbleValuesArray(d)); })
+          .sort(null)
+          .size([width, height])
+          .padding(1.5),
+        arc = d3.svg.arc().innerRadius(0),
+        pie = d3.layout.pie();
 
-  var svg = d3.select("body").append("svg")
-      .attr("width", diameter)
-      .attr("height", diameter)
-      .attr("class", "bubble");
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", "bubble");
 
-  var nodes = svg.selectAll("g.node")
-      .data(bubble.nodes({children: data}).filter(function(d) { return !d.children; }));
-  nodes.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    var nodes = svg.selectAll("g.node")
+        .data(bubble.nodes({children: data}).filter(function(d) { return !d.children; }));
+    nodes.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
-  var arcGs = nodes.selectAll("g.arc")
-      .data(function(d, i) {
-        return pie(makeBubbleValuesArray(d)).map(function(m) { m.r = d.r; return m; });
-      });
-  var arcEnter = arcGs.enter().append("g").attr("class", "arc");
+    var arcGs = nodes.selectAll("g.arc")
+        .data(function(d, i) {
+          return pie(makeBubbleValuesArray(d)).map(function(m) { m.r = d.r; return m; });
+        });
+    var arcEnter = arcGs.enter().append("g").attr("class", "arc");
 
-  arcEnter.append("path")
-      .attr("d", function(d) {
-        arc.outerRadius(d.r);
-        return arc(d);
-      })
-      .style("fill", function(d, i) { return color(i); });
+    arcEnter.append("path")
+        .attr("d", function(d) {
+          arc.outerRadius(d.r);
+          return arc(d);
+        })
+        .style("fill", function(d, i) { return color(i); });
 
-  arcEnter.append("text")
-      .attr({
-        x: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[0]; },
-        y: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[1]; },
-        dy: "0.35em"
-      })
-      .style("text-anchor", "middle")
-      .text(function(d) { console.log(d); return d.value; });
+    arcEnter.append("text")
+        .attr({
+          x: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[0]; },
+          y: function(d) { arc.outerRadius(d.r); return arc.centroid(d)[1]; },
+          dy: "0.35em"
+        })
+        .style("text-anchor", "middle")
+        .text(function(d) { console.log(d); return d.value; });
 
-  var labels = nodes.selectAll("text.label")
-      .data(function(d) { console.log(d); return [d['title']]; });
-  labels.enter().append("text")
-      .attr({
-        "class": "label",
-        dy: "0.35em"
-      })
-      .style("text-anchor", "middle")
-      .text(String);
+    var labels = nodes.selectAll("text.label")
+        .data(function(d) { console.log(d); return [d['title']]; });
+    labels.enter().append("text")
+        .attr({
+          "class": "label",
+          dy: "0.35em"
+        })
+        .style("text-anchor", "middle")
+        .text(String);
+
+  });
 
   </script>
 </body>

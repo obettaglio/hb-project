@@ -48,7 +48,7 @@
           <button type="submit" class="btn btn-default">Submit</button>
         </form> -->
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/logout">Logout</a></li>
+          {% block nav %}<li><a href="/logout">Logout</a></li>{% endblock %}
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -74,6 +74,7 @@
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src='/static/js/homepage.js'></script>
+  <script src='/static/js/sign-in.js'></script>
   <script src='/static/js/classroom.js'></script>
   <script src='/static/js/create-class.js'></script>
   <script src='/static/js/student-roster.js'></script>

@@ -22,6 +22,11 @@
     display: inline-block;
 }
 
+#login-div,
+#register-div {
+    display: none;
+}
+
 #complete-class {
     display: none;
 }
