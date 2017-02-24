@@ -1,3 +1,7 @@
+/*#body-container {
+    background-color: #1abc9c;
+}*/
+
 #add-student-to-new-class-header,
 #add-student-to-new-class-form,
 #add-student-to-roster-form,
@@ -6,6 +10,7 @@
     visibility: hidden;
 }
 
+.register-on-homepage,
 .login-on-homepage {
     display: none;
 }
@@ -44,10 +49,10 @@
     width: 50%;
 }
 
-.homepage-main,
+/*.homepage-main,
 p.register-on-homepage {
     color: white;
-}
+}*/
 
 #homepage-title {
     font-weight: bold;

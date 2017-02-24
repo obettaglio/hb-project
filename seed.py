@@ -9,6 +9,8 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 from model import connect_to_db, db
 
+from data_generator import generate_students, generate_examresults
+
 import json
 
 import random
@@ -364,7 +366,10 @@ def load_videoresults():
                                       last_sec_watched=last_sec_watched)
 
             # randomly decide whether or not to add result
-            if bool(random.getrandbits(1)):
+            # if bool(random.getrandbits(1)):
+            random_add = random.random()
+            if random_add < 0.67:
+                print random_add
                 db.session.add(videoresult)
 
     db.session.commit()
@@ -428,6 +433,7 @@ def call_all_functions():
     load_subjects()
     load_classrooms()
     load_students()
+    generate_students()
     load_exams()
     load_examresults()
     # load_exercises()
@@ -443,3 +449,4 @@ if __name__ == "__main__":
 
     call_all_functions()
     update_pkey_seqs()
+    generate_examresults()

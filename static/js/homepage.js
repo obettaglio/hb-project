@@ -17,20 +17,20 @@ function showLoginOnHomepage(evt) {
     $('.login-on-homepage').css('visibility', 'visible');
 }
 
-function changeSignInDisplay(evt, div) {
+function changeSignInDisplay(evt, div, button) {
     // hide all forms,
     // show desired form
 
-    evt.delay(function (div) {$('.sign-in-div').hide();
-                           div.show();}
-    );
+    evt.preventDefault();
 
-    // $('.sign-in-div').hide();
-    // div.show();
+    $('.sign-in-div').hide();
+    div.show();
+
+    button.trigger(evt);
 }
 
 $('#register-on-homepage-button').on('click', showRegisterOnHomepage);
 $('#login-on-homepage-button').on('click', showLoginOnHomepage);
 
-$('#register-nav-button').on('click', function(evt) {changeSignInDisplay(evt, $('#register-div'));});
-$('#login-nav-button').on('click', function(evt) {changeSignInDisplay(evt, $('#login-div'));});
+$('#register-nav-button').on('click', function(evt) {changeSignInDisplay(evt, $('#register-div'), $('#register-nav-button'));});
+$('#login-nav-button').on('click', function(evt) {changeSignInDisplay(evt, $('#login-div'), $('#login-nav-button'));});

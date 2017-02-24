@@ -215,94 +215,6 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
-@app.route('/exam-bubble-data.json')
-def jsonify_exam_bubble_data():
-    """Query database for data filtering by exam_id. Return data for bubble chart as JSON.
-
-    Data consists of examresult and videoresult details listed by video_name:
-        video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
-
-    ## NOT BEING USED ##
-
-    exam_id = request.args.get('exam_id')
-    # exam_id = exam_id
-
-    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-
-    # student_results = {}
-    video_results = {}
-    # video_names_set = set()
-    # results = {'student_results': student_results,
-    #            'video_results': video_results}
-
-    def convert_percent_to_grade_views(exam_percentage):
-        if exam_percentage >= 0.9:
-            return 'A_views'
-        elif exam_percentage >= 0.8:
-            return 'B_views'
-        elif exam_percentage >= 0.7:
-            return 'C_views'
-        elif exam_percentage >= 0.6:
-            return 'D_views'
-        else:
-            return 'F_views'
-
-    for examresult in examresults:
-        student_email, exam_score = examresult
-
-        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-        student_name = student_name[0] + ' ' + student_name[1]
-
-        exam_percentage = float(exam_score) / total_points
-        # exam_percentage_range = int(exam_percentage * 10) * 10
-
-        all_video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
-
-        # student_videos = []
-
-        for video_id in all_video_ids:
-            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
-            video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()[0]
-            # student_videos.append(video_name)
-            # video_results[video_name] = video_results.get(video_name, 0) + 1
-
-            if video_name not in video_results:
-                video_results[video_name] = {'video_name': video_name,
-                                             'video_url': video_url,
-                                             'total_views': 0,
-                                             'A_views': 0,
-                                             'B_views': 0,
-                                             'C_views': 0,
-                                             'D_views': 0,
-                                             'F_views': 0}
-
-            # if video_name not in video_names_set:
-            #     video_result = {'title': video_name,
-            #                     'url': video_url,
-            #                     'total_views': 0,
-            #                     'A_views': 0,
-            #                     'B_views': 0,
-            #                     'C_views': 0,
-            #                     'D_views': 0,
-            #                     'F_views': 0}
-
-                # video_results.append(video_result)
-
-            grade_range_key = convert_percent_to_grade_views(exam_percentage)
-
-            video_results[video_name]['total_views'] += 1
-            video_results[video_name][grade_range_key] += 1
-
-        # student_results[student_email] = {'student_name': student_name,
-        #                                   'exam_percentage_range': exam_percentage_range,
-        #                                   'student_videos': student_videos}
-
-    return jsonify(video_results.values())
-    # return video_results.values()
-    # return jsonify(video_results)
-
-
 @app.route('/exam-bubble-pie-data.json')
 def jsonify_exam_bubble_pie_data():
     """Query database for data filtering by exam_id. Return data for bubble pie chart as JSON.
@@ -311,10 +223,7 @@ def jsonify_exam_bubble_pie_data():
         title: video_name, data: dictionary containing:
             label: grade_range, value: num_students."""
 
-    ## TO DO ##
-
     exam_id = request.args.get('exam_id')
-    # exam_id = exam_id
 
     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
@@ -323,15 +232,15 @@ def jsonify_exam_bubble_pie_data():
 
     def convert_percent_to_grade(exam_percentage):
         if exam_percentage >= 0.9:
-            return 'A'
+            return 0
         elif exam_percentage >= 0.8:
-            return 'B'
+            return 1
         elif exam_percentage >= 0.7:
-            return 'C'
+            return 2
         elif exam_percentage >= 0.6:
-            return 'D'
+            return 3
         else:
-            return 'F'
+            return 4
 
     for examresult in examresults:
         student_email, exam_score = examresult
@@ -349,21 +258,32 @@ def jsonify_exam_bubble_pie_data():
             # video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()[0]
 
             if video_name not in results:
-                results[video_name] = {'title': video_name,
-                                       'data': {grade_range: {'label': grade_range,
-                                                              'value': 1}}}
+                # results[video_name] = {'title': video_name,
+                #                        'data': {'A': {'label': 'A',
+                #                                       'value': 0},
+                #                                 'B': {'label': 'B',
+                #                                       'value': 0},
+                #                                 'C': {'label': 'C',
+                #                                       'value': 0},
+                #                                 'D': {'label': 'D',
+                #                                       'value': 0},
+                #                                 'F': {'label': 'F',
+                #                                       'value': 0}}}
 
-            else:
-                if grade_range in results[video_name]['data']:
-                    results[video_name]['data'][grade_range]['value'] += 1
-                else:
-                    results[video_name]['data'][grade_range] = {'label': grade_range,
-                                                                'value': 1}
+                results[video_name] = {'title': video_name,
+                                       'data': [['A', 0],
+                                                ['B', 0],
+                                                ['C', 0],
+                                                ['D', 0],
+                                                ['F', 0]]}
+
+            # results[video_name]['data'][grade_range]['value'] += 1
+            results[video_name]['data'][grade_range][1] += 1
 
     results = results.values()
 
-    for result in results:
-        result['data'] = result['data'].values()
+    # for result in results:
+    #     result['data'] = result['data'].values()
 
     return jsonify(results)
 
@@ -474,7 +394,11 @@ def jsonify_exam_scatterplot_data():
                                   'numVideos': num_videos,
                                   'gradeRange': grade_range}
 
-    return jsonify(results.values())
+    dicts = results.values()
+    tups = sorted([(d['gradeRange'], d) for d in dicts])
+    results = [t[1] for t in tups]
+
+    return jsonify(results)
 
 
 @app.route('/exam-bar-d3')
@@ -485,16 +409,6 @@ def show_exam_bar_d3():
 
     return render_template('exam-bar-d3.html',
                            exam_id=exam_id)
-
-
-@app.route('/exam-bubble-d3')
-def show_exam_bubble_d3():
-    """Display d3 bubble chart."""
-
-    # exam_id = request.args.get('exam_id')
-
-    return render_template('exam-bubble-d3-static.html')
-                           # exam_id=exam_id)
 
 
 @app.route('/exam-bubble-pie-d3')

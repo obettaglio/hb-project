@@ -44,7 +44,9 @@
 
     d3.json('/exam-pie-data.json?exam_id={{ exam_id }}', function(error, data) {
 
-      var color = d3.scale.category20c();
+      // var color = d3.scale.category20c();
+      var color = d3.scale.ordinal()
+        .range(['#e67e22', '#f39c12', '#f1c40f', '#1abc9c', '#16a085']);
 
       var arc = d3.svg.arc()
         .innerRadius(0)

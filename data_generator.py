@@ -31,36 +31,59 @@ lorems = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce " +
 
 def generate_students():
 
-    file = open("static/data/u.students", "r+")
     for f_name in f_names:
-        for l_name in l_names:
-            khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
-            student_email = khan_username + "@genstudent.com"
-            # password = khan_username + str(123)
 
-            line = "|".join([student_email, f_name, l_name, khan_username])
+        random_index = random.randint(0, len(l_names) - 1)
+        l_name = l_names[random_index]
+        del l_names[random_index]
 
-            file.write(line + "\n")
+        khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
+        student_email = khan_username + "@genstudent.com"
+        # password = khan_username + str(123)
+        class_id = 1
 
-    file.close()
+        student = Student(student_email=student_email,
+                          f_name=f_name,
+                          l_name=l_name,
+                          khan_username=khan_username,
+                          class_id=class_id)
+
+        db.session.add(student)
+
+    db.session.commit()
+
+
+# def generate_students():
+
+#     file = open("static/data/u.students", "r+")
+#     for f_name in f_names:
+#         for l_name in l_names:
+#             khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
+#             student_email = khan_username + "@genstudent.com"
+#             # password = khan_username + str(123)
+
+#             line = "|".join([student_email, f_name, l_name, khan_username])
+
+#             file.write(line + "\n")
+
+#     file.close()
 
 
 def generate_examresults():
 
-    file = open("static/data/u.examresults", "r+")
-    # for f_name in f_names:
-    #     for l_name in l_names:
-    #         khan_username = "khanst" + f_name[:2].lower() + l_name[:5]
-    #         student_email = khan_username + "@mockuser.com"
-    #         # password = khan_username + str(123)
-    #         # age = random.randrange(15, 50)
-    #         # gender = random.choice(genders)
+    for f_name in f_names:
 
-    #         line = "|".join([student_email, f_name, l_name, khan_username])
+        exam_id = 1
+        student_email = db.session.query(Student.student_email).filter(Student.f_name == f_name).first()[0]
+        score = random.randint(45, 100)
 
-    #         file.write(line + "\n")
+        examresult = ExamResult(exam_id=exam_id,
+                                student_email=student_email,
+                                score=score)
 
-    file.close()
+        db.session.add(examresult)
+
+    db.session.commit()
 
 
 # def fake_reviews():

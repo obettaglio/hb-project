@@ -32,7 +32,9 @@ var x = d3.scale.linear()
 var y = d3.scale.linear()
     .range([height, 0]);
 
-var color = d3.scale.category20c();
+// var color = d3.scale.category20c();
+var color = d3.scale.ordinal()
+    .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
 
 var xAxis = d3.svg.axis()
     .scale(x)

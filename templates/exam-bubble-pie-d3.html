@@ -60,18 +60,32 @@
 
   d3.json('/exam-bubble-pie-data.json?exam_id={{ exam_id }}', function(error, data) {
 
-    var color = d3.scale.category20c(),
-        width = 860,
+    // var color = d3.scale.category20c();
+    var color = d3.scale.ordinal()
+        .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
+
+    var width = 860,
         height = 600;
 
     function makeBubbleValuesArray(data) {
       var valuesArray = [];
       for (var j = 0; j < data['data'].length; j++) {
-        var value = data['data'][j]['value'];
+        var value = data['data'][j][1];
         valuesArray.push(value);
       }
       return valuesArray;
     }
+
+    function getSliceLabel(data, i) {
+      var label = data['data'][i][0];
+
+      return label;
+    }
+
+    // function getSliceLabel(data, i) {
+    //   sliceLabel = data['data'][i]['label']
+    //   return sliceLabel;
+    // }
 
     var bubble = d3.layout.pack()
           .value(function(d, i) { return d3.sum(makeBubbleValuesArray(d)); })
@@ -103,7 +117,7 @@
           arc.outerRadius(d.r);
           return arc(d);
         })
-        .style("fill", function(d, i) { return color(i); });
+        .style("fill", function(d, i) { console.log(d); return color(i); });
 
     arcEnter.append("text")
         .attr({
@@ -112,10 +126,11 @@
           dy: "0.35em"
         })
         .style("text-anchor", "middle")
-        .text(function(d) { console.log(d); return d.value; });
+        // .text(function(d) { console.log(d); return d.value; });
+        .text(function(d) { return; });                     // set slice label
 
     var labels = nodes.selectAll("text.label")
-        .data(function(d) { console.log(d); return [d['title']]; });
+        .data(function(d) { return [d['title']]; });
     labels.enter().append("text")
         .attr({
           "class": "label",
@@ -123,6 +138,30 @@
         })
         .style("text-anchor", "middle")
         .text(String);
+
+    var legend = svg.selectAll(".legend")
+        .data(color.domain())
+      .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", width - 800)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+        // .style("fill", function(d, i) { return color(i); });
+
+    legend.data(data);    // redefine data for text
+    
+    legend.append("text")
+        .attr("x", width - 806)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        // .text(function(d) { return d; });  // set legend label
+        .text(function(d, i) { return getSliceLabel(d, i); })
+        // .text(function(d, i) { console.log(d); return getSliceLabel(d, i); });
 
   });
 

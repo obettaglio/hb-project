@@ -99,9 +99,11 @@
         .domain([0, y1Max])
         .range([height, 0]);
 
+    // var color = d3.scaleOrdinal()
+    //     .domain(d3.range(n))
+    //     .range(d3.schemeCategory20c);
     var color = d3.scaleOrdinal()
-        .domain(d3.range(n))
-        .range(d3.schemeCategory20c);
+        .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
 
     var series = g.selectAll(".series")
       .data(y01z)
