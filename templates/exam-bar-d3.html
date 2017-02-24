@@ -12,6 +12,11 @@
     top: 10px;
   }
 
+  text {
+      font: 10px sans-serif;
+      text-anchor: middle;
+    }
+
   label {
     display: block;
   }
@@ -77,6 +82,11 @@
     var allResults = [examScores, numVideos, avgPoints, avgSecsWatched];
     console.log(allResults);
 
+    var barLabels = ['Exam Grade',
+                     'Number of Videos Watched',
+                     'Average Points Per Video',
+                     'Average Seconds Watched']
+
     var xz = d3.range(m),
         // xz = d3.range(m).map(function(i, data) { return studentNames[i]; }),
         yz = d3.range(n).map(function(i, data) { return allResults[i]; }),
@@ -103,7 +113,8 @@
     //     .domain(d3.range(n))
     //     .range(d3.schemeCategory20c);
     var color = d3.scaleOrdinal()
-        .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
+        .range(['#16a085', '#f1c40f', '#f39c12', '#e67e22']);
+        // '#1abc9c', 
 
     var series = g.selectAll(".series")
       .data(y01z)
@@ -175,6 +186,30 @@
           .attr("x", function(d, i) { return x(i); })
           .attr("width", x.bandwidth());
     }
+
+    var legend = svg.selectAll(".legend")
+        .data(color.domain())
+      .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", width - 700)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+        // .style("fill", function(d, i) { return color(i); });
+
+    legend.data(barLabels);    // redefine data for text
+    
+    legend.append("text")
+        .attr("x", width - 676)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "start")
+        // .text(function(d) { return d; });  // set legend label
+        .text(function(d, i) { console.log(d); return d ; })
+        // .text(function(d, i) { console.log(d); return getSliceLabel(d, i); });
 
   }
 

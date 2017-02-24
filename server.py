@@ -111,7 +111,7 @@ def register_user():
 
     # 1. Get a request token.
     app.request_token, app.secret_request_token = app.service.get_request_token(
-        params={'oauth_callback': 'http://localhost:5000/authorize'})
+        params={'oauth_callback': 'http://localhost:5000/khan-authorize'})
 
     # 2. Authorize your request token.
     authorize_url = app.service.get_authorize_url(app.request_token)
@@ -119,8 +119,8 @@ def register_user():
     return redirect(authorize_url)
 
 
-@app.route('/authorize')
-def show_authorize_form():
+@app.route('/khan-authorize')
+def authorize_khan_user():
     """Handle Khan Academy authorization form.
 
     Put access tokens in session, add user to database, and display success message."""
@@ -162,7 +162,22 @@ def show_authorize_form():
     # flash('Account created successfully! Please check your email for user information and temporary password.')
     flash('Account created successfully! Please log in.\nTemporary password: ' + password)
     return redirect('/login')
-    # return render_template('authorize.html')
+    # return render_template('khan-authorize.html')
+
+
+@app.route('/schoology-authorize')
+def show_schoology_auth_page():
+    """Display Schoology connect page."""
+
+    return render_template('/schoology-authorize.html')
+
+
+@app.route('/schoology-authorize')
+def authorize_schoology_user():
+    """Handle Schoology authorization form."""
+
+    pass
+    # return redirect('/classroom')
 
 
 @app.route('/logout')
