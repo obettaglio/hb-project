@@ -37,7 +37,7 @@ def generate_students():
         l_name = l_names[random_index]
         del l_names[random_index]
 
-        khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
+        khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5].lower()
         student_email = khan_username + "@genstudent.com"
         # password = khan_username + str(123)
         class_id = 1

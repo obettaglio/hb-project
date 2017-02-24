@@ -366,10 +366,9 @@ def load_videoresults():
                                       last_sec_watched=last_sec_watched)
 
             # randomly decide whether or not to add result
-            # if bool(random.getrandbits(1)):
-            random_add = random.random()
-            if random_add < 0.67:
-                print random_add
+            if bool(random.getrandbits(1)):
+            # random_add = random.random()
+            # if random_add < 0.67:
                 db.session.add(videoresult)
 
     db.session.commit()
