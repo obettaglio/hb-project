@@ -312,29 +312,58 @@ def jsonify_exam_pie_data():
 
     exam_id = request.args.get('exam_id')
 
-    # total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
-    results = {'0-4': {'label': '0-4',
-                       'value': 0},
-               '5-9': {'label': '5-9',
-                       'value': 0},
-               '10-14': {'label': '10-14',
-                         'value': 0},
-               '15+': {'label': '15+',
-                       'value': 0}}
+    # results = {'0-4': {'label': '0-4',
+    #                    'value': 0},
+    #            '5-9': {'label': '5-9',
+    #                    'value': 0},
+    #            '10-14': {'label': '10-14',
+    #                      'value': 0},
+    #            '15+': {'label': '15+',
+    #                    'value': 0}}
 
-    # def convert_percent_to_grade(exam_percentage):
-    #     if exam_percentage >= 0.9:
-    #         return 'A_views'
-    #     elif exam_percentage >= 0.8:
-    #         return 'B_views'
-    #     elif exam_percentage >= 0.7:
-    #         return 'C_views'
-    #     elif exam_percentage >= 0.6:
-    #         return 'D_views'
-    #     else:
-    #         return 'F_views'
+    results = {'0-4': {'label': '0-4',
+                       'value': 0,
+                       'data': {'A': 0,
+                                'B': 0,
+                                'C': 0,
+                                'D': 0,
+                                'F': 0}},
+               '5-9': {'label': '5-9',
+                       'value': 0,
+                       'data': {'A': 0,
+                                'B': 0,
+                                'C': 0,
+                                'D': 0,
+                                'F': 0}},
+               '10-14': {'label': '10-14',
+                         'value': 0,
+                         'data': {'A': 0,
+                                  'B': 0,
+                                  'C': 0,
+                                  'D': 0,
+                                  'F': 0}},
+               '15+': {'label': '15+',
+                       'value': 0,
+                       'data': {'A': 0,
+                                'B': 0,
+                                'C': 0,
+                                'D': 0,
+                                'F': 0}}}
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A'
+        elif exam_percentage >= 0.8:
+            return 'B'
+        elif exam_percentage >= 0.7:
+            return 'C'
+        elif exam_percentage >= 0.6:
+            return 'D'
+        else:
+            return 'F'
 
     def convert_num_videos_to_range(num_videos):
         if num_videos <= 4:
@@ -349,8 +378,8 @@ def jsonify_exam_pie_data():
     for examresult in examresults:
         student_email, exam_score = examresult
 
-        # exam_percentage = float(exam_score) / total_points
-        # grade_range = convert_percent_to_grade(exam_percentage)
+        exam_percentage = float(exam_score) / total_points
+        grade_range = convert_percent_to_grade(exam_percentage)
 
         videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
         num_videos = videoresults_query.count()
@@ -358,6 +387,7 @@ def jsonify_exam_pie_data():
         num_videos_range = convert_num_videos_to_range(num_videos)
 
         results[num_videos_range]['value'] += 1
+        results[num_videos_range]['data'][grade_range] += 1
 
     return jsonify(results.values())
 

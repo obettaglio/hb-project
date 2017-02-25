@@ -92,7 +92,7 @@
           .sort(null)
           .size([width, height])
           .padding(1.5),
-        arc = d3.svg.arc().innerRadius(0),
+        arc = d3.svg.arc().innerRadius(15),
         pie = d3.layout.pie();
 
     var svg = d3.select("body").append("svg")
@@ -117,7 +117,25 @@
           arc.outerRadius(d.r);
           return arc(d);
         })
-        .style("fill", function(d, i) { console.log(d); return color(i); });
+        .style("fill", function(d, i) { return color(i); })
+        .on("mouseover", function(d) {
+          d3.select(this).transition()
+            .duration(1000)
+            .attr("d", function(d) {
+              arc.outerRadius(d.r * 1.5);
+              arc.innerRadius(d.r * 0.67);
+              return arc(d);
+            });
+        })
+        .on("mouseout", function(d) {
+          d3.select(this).transition()
+            .duration(1000)
+            .attr("d", function(d) {
+              arc.outerRadius(d.r);
+              arc.innerRadius(15)
+              return arc(d);
+            });
+        });
 
     arcEnter.append("text")
         .attr({
@@ -131,13 +149,15 @@
 
     var labels = nodes.selectAll("text.label")
         .data(function(d) { return [d['title']]; });
-        // .call(wrap, x.rangeBand());
+        // .data(function(d) { return '+'; });
+
     labels.enter().append("text")
         .attr({
           "class": "label",
           dy: "0.35em"
         })
         .style("text-anchor", "middle")
+        // .call(wrap, x.rangeBand())
         .text(String);
 
     var legend = svg.selectAll(".legend")

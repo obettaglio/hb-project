@@ -30,22 +30,45 @@
 
     // var data = [{
     //   "label": "0-2",
-    //   "value": 10
+    //   "value": 10,
+    //   "data": {"A": 0,
+    //            "B": 0,
+    //            "C": 0,
+    //            "D": 0,
+    //            "F": 0}
     // }, {
     //   "label": "3-7",
-    //   "value": 15
+    //   "value": 15,
+    //   "data": {"A": 0,
+    //            "B": 0,
+    //            "C": 0,
+    //            "D": 0,
+    //            "F": 0}
     // }, {
     //   "label": "8-15",
-    //   "value": 70
+    //   "value": 70,
+    //   "data": {"A": 0,
+    //            "B": 0,
+    //            "C": 0,
+    //            "D": 0,
+    //            "F": 0}
     // }, {
     //   "label": "16-20",
-    //   "value": 5
+    //   "value": 5,
+    //   "data": {"A": 0,
+    //            "B": 0,
+    //            "C": 0,
+    //            "D": 0,
+    //            "F": 0}
     // }];
 
     d3.json('/exam-pie-data.json?exam_id={{ exam_id }}', function(error, data) {
 
       // var color = d3.scale.category20c();
-      var color = d3.scale.ordinal()
+      var pieColor = d3.scale.ordinal()
+        .range(['#34495e', '#7f8c8d', '#95a5a6', '#bdc3c7', '#ecf0f1']);
+
+      var sliceColor = d3.scale.ordinal()
         .range(['#e67e22', '#f39c12', '#f1c40f', '#1abc9c', '#16a085']);
 
       var arc = d3.svg.arc()
@@ -72,17 +95,23 @@
       renderarcs.append('path')
         .attr('d', arc)
         .attr('fill', function(d, i) {
-          return color(i);
+          return pieColor(i);
         })
-        .on("mouseover", function(d) {
+        .on('mouseover', function(d) {
           d3.select(this).transition()
             .duration(1000)
-            .attr("d", arcOver);
+            .attr('d', arcOver);
+            // .attr('fill', function(d, i) {
+            //   return sliceColor(i);
+            // });
         })
-        .on("mouseout", function(d) {
+        .on('mouseout', function(d) {
           d3.select(this).transition()
             .duration(1000)
-            .attr("d", arc);
+            .attr('d', arc);
+            // .attr('fill', function(d, i) {
+            //   return pieColor(i);
+            // });
         });
 
       renderarcs.append('text')
@@ -94,8 +123,27 @@
         // .text(function(d) {
         //   return d.value + "%";
         .text(function(d) {
-          return d.data.label;  // want to return data label
+          return d.data.label;  // label main slices
         });
+
+      // var rendersubarcs = renderarcs.append('g')
+      //   .attr('transform', 'translate(440,250)')
+      //   .selectAll('.subarc')
+      //   .data(function(d) {
+      //     console.log(d);
+      //     console.log(d['data']['data']['A']);
+      //     return pie(d['data']['data']['A']);
+      //   })
+      //   .enter()
+      //   .append('g')
+      //   .attr('class', "subarc");
+
+      // rendersubarcs.append('path')
+      //   .attr('d', arcOver)
+      //   .attr('fill', function(d, i) {
+      //     return sliceColor(i);
+      //   })
+
       });
 
   </script>
