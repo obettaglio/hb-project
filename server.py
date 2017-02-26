@@ -486,6 +486,13 @@ def show_exam_scatterplot_d3():
                            exam_id=exam_id)
 
 
+@app.route('/exam-bar-percent-d3')
+def show_exam_bar_percent_d3():
+    """Display d3 vertical percent bar chart."""
+
+    return render_template('exam-bar-percent-d3.html')
+
+
 # @app.route('/student-info.json')
 # def jsonify_student_info():
 #     """Return data about students in database as JSON.

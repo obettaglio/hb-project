@@ -148,8 +148,8 @@
         .text(function(d) { return; });                     // set slice label
 
     var labels = nodes.selectAll("text.label")
-        .data(function(d) { return [d['title']]; });
-        // .data(function(d) { return '+'; });
+        // .data(function(d) { return [d['title']]; });
+        .data(function(d) { return '+'; });
 
     labels.enter().append("text")
         .attr({
