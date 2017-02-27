@@ -29,7 +29,7 @@ function getClassInfo(evt) {
         "subject": $("#subject-field").val()
     };
 
-    $.post("/classroom/create-class",  // post route
+    $.post("/create-class",  // post route
            formInputs,
            showAddStudentToNewClassForm
            );

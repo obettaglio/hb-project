@@ -13,6 +13,7 @@ import rauth
 import os
 import random
 import string
+from datetime import datetime
 # import requests
 
 
@@ -40,7 +41,24 @@ def index():
 
     Homepage contains links to Register and Login pages."""
 
-    return render_template('homepage.html')
+    if not session.get('logged_in_user'):
+        return render_template('homepage.html')
+
+    else:
+        user_email = session['logged_in_user']
+        user = db.session.query(User).filter(User.user_email == user_email).first()
+        user_f_name = user.f_name
+
+        classrooms = db.session.query(Classroom).filter(Classroom.user_email == user_email).all()
+
+        # if classrooms is not None:
+        return render_template('homepage-user.html',
+                               user_f_name=user_f_name,
+                               classrooms=classrooms)
+
+        # else:
+        #     return render_template('homepage-user-empty.html',
+        #                            user_f_name=user_f_name)
 
 
 @app.route('/sign-in')
@@ -76,12 +94,12 @@ def log_user_in():
                 oauth_params = session['oauth_params']
                 if 'access_token' in oauth_params:
                     flash('Logged in.')
-                    return redirect('/classroom')
+                    return redirect('/')
                 else:
                     # no tokens, redo oauth
                     pass
             else:
-                return redirect('/classroom')
+                return redirect('/')
         else:
             flash('Invalid password.')
             return redirect('/login')
@@ -390,32 +408,16 @@ def jsonify_exam_pie_data():
 
     results = {'0-4': {'label': '0-4',
                        'value': 0,
-                       'data': {'A': 0,
-                                'B': 0,
-                                'C': 0,
-                                'D': 0,
-                                'F': 0}},
+                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
                '5-9': {'label': '5-9',
                        'value': 0,
-                       'data': {'A': 0,
-                                'B': 0,
-                                'C': 0,
-                                'D': 0,
-                                'F': 0}},
+                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
                '10-14': {'label': '10-14',
                          'value': 0,
-                         'data': {'A': 0,
-                                  'B': 0,
-                                  'C': 0,
-                                  'D': 0,
-                                  'F': 0}},
+                         'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
                '15+': {'label': '15+',
                        'value': 0,
-                       'data': {'A': 0,
-                                'B': 0,
-                                'C': 0,
-                                'D': 0,
-                                'F': 0}}}
+                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}}}
 
     def convert_percent_to_grade(exam_percentage):
         if exam_percentage >= 0.9:
@@ -510,6 +512,61 @@ def jsonify_exam_scatterplot_data():
     return jsonify(results)
 
 
+@app.route('/exam-timestamp-data.json')
+def jsonify_exam_timestamp_data():
+    """Query database for data filtering by exam_id. Return data for timestamp scatterplot chart as JSON.
+
+    Data consists of examresult and videoresult details listed by video_name:
+        video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
+
+    exam_id = request.args.get('exam_id')
+
+    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+    results = []
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A'
+        elif exam_percentage >= 0.8:
+            return 'B'
+        elif exam_percentage >= 0.7:
+            return 'C'
+        elif exam_percentage >= 0.6:
+            return 'D'
+        else:
+            return 'F'
+
+    for examresult in examresults:
+        student_email, exam_score = examresult
+
+        exam_percentage = float(exam_score) / total_points
+        grade_range = convert_percent_to_grade(exam_percentage)
+
+        video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
+
+        for video_id in video_ids:
+            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+            timestamp = db.session.query(VideoResult.timestamp).filter(VideoResult.video_id == video_id).first()[0]
+
+            timestamp = datetime.strftime(timestamp, '%m/%d')
+
+            # results[student_email] = {'videoName': video_name,
+            #                           'timestamp': timestamp,
+            #                           'gradeRange': grade_range}
+
+            results.append({'videoName': video_name,
+                            'timestamp': timestamp,
+                            'gradeRange': grade_range})
+
+    # dicts = results.values()
+    tups = sorted([(d['gradeRange'], d) for d in results])
+    results = [t[1] for t in tups]
+
+    return jsonify(results)
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -560,56 +617,21 @@ def show_exam_scatterplot_d3():
                            exam_id=exam_id)
 
 
+@app.route('/exam-timestamp-d3')
+def show_exam_timestamp_d3():
+    """Display d3 timestamp scatterplot chart."""
+
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-timestamp-d3.html',
+                           exam_id=exam_id)
+
+
 @app.route('/exam-bar-percent-d3')
 def show_exam_bar_percent_d3():
     """Display d3 vertical percent bar chart."""
 
     return render_template('exam-bar-percent-d3.html')
-
-
-# @app.route('/student-info.json')
-# def jsonify_student_info():
-#     """Return data about students in database as JSON.
-
-#     Sample data for d3 test."""
-
-#     student_info = open('seed_data/sample_students.json').read()
-#     return jsonify(student_info)
-#     # return student_info
-
-
-# @app.route('/examresults.json')
-# def jsonify_examresult_info():
-#     """Return data about exam results as JSON.
-
-#     Sample data for d3 test."""
-
-#     examresults = open('seed_data/sample_examresults.json').read()
-#     return jsonify(examresults)
-
-
-# @app.route('/videoresults.json')
-# def jsonify_videoresult_info():
-#     """Return data about video results as JSON.
-
-#     Sample data for d3 test."""
-
-#     videoresults = open('seed_data/sample_videoresults.json').read()
-#     return jsonify(videoresults)
-
-
-# @app.route('/d3-test')
-# def show_d3_test():
-#     """Display d3 test graph!!!!!!"""
-
-#     return render_template('d3-test.html')
-
-
-# @app.route('/d3-test-easy')
-# def show_d3_test_easy():
-#     """Display d3 test easy graph!!!!!!"""
-
-#     return render_template('d3-test-easy.html')
 
 
 ##### CLASSROOMS, EXAMS #####
@@ -625,22 +647,23 @@ def show_single_class():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
-    if classroom is not None:
-        class_id = classroom.class_id
-        exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
+    # if classroom is not None:
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
-        return render_template('classroom.html',
-                               user_f_name=user_f_name,
-                               classroom=classroom,
-                               exams=exams)
+    return render_template('classroom.html',
+                           user_f_name=user_f_name,
+                           classroom=classroom,
+                           exams=exams)
 
-    else:
-        return redirect('/classroom/create-class')
+    # else:
+    #     return redirect('/create-class')
 
 
-@app.route('/classroom/create-class')
+@app.route('/create-class')
 def show_create_class_form():
     """Display form to create class.
 
@@ -650,26 +673,26 @@ def show_create_class_form():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
-    if classroom is not None:
-        flash('A class currently exists for this user.')
-        return redirect('/classroom')
+    # if classroom is not None:
+    #     flash('A class currently exists for this user.')
+    #     return redirect('/')
 
-    else:
-        subjects_tup = db.session.query(Subject.name).all()
-        subjects = []
+    # else:
+    subjects_tup = db.session.query(Subject.name).all()
+    subjects = []
 
-        for subject in subjects_tup:
-            subject = subject[0]
-            subjects.append(subject)
+    for subject in subjects_tup:
+        subject = subject[0]
+        subjects.append(subject)
 
-        return render_template('create-class.html',
-                               user_f_name=user_f_name,
-                               subjects=subjects)
+    return render_template('create-class.html',
+                           user_f_name=user_f_name,
+                           subjects=subjects)
 
 
-@app.route('/classroom/create-class', methods=['POST'])
+@app.route('/create-class', methods=['POST'])
 def create_class():
     """Handle form to create class and redirect to classroom page."""
 
@@ -702,7 +725,7 @@ def show_student_roster():
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
     class_id = classroom.class_id
 
-    students = db.session.query(Student).filter(Student.class_id == class_id).all()
+    students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
 
     return render_template('student-roster.html',
                            user_f_name=user_f_name,
@@ -750,8 +773,8 @@ def add_student_to_roster():
     return jsonify(new_student_dict)
 
 
-@app.route('/classroom/<exam_id>')
-def show_exam(exam_id):
+@app.route('/classroom/exam')
+def show_exam():
     """Display individual exam data.
 
     Includes list of exam scores, visual analytic, and Add Score button."""
@@ -760,10 +783,12 @@ def show_exam(exam_id):
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
+    class_id = request.args.get('class_id')
+    classroom = Classroom.query.filter(Classroom.class_id == class_id).first()
 
-    students = db.session.query(Student).filter(Student.class_id == class_id).all()
+    students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+
+    exam_id = request.args.get('exam_id')
     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
     examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
 
@@ -784,38 +809,38 @@ def show_exam(exam_id):
 
     return render_template('exam-individual.html',
                            user_f_name=user_f_name,
+                           classroom=classroom,
                            exam=exam,
                            examresults=examresults,
                            students=students)
 
 
-@app.route('/classroom/add-exam')
-def show_new_exam_form():
-    """Display form to add new exam under specified class."""
+# @app.route('/classroom/add-exam')
+# def show_new_exam_form():
+#     """Display form to add new exam under specified class."""
 
-    user_email = session['logged_in_user']
-    user = db.session.query(User).filter(User.user_email == user_email).first()
-    user_f_name = user.f_name
+#     user_email = session['logged_in_user']
+#     user = db.session.query(User).filter(User.user_email == user_email).first()
+#     user_f_name = user.f_name
 
-    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+#     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
-    if classroom is not None:
-        return render_template('add-exam.html',
-                               user_f_name=user_f_name,
-                               classroom=classroom)
+#     if classroom is not None:
+#         return render_template('add-exam.html',
+#                                user_f_name=user_f_name,
+#                                classroom=classroom)
 
-    else:
-        return redirect('/classroom/create-class')
+#     else:
+#         return redirect('/create-class')
 
 
 @app.route('/classroom/add-exam', methods=['POST'])
 def add_new_exam():
     """Handle form to add new exam under specified class."""
 
-    user_email = session['logged_in_user']
-    classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
+    # user_email = session['logged_in_user']
 
+    class_id = request.form.get('class_id')
     name = request.form.get('exam_name')
     total_points = request.form.get('total_points')
 

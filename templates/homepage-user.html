@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}KhanClassroom{% endblock %}
+
+{% block content %}
+
+<h1>Welcome!</h1>
+
+<h3>Your Classrooms:</h3>
+
+<div id='classroom-list'>
+
+  {% if classrooms %}
+
+    {% for classroom in classrooms %}
+
+      <h4><a href="/classroom?class_id={{ classroom.class_id }}">{{ classroom.name }}</h4></p>
+
+    {% endfor %}
+
+  {% else %}
+
+    <p>No classrooms yet!</p>
+
+  {% endif %}
+
+</div>
+
+<br>
+<h4><a href='/create-class'>Add a New Classroom</a></h4>
+
+{% endblock %}

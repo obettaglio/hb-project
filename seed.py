@@ -13,6 +13,8 @@ from data_generator import generate_students, generate_examresults
 
 import json
 
+from passlib.hash import argon2
+
 import random
 
 from datetime import datetime, timedelta
@@ -34,6 +36,8 @@ def load_users():
         # user_id = user['user_id']
         user_email = user['email']
         password = user['username'][:3] + '123'
+        # password = generate_password()
+        pwd_hash = argon2.hash(password)
         nickname = user['nickname'].split(' ')
         f_name, l_name = nickname
         khan_username = user['username']
@@ -41,7 +45,7 @@ def load_users():
         num_students = user['students_count']
 
         user = User(user_email=user_email,
-                    password=password,
+                    password=pwd_hash,
                     f_name=f_name,
                     l_name=l_name,
                     khan_username=khan_username,

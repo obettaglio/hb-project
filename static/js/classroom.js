@@ -33,10 +33,10 @@ function getExamInfo(evt) {
 
     evt.preventDefault();
 
-    var exam_id = $('#exam-id').attr('data-exam');
+    var class_id = $('#class-id').attr('data-class');
 
     var formInputs = {
-        exam_id,
+        class_id,
         'exam_name': $('#exam-name-field').val(),
         'total_points': $('#total-points-field').val()
     };
