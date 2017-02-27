@@ -230,6 +230,57 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
+@app.route('/exam-bar-new-data.json')
+def jsonify_exam_bar_new_data():
+    """Query database for data filtering by exam_id. Return data for new bar chart as JSON.
+
+    Data consists of examresult and videoresult details listed by video_name:
+        num_students separated by grade_range."""
+
+    exam_id = request.args.get('exam_id')
+
+    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A'
+        elif exam_percentage >= 0.8:
+            return 'B'
+        elif exam_percentage >= 0.7:
+            return 'C'
+        elif exam_percentage >= 0.6:
+            return 'D'
+        else:
+            return 'F'
+
+    results = {}
+
+    for examresult in examresults:
+        student_email, exam_score = examresult
+
+        video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
+
+        for video_id in video_ids:
+            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+
+            exam_percentage = float(exam_score) / total_points
+            grade_range = convert_percent_to_grade(exam_percentage)
+
+            if video_name not in results:
+                results[video_name] = {'video_name': video_name,
+                                       'A': 0,
+                                       'B': 0,
+                                       'C': 0,
+                                       'D': 0,
+                                       'F': 0}
+
+            # results[video_name]['total_views'] += 1
+            results[video_name][grade_range] += 1
+
+    return jsonify(results)
+
+
 @app.route('/exam-bubble-pie-data.json')
 def jsonify_exam_bubble_pie_data():
     """Query database for data filtering by exam_id. Return data for bubble pie chart as JSON.
@@ -453,6 +504,16 @@ def show_exam_bar_d3():
     exam_id = request.args.get('exam_id')
 
     return render_template('exam-bar-d3.html',
+                           exam_id=exam_id)
+
+
+@app.route('/exam-bar-new-d3')
+def show_exam_bar_new_d3():
+    """Display new d3 stacked/grouped bar chart."""
+
+    exam_id = request.args.get('exam_id')
+
+    return render_template('exam-bar-new-d3.html',
                            exam_id=exam_id)
 
 

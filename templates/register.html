@@ -11,7 +11,37 @@
 
 {% block content %}
 
-<h1>Register with KhanClassroom</h1>
+<div class='auth-form-div'>
+  <form accept-charset="UTF-8" action="/register" method="post">
+    <!-- <div style="margin:0;padding:0;display:inline">
+        <input name="utf8" type="hidden" value="✓">
+        <input name="authenticity_token" type="hidden" value="4SuFadPv+YJxIjWfw0bD2/4BxX1CVXkFLAuhA3WW4kPGZWI4t9O0d8K1kvdweYbUTyeTud34VNFy/3l9/CPQrw==">
+    </div> -->
+
+    <div class="auth-form-header p-0">
+        <h1>Create an Account</h1>
+    </div>
+
+    <div id="js-flash-container">
+    </div>
+
+    <div class="auth-form-body mt-3">
+
+      <p class='alternate-auth'>
+        We keep it simple.<br>Just connect to Khan Academy.
+      </p>
+
+      <input class="btn btn-primary btn-block" id='khan-connect-btn' data-disable-with="Signing in…" name="commit" tabindex="3" type="submit" value="Authorize">
+
+    </div>
+  </form>
+
+  <p class='alternate-auth'>
+    Already registered with us? <a href='/login'>Sign in.</a>
+  </p>
+</div>
+
+<!-- <h1>Register with KhanClassroom</h1>
 
 <br>
 <p>We keep it simple. Just connect your Khan Academy account!</p>
@@ -20,7 +50,7 @@
     <input type='submit' id='khan-register-submit' value='Sign in to Khan Academy'>
 </form>
 
-<!-- <form action='/register' method='post' class='register-form'>
+<form action='/register' method='post' class='register-form'>
     <label>First Name: </label>
     <input type='text' name='f_name'><br>
     <label>Last Name: </label>
@@ -34,9 +64,9 @@
     <label>District: </label>
     <input type='text' name='district'><br>
     <input type='submit' value='Register'>
-</form> -->
+</form>
 
 <br>
-<h4>Already registered with us? <a href='/login'>Log in here.</a></h4>
+<h4>Already registered with us? <a href='/login'>Sign in here.</a></h4> -->
 
 {% endblock %}
