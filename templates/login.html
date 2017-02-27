@@ -19,7 +19,7 @@
     </div> -->
 
     <div class="auth-form-header p-0">
-        <h1>Sign in to KhanClassroom</h1>
+        <h1>Sign In</h1>
     </div>
 
     <div id="js-flash-container">
@@ -30,12 +30,14 @@
         <label for="login_field">
           Email address
         </label>
-        <input autocapitalize="off" autocorrect="off" autofocus="autofocus" class="form-control input-block" id="email_field" name="email" tabindex="1" type="text">
+        <input autocapitalize="off" autocorrect="off" autofocus="autofocus" class="form-control input-block" id="email-field" name="email" tabindex="1" type="text">
 
         <label for="password">
-          Password <a href="/password-reset" class="forgot-pwd-label">Forgot password?</a>
+          Password
         </label>
-        <input class="form-control form-control input-block" id="password_field" name="password" tabindex="2" type="password">
+        <input class="form-control input-block" id="password-field" name="password" tabindex="2" type="password">
+
+        <a href="/password-reset" class="forgot-pwd-link">Forgot password?</a>
 
         <input class="btn btn-primary btn-block" id='login-btn' data-disable-with="Signing in…" name="commit" tabindex="3" type="submit" value="Sign in">
     </div>

@@ -53,7 +53,7 @@
         {% endfor %}
         </select><br>
         <label>Score: </label>
-        <input type='text' id='score-field' name='score'><br>
+        <input type='number' id='score-field' name='score' min='0' max='{{ exam.total_points }}'><br>
         <input type='submit' id='add-score-submit' value='Add Score'>
     </form>
 
@@ -71,7 +71,7 @@
     </div>
 
     <div id='exam-chart-div'>
-      <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+      <iframe id='bar-chart' class='exam-chart' src="/exam-bar-new-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
       <iframe id='bubble-chart' class='exam-chart' src="/exam-bubble-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
       <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
       <iframe id='scatterplot-chart' class='exam-chart' src="/exam-scatterplot-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>

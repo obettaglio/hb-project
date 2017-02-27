@@ -8,9 +8,11 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
                    ExerciseResult, Video, VideoResult)
 from model import connect_to_db, db
 # import ka_oauth
+from passlib.hash import argon2
 import rauth
 import os
 import random
+import string
 # import requests
 
 
@@ -67,7 +69,8 @@ def log_user_in():
     user = db.session.query(User).filter(User.user_email == email).first()
 
     if user:
-        if password == user.password:
+        # if password == user.password:
+        if argon2.verify(password, user.password):
             session['logged_in_user'] = user.user_email
             if 'oauth_params' in session:
                 oauth_params = session['oauth_params']
@@ -142,15 +145,26 @@ def authorize_khan_user():
     response = oauth_session.get("http://www.khanacademy.org/api/v1/user", params=params)
     user_dict = response.json()
 
+    def generate_password():
+        """Generate 8-character alphanumeric password."""
+
+        chars = string.letters + string.digits
+        length = 8
+        password = ''.join(random.choice(chars) for _ in range(length))
+        return password
+
     user_email = user_dict['email']
-    password = user_dict['username'][:3] + str(random.randint(100, 999))
+    # password = user_dict['username'][:3] + str(random.randint(100, 999))
+    password = generate_password()
+    pwd_hash = argon2.hash(password)
     nickname = user_dict['nickname'].split(' ')
     f_name, l_name = nickname
     khan_username = user_dict['username']
     num_students = user_dict['students_count']
 
     user = User(user_email=user_email,
-                password=password,
+                # password=password,
+                password=pwd_hash,
                 f_name=f_name,
                 l_name=l_name,
                 khan_username=khan_username,
@@ -162,7 +176,6 @@ def authorize_khan_user():
     # flash('Account created successfully! Please check your email for user information and temporary password.')
     flash('Account created successfully! Please log in.\nTemporary password: ' + password)
     return redirect('/login')
-    # return render_template('khan-authorize.html')
 
 
 @app.route('/schoology-authorize')
@@ -608,7 +621,10 @@ def show_single_class():
     Include list of existing exams, link to student roster, visual data, and New Exam button.
     >> MVP: ONLY ONE CLASSROOM PER USER <<"""
 
-    user_email = db.session.query(User.user_email).filter(User.user_email == session['logged_in_user']).first()
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
     if classroom is not None:
@@ -616,6 +632,7 @@ def show_single_class():
         exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
         return render_template('classroom.html',
+                               user_f_name=user_f_name,
                                classroom=classroom,
                                exams=exams)
 
@@ -630,6 +647,9 @@ def show_create_class_form():
     >> MVP: ONLY ONE CLASSROOM PER USER <<"""
 
     user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
     if classroom is not None:
@@ -645,6 +665,7 @@ def show_create_class_form():
             subjects.append(subject)
 
         return render_template('create-class.html',
+                               user_f_name=user_f_name,
                                subjects=subjects)
 
 
@@ -674,7 +695,9 @@ def create_class():
 def show_student_roster():
     """Display student roster for class taught by user."""
 
-    user_email = db.session.query(User.user_email).filter(User.user_email == session['logged_in_user']).first()
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
 
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
     class_id = classroom.class_id
@@ -682,6 +705,7 @@ def show_student_roster():
     students = db.session.query(Student).filter(Student.class_id == class_id).all()
 
     return render_template('student-roster.html',
+                           user_f_name=user_f_name,
                            classroom=classroom,
                            students=students)
 
@@ -733,6 +757,9 @@ def show_exam(exam_id):
     Includes list of exam scores, visual analytic, and Add Score button."""
 
     user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
     classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
     class_id = classroom.class_id
 
@@ -756,6 +783,7 @@ def show_exam(exam_id):
     # examresults.reverse()
 
     return render_template('exam-individual.html',
+                           user_f_name=user_f_name,
                            exam=exam,
                            examresults=examresults,
                            students=students)
@@ -766,10 +794,14 @@ def show_new_exam_form():
     """Display form to add new exam under specified class."""
 
     user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
 
     if classroom is not None:
         return render_template('add-exam.html',
+                               user_f_name=user_f_name,
                                classroom=classroom)
 
     else:

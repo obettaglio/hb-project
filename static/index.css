@@ -29,6 +29,7 @@
 
 .form-control {
     min-height: 34px;
+    margin-bottom: 15px;
 }
 
 .btn-primary {
@@ -69,9 +70,10 @@
     border-radius: 0 0 3px 3px;
 }
 
-.forgot-pwd-label {
+.forgot-pwd-link {
     font-size: 12px;
-    float: right;
+    /*float: right;*/
+    /*margin-bottom: 15px;*/
 }
 
 #login-btn,
