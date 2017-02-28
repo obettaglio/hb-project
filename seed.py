@@ -267,7 +267,7 @@ def load_exerciseresults():
     d2 = datetime.strptime('2/1/2017 4:50 AM', '%m/%d/%Y %I:%M %p')
 
     for exercise in exercises:
-        # total_secs = video.length
+        # num_problems = exercise.?
 
         for student_email in student_emails:
             exercise_id = exercise.exercise_id
@@ -403,6 +403,7 @@ def load_videoresults():
         for student_email in student_emails:
             video_id = video.video_id
             timestamp = generate_random_date(d1, d2)
+            print timestamp
             points = random.randint(1, 30)
             secs_watched = random.randint(1, total_secs)
             last_sec_watched = random.randint(secs_watched, total_secs)

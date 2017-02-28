@@ -548,9 +548,10 @@ def jsonify_exam_timestamp_data():
 
         for video_id in video_ids:
             video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
-            timestamp = db.session.query(VideoResult.timestamp).filter(VideoResult.video_id == video_id).first()[0]
+            timestamp = db.session.query(VideoResult.timestamp).filter((VideoResult.student_email == student_email) &
+                                                                       (VideoResult.video_id == video_id)).first()[0]
 
-            timestamp = datetime.strftime(timestamp, '%m/%d')
+            timestamp = datetime.strftime(timestamp, '%m-%d-%H-%M-%S')
 
             # results[student_email] = {'videoName': video_name,
             #                           'timestamp': timestamp,

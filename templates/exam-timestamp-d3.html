@@ -26,7 +26,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 860 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
-var parseTime = d3.time.format("%m/%d").parse;
+var parseTime = d3.time.format("%m-%d-%H-%M-%S").parse;
 
 var x = d3.time.scale()
     .range([0, width]);
@@ -38,6 +38,7 @@ d3.json('/exam-timestamp-data.json?exam_id={{ exam_id }}', function(error, data)
 
   data.forEach(function(d) {
     d.timestamp = parseTime(d.timestamp);
+    // d.timestamp = d.timestamp;
     d.videoName = d.videoName;
   });
 
@@ -103,7 +104,7 @@ d3.json('/exam-timestamp-data.json?exam_id={{ exam_id }}', function(error, data)
       .data(data)
     .enter().append("circle")
       .attr("class", "dot")
-      .attr("r", 5)
+      .attr("r", 3)
       .attr("cx", function(d) { return x(d.timestamp); })
       .attr("cy", function(d) { console.log(d); console.log(y(d.videoName)); return y(d.videoName); })
       .style("fill", function(d) { return color(d.gradeRange); });

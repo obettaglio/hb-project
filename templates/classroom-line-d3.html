@@ -30,7 +30,8 @@ var x = d3.scaleOrdinal().range([0, width]),
     y = d3.scaleLinear().range([height, 0]),
     // z = d3.scaleOrdinal(d3.schemeCategory10);
     z = d3.scaleOrdinal()
-        .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
+        .range(['#1abc9c', '#f1c40f', '#e67e22']);
+        // 2: '#16a085', 4: '#f39c12',
 
 var line = d3.line()
     .curve(d3.curveBasis)
@@ -41,9 +42,10 @@ var line = d3.line()
 d3.tsv("/static/data/classroom-line-data.tsv", type, function(error, data) {
   if (error) throw error;
 
-  console.log(data[0]);
+  console.log(data);
 
   var yFields = data.columns.slice(1).map(function(id) {
+    console.log(id);
     return {
       id: id,
       values: data.map(function(d) {
@@ -52,15 +54,15 @@ d3.tsv("/static/data/classroom-line-data.tsv", type, function(error, data) {
     };
   });
 
-  // var numExamNames = new Set();
-  // for (var i = 0; i < data.length; i++) {
-  //   numExamNames.add(data[i].examName);
-  // }
+  var numExamNames = new Set();
+  for (var i = 0; i < data.length; i++) {
+    numExamNames.add(data[i].examName);
+  }
 
-  // var xWidth = width / numExamNames;
+  var xWidth = width / numExamNames.size;
 
-  x.domain(d3.extent(data, function(d) { return d.examName; }));
-      // .range(data.map(function(d,i) { return i * xWidth; }));
+  x.domain(d3.extent(data, function(d) { return d.examName; }))
+      .range(data.map(function(d,i) { return i * xWidth; }));
 
   y.domain([
     d3.min(yFields, function(c) { return d3.min(c.values, function(d) { return d.dataValue; }); }),
@@ -110,7 +112,8 @@ d3.tsv("/static/data/classroom-line-data.tsv", type, function(error, data) {
 });
 
 function type(d, _, columns) {
-  d.examName = d.examName;
+  // d.examName = columns[0];
+
   for (var i = 1, n = columns.length, c; i < n; ++i) {
     console.log(d[c]);
     d[c = columns[i]] = +d[c];
