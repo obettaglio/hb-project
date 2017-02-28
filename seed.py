@@ -233,21 +233,62 @@ def load_exerciseresults():
 
     ExerciseResult.query.delete()
 
-    for row in open('static/data/u.exerciseresults'):
-        row = row.rstrip()
-        exerciseresult_id, exercise_id, student_email, timestamp, num_correct, num_done = row.split('|')
+    # for row in open('static/data/u.exerciseresults'):
+    #     row = row.rstrip()
+    #     exerciseresult_id, exercise_id, student_email, timestamp, num_correct, num_done = row.split('|')
 
-        if type(timestamp) != datetime:
-            timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
+    #     if type(timestamp) != datetime:
+    #         timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
 
-        exerciseresult = ExerciseResult(exerciseresult_id=exerciseresult_id,
-                                        exercise_id=exercise_id,
-                                        student_email=student_email,
-                                        timestamp=timestamp,
-                                        num_correct=num_correct,
-                                        num_done=num_done)
+    #     exerciseresult = ExerciseResult(exerciseresult_id=exerciseresult_id,
+    #                                     exercise_id=exercise_id,
+    #                                     student_email=student_email,
+    #                                     timestamp=timestamp,
+    #                                     num_correct=num_correct,
+    #                                     num_done=num_done)
 
-        db.session.add(exerciseresult)
+    #     db.session.add(exerciseresult)
+
+    # db.session.commit()
+
+    student_emails = db.session.query(Student.student_email).all()
+    exercises = db.session.query(Exercise).all()
+
+    def generate_random_date(start, end):
+        """Return a random datetime between two datetime objects."""
+
+        delta = end - start
+        int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+        random_second = random.randrange(int_delta)
+
+        return start + timedelta(seconds=random_second)
+
+    d1 = datetime.strptime('1/1/2017 1:30 PM', '%m/%d/%Y %I:%M %p')
+    d2 = datetime.strptime('2/1/2017 4:50 AM', '%m/%d/%Y %I:%M %p')
+
+    for exercise in exercises:
+        # total_secs = video.length
+
+        for student_email in student_emails:
+            exercise_id = exercise.exercise_id
+            timestamp = generate_random_date(d1, d2)
+            # points = random.randint(1, 30)
+            # secs_watched = random.randint(1, total_secs)
+            # last_sec_watched = random.randint(secs_watched, total_secs)
+            num_correct = random.randint(0, 15)
+            num_done = random.randint(num_correct, 18)
+
+            exerciseresult = ExerciseResult(exercise_id=exercise_id,
+                                            student_email=student_email,
+                                            timestamp=timestamp,
+                                            num_correct=num_correct,
+                                            num_done=num_done)
+
+            # randomly decide whether or not to add result
+            if bool(random.getrandbits(1)):
+            # random_add = random.random()
+            # if random_add < 0.67:
+                db.session.add(exerciseresult)
 
     db.session.commit()
 
