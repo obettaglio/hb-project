@@ -26,48 +26,46 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 860 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+var parseTime = d3.time.format("%m/%d").parse;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.ordinal();
+
 d3.json('/exam-timestamp-data.json?exam_id={{ exam_id }}', function(error, data) {
   if (error) throw error;
 
-  // var x = d3.scale.linear()
-  //     .range([0, width]);
-  // var x = d3.scale.ordinal()
-  //     .domain(d3.extent(data, function(d) { return d.timestamp; }))
-  //     .range([width, 0])
-
-  // var y = d3.scale.linear()
-  //     .range([height, 0]);
+  data.forEach(function(d) {
+    d.timestamp = parseTime(d.timestamp);
+    d.videoName = d.videoName;
+  });
 
   var color = d3.scale.ordinal()
       .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']);
 
   var distinctTimestamps = new Set(),
       distinctVideoNames = new Set();
-
   for (var i = 0; i < data.length; i++) {
     distinctTimestamps.add(data[i].timestamp);
     distinctVideoNames.add(data[i].videoName);
   }
 
-  console.log(distinctTimestamps);
-  console.log(distinctVideoNames);
-
   var xWidth = width / distinctTimestamps.size,
       yWidth = height / distinctVideoNames.size;
 
-  var x = d3.scale.ordinal()
-      .domain(data.map(function(d) { return d.timestamp }))
-      .range(data.map(function(d,i) { return i * xWidth; }));
+  // var x = d3.scale.ordinal()
+  //     .domain(data.map(function(d) { return parseTime(d.timestamp); }))
+  //     .range(data.map(function(d,i) { return i * xWidth; }));
 
-  var y = d3.scale.ordinal()
-      .domain(data.map(function(d) { return d.videoName; }))
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+  y.domain(data.map(function(d) { return d.videoName; }))
       .range(data.map(function(d,i) { return i * yWidth; }));
-
-  console.log(y.domain());
 
   var xAxis = d3.svg.axis()
       .scale(x)
-      .orient("bottom");
+      .orient("bottom")
+      .tickFormat(d3.time.format("%m/%d"));
 
   var yAxis = d3.svg.axis()
       .scale(y)
@@ -107,7 +105,7 @@ d3.json('/exam-timestamp-data.json?exam_id={{ exam_id }}', function(error, data)
       .attr("class", "dot")
       .attr("r", 5)
       .attr("cx", function(d) { return x(d.timestamp); })
-      .attr("cy", function(d) { return y(d.videoName); })
+      .attr("cy", function(d) { console.log(d); console.log(y(d.videoName)); return y(d.videoName); })
       .style("fill", function(d) { return color(d.gradeRange); });
 
   var legend = svg.selectAll(".legend")

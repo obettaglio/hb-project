@@ -139,12 +139,16 @@ def load_exams():
 
     for row in open('static/data/u.exams'):
         row = row.rstrip()
-        exam_id, name, class_id, total_points = row.split('|')
+        exam_id, name, class_id, total_points, timestamp = row.split('|')
+
+        if type(timestamp) != datetime:
+            timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
 
         exam = Exam(exam_id=exam_id,
                     name=name,
                     class_id=class_id,
-                    total_points=total_points)
+                    total_points=total_points,
+                    timestamp=timestamp)
 
         db.session.add(exam)
 

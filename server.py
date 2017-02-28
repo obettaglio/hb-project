@@ -567,6 +567,90 @@ def jsonify_exam_timestamp_data():
     return jsonify(results)
 
 
+@app.route('/classroom-line-data.json')
+def jsonify_classroom_line_data():
+    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+
+    Data consists of examresult and videoresult details listed by exam:
+        avg_score, avg_num_videos, >> avg_num_exercises <<."""
+
+    ## IN PROGRESS ##
+
+    class_id = request.args.get('class_id')
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+    num_students = db.session.query(Student).filter(Student.class_id == class_id).count()
+
+    def convert_percent_to_grade(exam_percentage):
+        if exam_percentage >= 0.9:
+            return 'A'
+        elif exam_percentage >= 0.8:
+            return 'B'
+        elif exam_percentage >= 0.7:
+            return 'C'
+        elif exam_percentage >= 0.6:
+            return 'D'
+        else:
+            return 'F'
+
+    def make_classroom_line_tsv(exam_name, avg_score, avg_num_videos):
+
+        file = open('static/data/classroom-line-data.tsv', 'r+')
+
+        # first_line = '\t'.join(['examName', 'avgScore', 'avgNumVideos'])
+
+        # if first_line not in file:
+        #     file.write(first_line + '\n')
+
+        line = '\t'.join([exam_name, avg_score, avg_num_videos])
+        file.write(line + '\n')
+
+        file.close()
+
+    # results = []
+
+    file = open('static/data/classroom-line-data.tsv', 'r+')
+    first_line = '\t'.join(['examName', 'avgScore', 'avgNumVideos'])
+    file.write(first_line + '\n')
+    file.close()
+
+    for exam in exams:
+        exam_id = exam.exam_id
+        exam_name = exam.name
+        exam_timestamp = exam.timestamp
+
+        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+        exam_percentages = []
+
+        for exam_score in exam_scores:
+            exam_score = exam_score[0]
+            exam_percentage = (float(exam_score) / total_points) * 100
+            exam_percentages.append(exam_percentage)
+
+        avg_score = str(sum(exam_percentages) / len(exam_percentages))
+
+        ## need start date of course section ##
+        num_videoresults = db.session.query(VideoResult).filter(VideoResult.timestamp < exam_timestamp).count()
+        avg_num_videoresults = str(num_videoresults / num_students)
+
+        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
+        # avg_num_exerciseresults = num_exerciseresults / num_students
+
+        # exam_values = {'examName': exam_name,
+        #                'avgScore': avg_score,
+        #                'avgNumVideos': avg_num_videoresults}
+        #                # 'avgNumExercises': avg_num_exercises}
+
+        # results.append(exam_values)
+
+        make_classroom_line_tsv(exam_name, avg_score, avg_num_videoresults)
+
+    # results = 'examName\tavgScore\tavgNumVideos\n' + open('static/data/classroom-line-data.tsv').read()
+
+    # return results
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -632,6 +716,16 @@ def show_exam_bar_percent_d3():
     """Display d3 vertical percent bar chart."""
 
     return render_template('exam-bar-percent-d3.html')
+
+
+@app.route('/classroom-line-d3')
+def show_classroom_line_d3():
+    """Display d3 line chart."""
+
+    class_id = request.args.get('class_id')
+
+    return render_template('classroom-line-d3.html',
+                           class_id=class_id)
 
 
 ##### CLASSROOMS, EXAMS #####

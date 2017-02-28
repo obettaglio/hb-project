@@ -101,6 +101,7 @@ class Exam(db.Model):
     name = db.Column(db.String(50), nullable=False)
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'))
     total_points = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
 
     classroom = db.relationship('Classroom',
                                 backref=db.backref("exams",
