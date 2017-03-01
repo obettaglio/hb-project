@@ -74,6 +74,7 @@ class Classroom(db.Model):
     name = db.Column(db.String(30), nullable=False, unique=True)
     user_email = db.Column(db.String(200), db.ForeignKey('users.user_email'))
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
+    start_date = db.Column(db.DateTime, nullable=False)
     period = db.Column(db.Integer, nullable=True)
     year = db.Column(db.Integer, nullable=True)
     school = db.Column(db.String(50), nullable=True)
@@ -180,6 +181,7 @@ class Video(db.Model):
     description = db.Column(db.String(500), nullable=True)
     url = db.Column(db.String(200), nullable=False)
     youtube_url = db.Column(db.String(200), nullable=False)
+    concept = db.Column(db.String(100), nullable=True)
     length = db.Column(db.Integer, nullable=False)
     order_num = db.Column(db.Integer, nullable=True)
 

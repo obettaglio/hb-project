@@ -1909,5 +1909,103 @@
     "content_id": "x9854c66d",
     "content_kind": "Video",
     "readable_id": "subtraction-word-problems-within-10"
+  },
+  {
+    "translated_youtube_id": "ourH3ueWNmA",
+    "relative_url": "/video/teens-and-ten",
+    "has_custom_thumbnail": true,
+    "has_questions": false,
+    "creation_date": "2016-03-01T22:28:18Z",
+    "duration": 180,
+    "ka_url": "https://www.khanacademy.org/video/teens-and-ten",
+    "download_urls": {
+      "mp4-low": "https://cdn.kastatic.org/KA-youtube-converted/ourH3ueWNmA.mp4-low/ourH3ueWNmA-low.mp4",
+      "mp4": "https://cdn.kastatic.org/KA-youtube-converted/ourH3ueWNmA.mp4/ourH3ueWNmA.mp4",
+      "m3u8": "https://cdn.kastatic.org/KA-youtube-converted/ourH3ueWNmA.m3u8/ourH3ueWNmA.m3u8",
+      "png": "https://cdn.kastatic.org/KA-youtube-converted/ourH3ueWNmA.mp4/ourH3ueWNmA.png",
+      "mp4-low-ios": "https://cdn.kastatic.org/KA-youtube-converted/ourH3ueWNmA.mp4-low-ios/ourH3ueWNmA-low-ios.mp4"
+    },
+    "translated_title": "Teens as sums with 10",
+    "author_key": "ag5zfmtoYW4tYWNhZGVteXJaCxIIVXNlckRhdGEiTHVzZXJfaWRfa2V5X2h0dHA6Ly9ub3VzZXJpZC5raGFuYWNhZGVteS5vcmcvNjZmOTNhODE4YjU2ZWUxZTliOTM1MGI2OTc2OGQ4ZTMM",
+    "translated_description_html": "Sal looks at the 1 in each teen number and thinks about what it really means.&nbsp;",
+    "id": "x79debcfe",
+    "concept_tags": [
+      "Tag:xdfc1c3668b0534af",
+      "Tag:x9b88e4e2936330c2"
+    ],
+    "download_size": 1799653,
+    "description_html": "Sal looks at the 1 in each teen number and thinks about what it really means.&nbsp;",
+    "do_not_publish": false,
+    "license_logo_url": "/images/license-logos/by-nc-sa.png",
+    "progress_key": "vx79debcfe",
+    "edit_slug": "edit/v/x79debcfe",
+    "author_names": [
+      "Sal Khan"
+    ],
+    "license_full_name": "Creative Commons Attribution/Non-Commercial/Share-Alike",
+    "listed": true,
+    "alternate_slugs": [],
+    "license_url": "http://creativecommons.org/licenses/by-nc-sa/3.0",
+    "INTERN_USE": null,
+    "thumbnail_data": {
+      "url": "",
+      "skip_filter": false,
+      "title_text": "Teens as sums \nwith 10",
+      "gcs_name": "/ka_thumbnails/ourH3ueWNmA.jpg"
+    },
+    "translated_custom_description_tag": "",
+    "source_language": "en",
+    "title": "Teens as sums with 10",
+    "description": "Sal looks at the 1 in each teen number and thinks about what it really means. ",
+    "extra_properties": null,
+    "custom_title_tag": "",
+    "deleted": false,
+    "license_name": "CC BY-NC-SA (KA default)",
+    "backup_timestamp": null,
+    "concept_tags_info": [
+      {
+        "display_name": "Ones and tens (place value)",
+        "id": "Tag:xdfc1c3668b0534af",
+        "slug": "ones-and-tens-place-value"
+      },
+      {
+        "display_name": "Teens (place value)",
+        "id": "Tag:x9b88e4e2936330c2",
+        "slug": "teens-place-value"
+      }
+    ],
+    "WHAT_TO_INTERN": {
+      "FrozenVideo": "frozenset(['author_key', 'description', 'description_html', 'date_modified', 'title', 'ka_user_license', 'keywords', 'content_id', 'readable_id'])",
+      "FrozenTopic": "frozenset(['content_id', 'description', 'title', 'date_modified', 'render_type', 'standalone_title', 'author_key'])",
+      "FrozenArticle": "frozenset(['author_key', 'description', 'description_html', 'title', 'date_modified', 'content_id', 'readable_id'])",
+      "FrozenExercise": "frozenset(['author_key', 'description', 'description_html', 'date_modified', 'author_name', 'suggested_completion_criteria', 'pretty_display_name', 'content_id', 'name'])"
+    },
+    "node_slug": "v/teens-and-ten",
+    "date_added": "2014-03-24T19:52:21Z",
+    "frozen_sha": "c7cdebf3c364ab042e51a1dcd56c1556218a949c",
+    "deleted_mod_time": null,
+    "youtube_id": "ourH3ueWNmA",
+    "translated_youtube_lang": "en",
+    "kind": "Video",
+    "custom_description_tag": "",
+    "date_modified": "2017-03-01T17:17:17Z",
+    "url": "http://www.youtube.com/watch?v=ourH3ueWNmA&feature=youtube_gdata_player",
+    "assessment_item_tags": [],
+    "clarifications_enabled": true,
+    "ka_user_license": "cc-by-nc-sa",
+    "global_id": "vx79debcfe",
+    "sha": "26fa038215797e6c19aeac89430cc19716e49f87",
+    "translated_description": "Sal looks at the 1 in each teen number and thinks about what it really means. ",
+    "image_url": "https://cdn.kastatic.org/googleusercontent/1Y8EfJY-cJ_PRic3d5JEObsBsbImdoq47CZwXUgRegsqTYsYAV2fgZ4Aq0VkOwyIZJfO8FHHs-eNPcrPT4c-Xsu1",
+    "keywords": "",
+    "translated_custom_title_tag": "",
+    "download_sizes": {
+      "mp4": 1799653,
+      "mp4-low": 257733,
+      "mp4-low-ios": 519968
+    },
+    "content_id": "x79debcfe",
+    "content_kind": "Video",
+    "readable_id": "teens-and-ten"
   }
 ]

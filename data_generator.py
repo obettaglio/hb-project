@@ -51,7 +51,11 @@ def generate_videoresults():
     VideoResult.query.delete()
 
     student_emails = db.session.query(Student.student_email).all()
-    videos = db.session.query(Video).order_by(Video.order_num).all()
+    exams = db.session.query(Exam).filter(Exam.class_id == 1).all()
+    videos_query = db.session.query(Video).order_by(Video.order_num)
+
+    exam_order = 0
+    completed_exams = []
 
     def generate_random_date(start, end):
         """Return a random datetime between two datetime objects."""
@@ -62,34 +66,58 @@ def generate_videoresults():
 
         return start + timedelta(seconds=random_second) / 5
 
-    for student_email in student_emails:
+    def find_exam_videos(exam_order, videos_query):
+        """Return list of 20 video objects corresponding to exam."""
 
-        d1 = datetime.strptime('1/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
-        d2 = datetime.strptime('2/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+        skip = exam_order * 20
+        exam_videos = videos_query.offset(skip).limit(20)
 
-        for video in videos:
-            total_secs = video.length
+        return exam_videos
 
-            video_id = video.video_id
-            timestamp = generate_random_date(d1, d2)
-            points = random.randint(1, 30)
-            secs_watched = random.randint(1, total_secs)
-            last_sec_watched = random.randint(secs_watched, total_secs)
+    for exam in exams:
 
-            videoresult = VideoResult(video_id=video_id,
-                                      student_email=student_email,
-                                      timestamp=timestamp,
-                                      points=points,
-                                      secs_watched=secs_watched,
-                                      last_sec_watched=last_sec_watched)
+        if completed_exams == []:
+            start_date = db.session.query(Classroom.start_date).filter(Classroom.class_id == 1).first()[0]
+        else:
+            prev_exam = completed_exams[-1]
+            start_date = prev_exam.timestamp
 
-            # randomly decide whether or not to add result
-            # if bool(random.getrandbits(1)):
-            random_add = random.random()
-            print random_add
-            if random_add < 0.67:
-                db.session.add(videoresult)
-                d1 = timestamp
+        ## identify videos assigned during exam grading period -- TO DO ##
+        exam_videos = find_exam_videos(exam_order, videos_query)
+
+        for student_email in student_emails:
+
+            # d1 = datetime.strptime('1/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+            # d2 = datetime.strptime('2/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+            d1 = start_date
+            d2 = exam.timestamp
+
+            for video in exam_videos:
+                total_secs = video.length
+
+                video_id = video.video_id
+                timestamp = generate_random_date(d1, d2)
+                points = random.randint(1, 30)
+                secs_watched = random.randint(1, total_secs)
+                last_sec_watched = random.randint(secs_watched, total_secs)
+
+                videoresult = VideoResult(video_id=video_id,
+                                          student_email=student_email,
+                                          timestamp=timestamp,
+                                          points=points,
+                                          secs_watched=secs_watched,
+                                          last_sec_watched=last_sec_watched)
+
+                # randomly decide whether or not to add result
+                # if bool(random.getrandbits(1)):
+                random_add = random.random()
+                print random_add
+                if random_add < 0.67:
+                    db.session.add(videoresult)
+                    d1 = timestamp
+
+        exam_order += 1
+        completed_exams.append(exam)
 
     db.session.commit()
 
@@ -100,54 +128,70 @@ def generate_examresults():
     # if student hit numvideos threshold by date:
         # higher grade range
 
-    student_emails = db.session.query(Student.student_email).all()
+    student_emails = db.session.query(Student.student_email).filter(Student.class_id == 1).all()
 
-    exam = db.session.query(Exam).filter(Exam.exam_id == 1).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == 1).order_by(Exam.timestamp).all()
+    completed_exams = []
 
-    exam_id = exam.exam_id
-    videos_count = db.session.query(Video).count()
-    print "Videos count: ", videos_count
+    for exam in exams:
 
-    # have to query to find exam grading period
-    first_third = datetime.strptime('1/10/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
-    second_third = datetime.strptime('1/20/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
-    exam_date = exam.timestamp
+        exam_id = exam.exam_id
+        exam_date = exam.timestamp
 
-    for student_email in student_emails:
-        videoresults_query = db.session.query(VideoResult)\
-                                       .filter(VideoResult.student_email == student_email)\
-                                       .order_by(VideoResult.timestamp)
-
-        first_third_count = videoresults_query.filter(VideoResult.timestamp < first_third).count()
-        second_third_count = videoresults_query.filter((VideoResult.timestamp > first_third) &
-                                                       (VideoResult.timestamp < second_third)).count()
-        final_count = videoresults_query.filter((VideoResult.timestamp > second_third) &
-                                                (VideoResult.timestamp < exam_date)).count()
-
-        print "First third: ", first_third_count
-        print "Second third: ", second_third_count
-        print "Final count: ", final_count
-
-        # make realistic exam scores
-        if first_third_count >= (videos_count / 4):
-            if second_third_count >= videos_count / 3:
-                score = random.randint(90, 100)
-            else:
-                score = random.randint(75, 100)
+        if completed_exams == []:
+            start_date = db.session.query(Classroom.start_date).filter(Classroom.class_id == 1).first()[0]
         else:
-            if second_third_count >= (videos_count / 3):
-                score = random.randint(75, 90)
-            elif final_count >= (videos_count * 2 / 3):
-                score = random.randint(60, 85)
+            prev_exam = completed_exams[-1]
+            start_date = prev_exam.timestamp
+
+        videos_count = db.session.query(Video).count()
+        print "Videos count: ", videos_count
+
+        # have to query to find exam grading period
+        # first_third = datetime.strptime('1/10/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+        # second_third = datetime.strptime('1/20/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+        first_third = ((exam_date - start_date) / 3) + start_date
+        second_third = ((exam_date - start_date) * 2 / 3) + start_date
+        print first_third, second_third
+
+        for student_email in student_emails:
+            videoresults_query = db.session.query(VideoResult)\
+                                           .filter(VideoResult.student_email == student_email)\
+                                           .order_by(VideoResult.timestamp)
+
+            first_third_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
+                                                          (VideoResult.timestamp < first_third)).count()
+            second_third_count = videoresults_query.filter((VideoResult.timestamp > first_third) &
+                                                           (VideoResult.timestamp < second_third)).count()
+            final_count = videoresults_query.filter((VideoResult.timestamp > second_third) &
+                                                    (VideoResult.timestamp < exam_date)).count()
+
+            print "First third: ", first_third_count
+            print "Second third: ", second_third_count
+            print "Final count: ", final_count
+
+            # make realistic exam scores
+            if first_third_count >= (videos_count / 4):
+                if second_third_count >= videos_count / 3:
+                    score = random.randint(90, 100)
+                else:
+                    score = random.randint(75, 100)
             else:
-                score = random.randint(45, 80)
+                if second_third_count >= (videos_count / 3):
+                    score = random.randint(75, 90)
+                elif final_count >= (videos_count * 2 / 3):
+                    score = random.randint(60, 85)
+                else:
+                    score = random.randint(45, 80)
 
-        # score = random.randint(45, 100)
+            # score = random.randint(45, 100)
 
-        examresult = ExamResult(exam_id=exam_id,
-                                student_email=student_email,
-                                score=score)
+            examresult = ExamResult(exam_id=exam_id,
+                                    student_email=student_email,
+                                    score=score)
 
-        db.session.add(examresult)
+            db.session.add(examresult)
+
+        completed_exams.append(exam)
 
     db.session.commit()

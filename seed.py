@@ -85,12 +85,16 @@ def load_classrooms():
 
     for row in open('static/data/u.classrooms'):
         row = row.rstrip()
-        class_id, name, user_email, subject_code, period, year, school = row.split('|')
+        class_id, name, user_email, subject_code, start_date, period, year, school = row.split('|')
+
+        if type(start_date) != datetime:
+            start_date = datetime.strptime(start_date, '%m-%d-%Y')
 
         classroom = Classroom(class_id=class_id,
                               name=name,
                               user_email=user_email,
                               subject_code=subject_code,
+                              start_date=start_date,
                               period=period,
                               year=year,
                               school=school)
@@ -142,7 +146,7 @@ def load_exams():
         exam_id, name, class_id, total_points, timestamp = row.split('|')
 
         if type(timestamp) != datetime:
-            timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
+            timestamp = datetime.strptime(timestamp, '%m-%d-%Y')
 
         exam = Exam(exam_id=exam_id,
                     name=name,
@@ -311,6 +315,7 @@ def load_videos():
         description = video['description']
         url = video['ka_url']
         youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
+        concept = video['concept_tags_info'][0]['slug']
         length = video['duration']
         order_num = i
 
@@ -323,6 +328,7 @@ def load_videos():
                       description=description,
                       url=url,
                       youtube_url=youtube_url,
+                      concept=concept,
                       length=length,
                       order_num=order_num)
 
