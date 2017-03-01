@@ -203,12 +203,71 @@ def show_schoology_auth_page():
     return render_template('/schoology-authorize.html')
 
 
-@app.route('/schoology-authorize')
+@app.route('/schoology-authorize', methods=['POST'])
 def authorize_schoology_user():
     """Handle Schoology authorization form."""
 
     pass
     # return redirect('/classroom')
+
+
+@app.route('/settings')
+def show_settings_page():
+    """Display user settings page."""
+
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
+    return render_template('settings.html',
+                           user_f_name=user_f_name,
+                           user=user)
+
+
+@app.route('/settings', methods=['POST'])
+def change_user_settings():
+    """Handle form to change user settings."""
+
+    ## UPDATE DB NOT WORKING ##
+
+    user_email = session['logged_in_user']
+
+    f_name = request.args.get('f_name')
+    l_name = request.args.get('l_name')
+    # user_email = request.args.get('user_email')
+    zipcode = request.args.get('zipcode')
+    district = request.args.get('district')
+
+    db.session.update(User).where(User.user_email == user_email)\
+                           .values(f_name=f_name,
+                                   l_name=l_name,
+                                   zipcode=zipcode,
+                                   district=district)
+
+    db.session.commit()
+
+    return redirect('/settings')
+
+
+@app.route('/password-reset-confirm')
+def show_password_reset_confirmation_page():
+    """Display password reset confirmation page."""
+
+    return render_template('password-reset-confirm.html')
+
+
+@app.route('/password-reset-confirm', methods=['POST'])
+def send_reset_password_link():
+    """Send reset password link to user email."""
+
+    pass
+
+
+@app.route('/password-reset')
+def show_password_reset_page():
+    """Display password reset page."""
+
+    return render_template('password-reset.html')
 
 
 @app.route('/logout')
@@ -600,10 +659,11 @@ def jsonify_classroom_line_data():
 
         file = open('static/data/classroom-line-data.tsv', 'r+')
 
-        # first_line = '\t'.join(['examName', 'avgScore', 'avgNumVideos'])
+        file.read()
 
-        # if first_line not in file:
-        #     file.write(first_line + '\n')
+        if os.stat(file).st_size == 0:
+            header = '\t'.join(['examName', 'avgScore', 'avgNumVideos'])
+            file.write(header + '\n')
 
         line = '\t'.join([exam_name, avg_score, avg_num_videos])
         file.write(line + '\n')
@@ -649,8 +709,6 @@ def jsonify_classroom_line_data():
         # results.append(exam_values)
 
         make_classroom_line_tsv(exam_name, avg_score, avg_num_videoresults)
-
-    # results = 'examName\tavgScore\tavgNumVideos\n' + open('static/data/classroom-line-data.tsv').read()
 
     # return results
 
