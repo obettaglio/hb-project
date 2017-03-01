@@ -1,10 +1,11 @@
 """Generator of users, students, exam results, and Khan Academy activities."""
 
 import random
+from datetime import datetime, timedelta
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
-from model import db, connect_to_db
-from server import app
+from model import db
+
 
 f_names = ["Meggie", "Leslie", "Agne", "Kelly", "Katie", "Ahmad", "Dennis",
            "Ariella", "Matthew", "Ethan", "William", "Catherine", "Jason",
@@ -15,21 +16,9 @@ l_names = ["Smith", "Johnson", "Inge", "Glassman", "Weinberg", "Carroll",
            "Chen", "Boyette", "Lonne", "Fischbach", "Wickham", "Horvatic",
            "Yoder", "Hardin"]
 
-lorems = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce " +
-          "auctor ex vitae nulla tempor, fermentum.", "Lorem ipsum dolor sit " +
-          "amet, consectetur adipiscing elit. Morbi euismod congue tellus eget " +
-          "dapibus. Suspendisse eu sapien pretium, sollicitudin lacus in, " +
-          "facilisis erat. Duis quam purus, dictum id dictum in.", "Lorem " +
-          "ipsum dolor sit amet, consectetur adipiscing elit. Phasellus tempor " +
-          "neque augue, eget viverra augue porttitor ut. Proin facilisis varius " +
-          "urna, elementum pulvinar ex. Class aptent taciti sociosqu ad litora " +
-          "torquent per conubia nostra, per inceptos himenaeos. Proin iaculis, " +
-          "metus sed placerat viverra, libero risus fermentum felis, sit amet " +
-          "tincidunt."
-          ]
-
 
 def generate_students():
+    """Generate mock students, drawing first and last names from a list of options."""
 
     for f_name in f_names:
 
@@ -53,29 +42,107 @@ def generate_students():
     db.session.commit()
 
 
-# def generate_students():
+def generate_videoresults():
+    """Generate videoresults for each student.
 
-#     file = open("static/data/u.students", "r+")
-#     for f_name in f_names:
-#         for l_name in l_names:
-#             khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5]
-#             student_email = khan_username + "@genstudent.com"
-#             # password = khan_username + str(123)
+    Generated date includes: timestamp, points, secs_watched, last_sec_watched.
+    Randomly choose whether or not to add videoresult."""
 
-#             line = "|".join([student_email, f_name, l_name, khan_username])
+    VideoResult.query.delete()
 
-#             file.write(line + "\n")
+    student_emails = db.session.query(Student.student_email).all()
+    videos = db.session.query(Video).order_by(Video.order_num).all()
 
-#     file.close()
+    def generate_random_date(start, end):
+        """Return a random datetime between two datetime objects."""
+
+        delta = end - start
+        int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+        random_second = random.randrange(int_delta)
+
+        return start + timedelta(seconds=random_second) / 5
+
+    for student_email in student_emails:
+
+        d1 = datetime.strptime('1/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+        d2 = datetime.strptime('2/1/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+
+        for video in videos:
+            total_secs = video.length
+
+            video_id = video.video_id
+            timestamp = generate_random_date(d1, d2)
+            points = random.randint(1, 30)
+            secs_watched = random.randint(1, total_secs)
+            last_sec_watched = random.randint(secs_watched, total_secs)
+
+            videoresult = VideoResult(video_id=video_id,
+                                      student_email=student_email,
+                                      timestamp=timestamp,
+                                      points=points,
+                                      secs_watched=secs_watched,
+                                      last_sec_watched=last_sec_watched)
+
+            # randomly decide whether or not to add result
+            # if bool(random.getrandbits(1)):
+            random_add = random.random()
+            print random_add
+            if random_add < 0.67:
+                db.session.add(videoresult)
+                d1 = timestamp
+
+    db.session.commit()
 
 
 def generate_examresults():
 
-    for f_name in f_names:
+    # first videoresult timestamp
+    # if student hit numvideos threshold by date:
+        # higher grade range
 
-        exam_id = 1
-        student_email = db.session.query(Student.student_email).filter(Student.f_name == f_name).first()[0]
-        score = random.randint(45, 100)
+    student_emails = db.session.query(Student.student_email).all()
+
+    exam = db.session.query(Exam).filter(Exam.exam_id == 1).first()
+
+    exam_id = exam.exam_id
+    videos_count = db.session.query(Video).count()
+    print "Videos count: ", videos_count
+
+    # have to query to find exam grading period
+    first_third = datetime.strptime('1/10/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+    second_third = datetime.strptime('1/20/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
+    exam_date = exam.timestamp
+
+    for student_email in student_emails:
+        videoresults_query = db.session.query(VideoResult)\
+                                       .filter(VideoResult.student_email == student_email)\
+                                       .order_by(VideoResult.timestamp)
+
+        first_third_count = videoresults_query.filter(VideoResult.timestamp < first_third).count()
+        second_third_count = videoresults_query.filter((VideoResult.timestamp > first_third) &
+                                                       (VideoResult.timestamp < second_third)).count()
+        final_count = videoresults_query.filter((VideoResult.timestamp > second_third) &
+                                                (VideoResult.timestamp < exam_date)).count()
+
+        print "First third: ", first_third_count
+        print "Second third: ", second_third_count
+        print "Final count: ", final_count
+
+        # make realistic exam scores
+        if first_third_count >= (videos_count / 4):
+            if second_third_count >= videos_count / 3:
+                score = random.randint(90, 100)
+            else:
+                score = random.randint(75, 100)
+        else:
+            if second_third_count >= (videos_count / 3):
+                score = random.randint(75, 90)
+            elif final_count >= (videos_count * 2 / 3):
+                score = random.randint(60, 85)
+            else:
+                score = random.randint(45, 80)
+
+        # score = random.randint(45, 100)
 
         examresult = ExamResult(exam_id=exam_id,
                                 student_email=student_email,
@@ -84,26 +151,3 @@ def generate_examresults():
         db.session.add(examresult)
 
     db.session.commit()
-
-
-# def fake_reviews():
-
-#     connect_to_db(app)
-
-#     review_list = Game.query.filter(Game.release_date < '2017-02-28 00:00:00').order_by(Game.release_date.desc()).limit(200)
-
-#     file = open("static/data/review_data.txt", "r+")
-#     user_id = 1
-
-#     while user_id <= 400:
-#         for game in review_list:
-#             game_id = game.game_id
-#             score = random.randrange(60, 100)
-#             comment = random.choice(lorems)
-
-#             line = "|".join([str(game_id), str(user_id), str(score), comment])
-#             file.write(line + "\n")
-
-#         user_id += 1
-
-#     file.close()

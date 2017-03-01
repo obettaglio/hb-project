@@ -505,9 +505,12 @@ def jsonify_exam_scatterplot_data():
                                   'numVideos': num_videos,
                                   'gradeRange': grade_range}
 
-    dicts = results.values()
-    tups = sorted([(d['gradeRange'], d) for d in dicts])
-    results = [t[1] for t in tups]
+    # dicts = results.values()
+    # tups = sorted([(d['gradeRange'], d) for d in dicts])
+    # results = [t[1] for t in tups]
+
+    results = results.values()
+    results = sorted(results, key=lambda d: d['gradeRange'])
 
     return jsonify(results)
 
@@ -521,7 +524,10 @@ def jsonify_exam_timestamp_data():
 
     exam_id = request.args.get('exam_id')
 
-    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+    total_points = exam.total_points
+    exam_date = exam.timestamp
+
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
     results = []
@@ -544,26 +550,23 @@ def jsonify_exam_timestamp_data():
         exam_percentage = float(exam_score) / total_points
         grade_range = convert_percent_to_grade(exam_percentage)
 
-        video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
+        video_ids = db.session.query(VideoResult.video_id).filter((VideoResult.student_email == student_email) &
+                                                                  (VideoResult.timestamp < exam_date)).all()
 
         for video_id in video_ids:
             video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+            video_order = db.session.query(Video.order_num).filter(Video.video_id == video_id).first()[0]
             timestamp = db.session.query(VideoResult.timestamp).filter((VideoResult.student_email == student_email) &
                                                                        (VideoResult.video_id == video_id)).first()[0]
 
             timestamp = datetime.strftime(timestamp, '%m-%d-%H-%M-%S')
 
-            # results[student_email] = {'videoName': video_name,
-            #                           'timestamp': timestamp,
-            #                           'gradeRange': grade_range}
-
             results.append({'videoName': video_name,
+                            'videoOrder': video_order,
                             'timestamp': timestamp,
                             'gradeRange': grade_range})
 
-    # dicts = results.values()
-    tups = sorted([(d['gradeRange'], d) for d in results])
-    results = [t[1] for t in tups]
+    results = sorted(results, key=lambda d: (d['videoOrder'], d['gradeRange']))
 
     return jsonify(results)
 

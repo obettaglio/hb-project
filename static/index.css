@@ -10,6 +10,21 @@
     visibility: hidden;
 }
 
+.navbar-default {
+    background-color: #16a085;
+}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav>li>a {
+    color: #fff;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: #fff;
+    background-color: transparent;
+}
+
 .register-on-homepage,
 .login-on-homepage {
     display: none;
@@ -35,6 +50,7 @@
 .btn-primary {
     background-color: #16a085;
     border-color: #829aa8;
+    /*border-color: #16a085;*/
 }
 
 .btn-primary:hover {
@@ -117,9 +133,8 @@ p.register-on-homepage {
     font-weight: bold;
 }
 
-#bubble-chart,
 #pie-chart,
-#scatterplot-chart {
+#timestamp-chart {
     display: none;
 }
 

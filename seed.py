@@ -9,7 +9,7 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 from model import connect_to_db, db
 
-from data_generator import generate_students, generate_examresults
+from data_generator import (generate_students, generate_videoresults, generate_examresults)
 
 import json
 
@@ -303,6 +303,8 @@ def load_videos():
     video_string = open('static/data/sample_videos.json').read()
     video_dict = json.loads(video_string)
 
+    i = 1
+
     for video in video_dict:
         video_id = video['id']
         name = video['title']
@@ -310,6 +312,7 @@ def load_videos():
         url = video['ka_url']
         youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
         length = video['duration']
+        order_num = i
 
     # for row in open('static/data/u.videos'):
     #     row = row.rstrip()
@@ -320,9 +323,12 @@ def load_videos():
                       description=description,
                       url=url,
                       youtube_url=youtube_url,
-                      length=length)
+                      length=length,
+                      order_num=order_num)
 
         db.session.add(video)
+
+        i += 1
 
     db.session.commit()
 
@@ -403,7 +409,6 @@ def load_videoresults():
         for student_email in student_emails:
             video_id = video.video_id
             timestamp = generate_random_date(d1, d2)
-            print timestamp
             points = random.randint(1, 30)
             secs_watched = random.randint(1, total_secs)
             last_sec_watched = random.randint(secs_watched, total_secs)
@@ -481,14 +486,16 @@ def call_all_functions():
     load_users()
     load_subjects()
     load_classrooms()
-    load_students()
+    # load_students()
     generate_students()
     load_exams()
-    load_examresults()
+    # load_examresults()
     # load_exercises()
     # load_exerciseresults()
     load_videos()
-    load_videoresults()
+    # load_videoresults()
+    generate_videoresults()
+    generate_examresults()
 
 
 if __name__ == "__main__":
@@ -498,4 +505,3 @@ if __name__ == "__main__":
 
     call_all_functions()
     update_pkey_seqs()
-    generate_examresults()

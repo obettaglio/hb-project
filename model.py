@@ -181,6 +181,7 @@ class Video(db.Model):
     url = db.Column(db.String(200), nullable=False)
     youtube_url = db.Column(db.String(200), nullable=False)
     length = db.Column(db.Integer, nullable=False)
+    order_num = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -201,6 +202,10 @@ class VideoResult(db.Model):
     points = db.Column(db.Integer, nullable=True)
     secs_watched = db.Column(db.Integer, nullable=True)
     last_sec_watched = db.Column(db.Integer, nullable=True)
+
+    video = db.relationship('Video',
+                            backref=db.backref("videoresults",
+                                               order_by=videoresult_id))
 
     def __repr__(self):
         """Provide helpful representation when printed."""

@@ -70,6 +70,5 @@ $('#add-score-button').on('click', showAddScoreForm);
 $('#add-score-submit').on('click', getScoreInfo);
 
 $('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'))});
-$('#bubble-button').on('click', function(evt) {changeChartDisplay(evt, $('#bubble-chart'))});
 $('#pie-button').on('click', function(evt) {changeChartDisplay(evt, $('#pie-chart'))});
-$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#scatterplot-chart'))});
+$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-chart'))});
