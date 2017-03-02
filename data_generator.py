@@ -70,7 +70,7 @@ def generate_videoresults():
         """Return list of 20 video objects corresponding to exam."""
 
         skip = exam_order * 20
-        exam_videos = videos_query.offset(skip).limit(20)
+        exam_videos = videos_query.offset(skip).limit(20).all()
 
         return exam_videos
 
@@ -84,6 +84,7 @@ def generate_videoresults():
 
         ## identify videos assigned during exam grading period -- TO DO ##
         exam_videos = find_exam_videos(exam_order, videos_query)
+        # exam_videos = videos_query.limit(20).all()
 
         for student_email in student_emails:
 

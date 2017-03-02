@@ -158,8 +158,8 @@ def authorize_khan_user():
 
     # 4. Make an authenticated API call
     params = {}
-    # import pdb
-    # pdb.set_trace()
+    import pdb
+    pdb.set_trace()
     response = oauth_session.get("http://www.khanacademy.org/api/v1/user", params=params)
     user_dict = response.json()
 
@@ -713,6 +713,85 @@ def jsonify_classroom_line_data():
     # return results
 
 
+@app.route('/classroom-line-data-new.json')
+def jsonify_classroom_line_data_new():
+    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+
+    Data consists of examresult and videoresult details listed by exam:
+        avg_score, avg_num_videos, >> avg_num_exercises <<."""
+
+    ## IN PROGRESS ##
+
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+
+    students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
+    # student_emails = students_query.all()
+    num_students = students_query.count()
+
+    completed_exams = []
+
+    # def convert_percent_to_grade(exam_percentage):
+    #     if exam_percentage >= 0.9:
+    #         return 'A'
+    #     elif exam_percentage >= 0.8:
+    #         return 'B'
+    #     elif exam_percentage >= 0.7:
+    #         return 'C'
+    #     elif exam_percentage >= 0.6:
+    #         return 'D'
+    #     else:
+    #         return 'F'
+
+    results = [{'id': 'avgScore',
+                'values': []},
+               {'id': 'avgNumVideos',
+                'values': []}]
+
+    for exam in exams:
+        exam_id = exam.exam_id
+        exam_name = exam.name
+        exam_timestamp = exam.timestamp
+
+        if completed_exams == []:
+            start_date = classroom.start_date
+        else:
+            prev_exam = completed_exams[-1]
+            start_date = prev_exam.timestamp
+
+        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+        exam_percentages = []
+
+        for exam_score in exam_scores:
+            exam_score = exam_score[0]
+            exam_percentage = (float(exam_score) / total_points) * 100
+            exam_percentages.append(exam_percentage)
+
+        avg_score = float(sum(exam_percentages) / len(exam_percentages))
+
+        # (VideoResult.student_email in student_emails) &
+
+        num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
+                                                                (VideoResult.timestamp < exam_timestamp)).count()
+        avg_num_videoresults = float(num_videoresults / num_students)
+
+        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
+        # avg_num_exerciseresults = num_exerciseresults / num_students
+
+        # update avgScore
+        results[0]['values'].append({'examName': exam_name,
+                                     'dataValue': avg_score})
+
+        # update avgNumVideos
+        results[1]['values'].append({'examName': exam_name,
+                                     'dataValue': avg_num_videoresults})
+
+    return jsonify(results)
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -786,7 +865,7 @@ def show_classroom_line_d3():
 
     class_id = request.args.get('class_id')
 
-    return render_template('classroom-line-d3.html',
+    return render_template('classroom-line-d3-new.html',
                            class_id=class_id)
 
 

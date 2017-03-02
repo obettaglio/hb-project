@@ -76,7 +76,7 @@ class Classroom(db.Model):
     subject_code = db.Column(db.String(4), db.ForeignKey('subjects.subject_code'))
     start_date = db.Column(db.DateTime, nullable=False)
     period = db.Column(db.Integer, nullable=True)
-    year = db.Column(db.Integer, nullable=True)
+    year = db.Column(db.String(10), nullable=True)
     school = db.Column(db.String(50), nullable=True)
 
     user = db.relationship('User',
