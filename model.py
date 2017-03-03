@@ -178,7 +178,7 @@ class Video(db.Model):
     __tablename__ = "videos"
 
     video_id = db.Column(db.String(50), autoincrement=False, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500), nullable=True)
     url = db.Column(db.String(200), nullable=False)
     youtube_url = db.Column(db.String(200), nullable=True)

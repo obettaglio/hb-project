@@ -328,6 +328,8 @@ def jsonify_exam_bar_new_data():
         num_students separated by grade_range."""
 
     exam_id = request.args.get('exam_id')
+    exam_topic = db.session.query(Exam.topic).filter(Exam.exam_id == exam_id).first()[0]
+    exam_video_ids = db.session.query(Video.video_id).filter(Video.topic == exam_topic).all()
 
     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
@@ -352,21 +354,22 @@ def jsonify_exam_bar_new_data():
         video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
 
         for video_id in video_ids:
-            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+            if video_id in exam_video_ids:
+                video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
 
-            exam_percentage = float(exam_score) / total_points
-            grade_range = convert_percent_to_grade(exam_percentage)
+                exam_percentage = float(exam_score) / total_points
+                grade_range = convert_percent_to_grade(exam_percentage)
 
-            if video_name not in results:
-                results[video_name] = {'video_name': video_name,
-                                       'A': 0,
-                                       'B': 0,
-                                       'C': 0,
-                                       'D': 0,
-                                       'F': 0}
+                if video_name not in results:
+                    results[video_name] = {'video_name': video_name,
+                                           'A': 0,
+                                           'B': 0,
+                                           'C': 0,
+                                           'D': 0,
+                                           'F': 0}
 
-            # results[video_name]['total_views'] += 1
-            results[video_name][grade_range] += 1
+                # results[video_name]['total_views'] += 1
+                results[video_name][grade_range] += 1
 
     return jsonify(results)
 
@@ -586,6 +589,8 @@ def jsonify_exam_timestamp_data():
     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
     total_points = exam.total_points
     exam_date = exam.timestamp
+    exam_topic = exam.topic
+    exam_video_ids = db.session.query(Video.video_id).filter(Video.topic == exam_topic).all()
 
     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
@@ -613,17 +618,18 @@ def jsonify_exam_timestamp_data():
                                                                   (VideoResult.timestamp < exam_date)).all()
 
         for video_id in video_ids:
-            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
-            video_order = db.session.query(Video.order_num).filter(Video.video_id == video_id).first()[0]
-            timestamp = db.session.query(VideoResult.timestamp).filter((VideoResult.student_email == student_email) &
-                                                                       (VideoResult.video_id == video_id)).first()[0]
+            if video_id in exam_video_ids:
+                video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+                video_order = db.session.query(Video.order_num).filter(Video.video_id == video_id).first()[0]
+                timestamp = db.session.query(VideoResult.timestamp).filter((VideoResult.student_email == student_email) &
+                                                                           (VideoResult.video_id == video_id)).first()[0]
 
-            timestamp = datetime.strftime(timestamp, '%m-%d-%H-%M-%S')
+                timestamp = datetime.strftime(timestamp, '%m-%d-%H-%M-%S')
 
-            results.append({'videoName': video_name,
-                            'videoOrder': video_order,
-                            'timestamp': timestamp,
-                            'gradeRange': grade_range})
+                results.append({'videoName': video_name,
+                                'videoOrder': video_order,
+                                'timestamp': timestamp,
+                                'gradeRange': grade_range})
 
     results = sorted(results, key=lambda d: (d['videoOrder'], d['gradeRange']))
 
