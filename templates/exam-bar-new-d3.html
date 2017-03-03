@@ -100,7 +100,7 @@
         y1Max = d3.max(y01z, function(y) { return d3.max(y, function(d) { return d[1]; }); });
 
     var svg = d3.select("svg"),
-        margin = {top: 40, right: 10, bottom: 20, left: 10},
+        margin = {top: 60, right: 10, bottom: 75, left: 10},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -142,8 +142,15 @@
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x)
-            .tickSize(0)
-            .tickPadding(6));
+            .tickSize(5)
+            .tickPadding(6))
+      .selectAll("text")
+        // .innerHTML("Hi")
+        // .html("hi")
+        .html(function(d, i) { return videoNames[i]; })
+        .attr("dx", "-2em")
+        .attr("transform", "rotate(20)")
+        .style("text-anchor", "start");
 
     // svg.append("text")      // text label for the x axis
     //       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
@@ -195,10 +202,13 @@
         .data(color.domain())
       .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        // .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(" + i * 25 + ", 0)"; });
 
     legend.append("rect")
-        .attr("x", width - 700)
+        // .attr("x", width - 700)
+        .attr("x", width - 128)
+        .attr("y", 10)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
@@ -207,13 +217,16 @@
     legend.data(barLabels);    // redefine data for text
     
     legend.append("text")
-        .attr("x", width - 676)
-        .attr("y", 9)
+        // .attr("x", width - 676)
+        .attr("x", width - 123)
+        .attr("y", 19)
         .attr("dy", ".35em")
         .style("text-anchor", "start")
+        .style("fill", "white")
+        .style("text-shadow", "1px 1px 0")
+        .style("font-weight", "bold")
         // .text(function(d) { return d; });  // set legend label
-        .text(function(d, i) { console.log(d); return d ; })
-        // .text(function(d, i) { console.log(d); return getSliceLabel(d, i); });
+        .text(function(d, i) { return d ; })
 
   }
 

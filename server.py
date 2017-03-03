@@ -351,25 +351,27 @@ def jsonify_exam_bar_new_data():
     for examresult in examresults:
         student_email, exam_score = examresult
 
-        video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
+        video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email)\
+                                                          .order_by(VideoResult.timestamp).all()
 
         for video_id in video_ids:
             if video_id in exam_video_ids:
                 video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+                order_num = db.session.query(Video.order_num).filter(Video.video_id == video_id).first()[0]
 
                 exam_percentage = float(exam_score) / total_points
                 grade_range = convert_percent_to_grade(exam_percentage)
 
-                if video_name not in results:
-                    results[video_name] = {'video_name': video_name,
-                                           'A': 0,
-                                           'B': 0,
-                                           'C': 0,
-                                           'D': 0,
-                                           'F': 0}
+                if order_num not in results:
+                    results[order_num] = {'video_name': video_name,
+                                          'A': 0,
+                                          'B': 0,
+                                          'C': 0,
+                                          'D': 0,
+                                          'F': 0}
 
                 # results[video_name]['total_views'] += 1
-                results[video_name][grade_range] += 1
+                results[order_num][grade_range] += 1
 
     return jsonify(results)
 
