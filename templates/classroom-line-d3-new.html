@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+/*.axis--x path {
+  display: none;
+}*/
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<svg width="760" height="500"></svg>
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    margin = {top: 20, right: 80, bottom: 90, left: 50},
+    width = svg.attr("width") - margin.left - margin.right,
+    height = svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// var x = d3.scaleOrdinal().range([0, width]),
+var x = d3.scaleOrdinal(),
+    y0 = d3.scaleLinear().range([height, 0]),
+    y1 = d3.scaleLinear().range([height, 0]),
+    z = d3.scaleOrdinal()
+        .range(['#1abc9c', '#f1c40f', '#e67e22']);
+        // 2: '#16a085', 4: '#f39c12',
+
+// var line = d3.line()
+//     .curve(d3.curveBasis)
+//     .x(function(d) { console.log(d.examName); return x(d.examName); })
+//     .y(function(d) { console.log(d.dataValue); return y(d.dataValue); });
+
+var lineOne = d3.line()
+    .curve(d3.curveBasis)
+    .x(function(d) { return x(d.examName); })
+    .y(function(d) { return y0(d.avgScore); });
+    // .x(function(d) { console.log(d[0]['values']['examName']); return x(d[0]['values']['examName']); })
+    // .y(function(d) { return y(d[0]['values']['dataValue']); });
+
+var lineTwo = d3.line()
+    .curve(d3.curveBasis)
+    .x(function(d) { return x(d.examName); })
+    .y(function(d) { return y1(d.avgNumVideos); });
+
+d3.json("/classroom-line-data-new.json?class_id={{ class_id }}", function(error, data) {
+  if (error) throw error;
+
+  // var lines = data;
+  // console.log(lines);
+
+  // var distinctExamNames = new Set();
+
+  // for (var i = 0; i < lines.values.length; i++) {
+  //   distinctExamNames.add(lines.values[i]['examName']);
+  // }
+  // console.log(distinctExamNames);
+
+  var numPoints = data.length;
+  var xWidth = width / numPoints;
+
+  // x.domain(lines.map(function(d, i) { console.log(d.values[i]['examName']); return d.values[i]['examName']; }))
+  x.domain(data.map(function(d, i) { return d.examName; }))
+      .range(data.map(function(d, i) { return i * xWidth; }));
+
+  y0.domain([0, 100]);
+  y1.domain([0, 20]);
+  // y.domain(
+    // d3.min(lines, function(c) { return d3.min(c.values, function(d) { return d.dataValue; }); }),
+    // d3.max(lines, function(c) { return d3.max(c.values, function(d) { return d.dataValue; }); })
+  // ]);
+
+  z.domain(data.map(function(c) { return c.id; }));
+
+  // debugger;
+
+  g.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", lineOne)
+      // .attr("d", function(d) { console.log(d); return lineOne(d); })
+      // .style("stroke", function(d) { return z(d.id); });
+      .style("stroke", z(0));
+
+  g.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", lineTwo)
+      // .attr("d", function(d) { return lineTwo(d); })
+      // .style("stroke", function(d) { return z(d.id); });
+      .style("stroke", z(1));
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    .selectAll("text")
+      .attr("transform", "rotate(20)")
+      .style("text-anchor", "start");
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y0))
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("fill", "#000")
+      .text("Average Score");
+
+  g.append("g")
+      .attr("class", "axis axis--y")
+      .attr("transform", "translate(" + width + ", 0)")
+      .call(d3.axisRight(y1))
+    .append("text")
+      .attr("transform", "rotate(90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("fill", "#000")
+      .text("Average Number of Videos");
+
+  // var singleLine = g.selectAll(".single-line")
+  //   .data(lines)
+  //   .enter().append("g")
+  //     .attr("class", "single-line");
+
+  // singleLine.append("path")
+  //     .attr("class", "line")
+  //     .attr("d", function(d) { return line(d.values); })
+  //     .style("stroke", function(d) { return z(d.id); });
+
+  // lineOne.append("text")
+  //     .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+  //     .attr("transform", function(d) { return "translate(" + x(d.value.examName) + "," + y(d.value.dataValue) + ")"; })
+  //     .attr("x", 3)
+  //     .attr("dy", "0.35em")
+  //     .style("font", "10px sans-serif")
+  //     .text(function(d) { return d.id; });
+  // debugger;
+});
+
+</script>

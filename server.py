@@ -708,6 +708,77 @@ def jsonify_classroom_line_data():
     return jsonify(results)
 
 
+@app.route('/classroom-line-data-new.json')
+def jsonify_classroom_line_data_new():
+    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+
+    Data consists of examresult and videoresult details listed by exam:
+        avg_score, avg_num_videos."""
+
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+
+    students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
+    # student_emails = students_query.all()
+    num_students = students_query.count()
+
+    completed_exams = []
+
+    results = []
+
+    for exam in exams:
+        exam_id = exam.exam_id
+        exam_name = exam.name
+        # exam_topic = exam.topic
+        exam_timestamp = exam.timestamp
+
+        if completed_exams == []:
+            start_date = classroom.start_date
+        else:
+            prev_exam = completed_exams[-1]
+            start_date = prev_exam.timestamp
+
+        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+        exam_percentages = []
+
+        for exam_score in exam_scores:
+            exam_score = exam_score[0]
+            exam_percentage = (float(exam_score) / total_points) * 100
+            exam_percentages.append(exam_percentage)
+
+        avg_score = float(sum(exam_percentages) / len(exam_percentages))
+
+        # (VideoResult.student_email in student_emails) &
+
+        ## SELECT ONLY RELATED VIDEOS WITH CORRECT EXAM_TOPIC ##
+        num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
+                                                                (VideoResult.timestamp < exam_timestamp)).count()
+        # num_videoresults = int(num_videoresults)
+        avg_num_videoresults = float(num_videoresults / num_students)
+
+        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
+        # avg_num_exerciseresults = num_exerciseresults / num_students
+
+        # # update avgScore
+        # results[0]['values'].append({'examName': exam_name,
+        #                              'dataValue': avg_score})
+
+        # # update avgNumVideos
+        # results[1]['values'].append({'examName': exam_name,
+        #                              'dataValue': avg_num_videoresults})
+
+        results.append({'examName': exam_name,
+                        'avgScore': avg_score,
+                        'avgNumVideos': avg_num_videoresults})
+
+        completed_exams.append(exam)
+
+    return jsonify(results)
+
+
 @app.route('/exam-bar-d3')
 def show_exam_bar_d3():
     """Display d3 stacked/grouped bar chart."""
@@ -782,6 +853,16 @@ def show_classroom_line_d3():
     class_id = request.args.get('class_id')
 
     return render_template('classroom-line-d3.html',
+                           class_id=class_id)
+
+
+@app.route('/classroom-line-d3-new')
+def show_classroom_line_d3_new():
+    """Display d3 line chart."""
+
+    class_id = request.args.get('class_id')
+
+    return render_template('classroom-line-d3-new.html',
                            class_id=class_id)
 
 
