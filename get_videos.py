@@ -1,26 +1,49 @@
 import json
 
-data = open('topictree.json').read()
-data = json.loads(data)
+from video_topics import (counting_topics, place_value_topics, addition_topics,
+                          subtraction_topics, addition_subtraction_topics,
+                          measurement_data_topics, geometry_topics)
 
-topics = {}
+topics = open('videos-by-topic.json').read()
+topics = json.loads(topics)
+
+all_videos = []
+video_titles = []
 
 
-def find_topics(node):
-    """Add video topics as keys and arrays of corresponding videos as values to a dictionary."""
+def add_videos_by_topic(topics_lst, exam_topic_str):
+    """Find all videos in topic list and add them to all_videos.
 
-    topic = node.get('slug', None)
+    Add a custom key 'exam_topic' to each video in topic."""
 
-    if topic not in topics:
-        topics[topic] = []
+    for topic in topics_lst:
+        topic_videos = topics.get(topic, None)
 
-    children = node.get('children', None)
+        for video in topic_videos:
+            print video['title']
 
-    if children:
-        for child in children:
-            find_topics(child)
+            if video['title'] not in video_titles:
+                video['exam_topic'] = exam_topic_str
+                all_videos.append(video)
+                print "Added: " + video['title']
+                video_titles.append(video['title'])
 
-    else:
-        topics[topic].append(node)
+        # print topic_videos[0]['title']
 
-find_topics(data)
+        # all_videos.extend(topic_videos)
+
+add_videos_by_topic(counting_topics, 'counting')
+add_videos_by_topic(place_value_topics, 'place_value')
+add_videos_by_topic(addition_topics, 'addition')
+add_videos_by_topic(subtraction_topics, 'subtraction')
+add_videos_by_topic(addition_subtraction_topics, 'addition-subtraction')
+add_videos_by_topic(measurement_data_topics, 'measurement-data')
+add_videos_by_topic(geometry_topics, 'geometry')
+
+print len(all_videos)
+
+all_videos = json.dumps(all_videos)
+
+video_file = open('static/data/videos.json', 'w')
+video_file.write(all_videos)
+video_file.close()

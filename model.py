@@ -100,6 +100,7 @@ class Exam(db.Model):
 
     exam_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    topic = db.Column(db.String(100), nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'))
     total_points = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
@@ -180,8 +181,8 @@ class Video(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(500), nullable=True)
     url = db.Column(db.String(200), nullable=False)
-    youtube_url = db.Column(db.String(200), nullable=False)
-    concept = db.Column(db.String(100), nullable=True)
+    youtube_url = db.Column(db.String(200), nullable=True)
+    topic = db.Column(db.String(100), nullable=True)
     length = db.Column(db.Integer, nullable=False)
     order_num = db.Column(db.Integer, nullable=True)
 

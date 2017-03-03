@@ -143,13 +143,14 @@ def load_exams():
 
     for row in open('static/data/u.exams'):
         row = row.rstrip()
-        exam_id, name, class_id, total_points, timestamp = row.split('|')
+        exam_id, name, topic, class_id, total_points, timestamp = row.split('|')
 
         if type(timestamp) != datetime:
             timestamp = datetime.strptime(timestamp, '%m-%d-%Y')
 
         exam = Exam(exam_id=exam_id,
                     name=name,
+                    topic=topic,
                     class_id=class_id,
                     total_points=total_points,
                     timestamp=timestamp)
@@ -304,35 +305,37 @@ def load_videos():
 
     Video.query.delete()
 
-    video_string = open('static/data/sample_videos.json').read()
-    video_dict = json.loads(video_string)
+    # video_string = open('static/data/sample_videos.json').read()
+    video_string = open('static/data/videos.json').read()
+    video_dicts = json.loads(video_string)
 
     i = 1
 
-    for video in video_dict:
+    for video in video_dicts:
         video_id = video['id']
         name = video['title']
         description = video['description']
         url = video['ka_url']
-        youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
-        concept = video['concept_tags_info'][0]['slug']
-        length = video['duration']
+        # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
+        topic = video['exam_topic']
+        length = video.get('duration', None)
         order_num = i
 
     # for row in open('static/data/u.videos'):
     #     row = row.rstrip()
     #     video_id, name, url, length = row.split('|')
 
-        video = Video(video_id=video_id,
-                      name=name,
-                      description=description,
-                      url=url,
-                      youtube_url=youtube_url,
-                      concept=concept,
-                      length=length,
-                      order_num=order_num)
+        if length:
+            video = Video(video_id=video_id,
+                          name=name,
+                          description=description,
+                          url=url,
+                          # youtube_url=youtube_url,
+                          topic=topic,
+                          length=length,
+                          order_num=order_num)
 
-        db.session.add(video)
+            db.session.add(video)
 
         i += 1
 

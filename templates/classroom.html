@@ -4,35 +4,54 @@
 
 {% block content %}
 
-<h1 id='class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }}</h1>
+<div class="row">
+  <div class='col-lg-12'>
 
-<h4><a href='/classroom/student-roster'>Student Roster</a></h4>
+    <h1 id='class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }}</h1>
 
-<h3>Exams:</h3>
+    <h4><a href='/classroom/student-roster'>Student Roster</a></h4>
+  </div>
 
-<div id='exam-list'>
+  <div class='col-lg-4'>
 
-  {% if exams %}
+    <h3>Exams:</h3>
 
-    {% for exam in exams %}
+    <div id='exam-list'>
 
-      <p><a href="/classroom/exam?class_id={{ classroom.class_id }}&exam_id={{ exam.exam_id }}">{{ exam.name }}</a></p>
+      {% if exams %}
 
-    {% endfor %}
+        {% for exam in exams %}
 
-  {% endif %}
+          <p><a href="/classroom/exam?class_id={{ classroom.class_id }}&exam_id={{ exam.exam_id }}">{{ exam.name }}</a></p>
 
+        {% endfor %}
+
+      {% endif %}
+
+    </div>
+
+    <br>
+    <h4><a href='' id='add-exam-button'>Add a New Exam</a></h4>
+
+    <form id='add-exam-form'>
+        <label>Exam Name: </label>
+        <input type='text' id='exam-name-field' name='exam-name'><br>
+        <label>Total Points: </label>
+        <input type='text' id='total-points-field' name='total-points'><br>
+        <input type='submit' id='add-exam-submit' value='Add Exam'>
+    </form>
+  </div>
+
+  <div class='col-lg-8'>
+
+    <!-- https://bl.ocks.org/mbostock/4063318
+    https://bl.ocks.org/mbostock/4062085 -->
+
+    <div id='classroom-chart-div'>
+      <iframe id='line-chart' class='classroom-chart' src="/classroom-line-d3?class_id={{ classroom.class_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+    </div>
+
+  </div>
 </div>
-
-<br>
-<h4><a href='' id='add-exam-button'>Add a New Exam</a></h4>
-
-<form id='add-exam-form'>
-    <label>Exam Name: </label>
-    <input type='text' id='exam-name-field' name='exam-name'><br>
-    <label>Total Points: </label>
-    <input type='text' id='total-points-field' name='total-points'><br>
-    <input type='submit' id='add-exam-submit' value='Add Exam'>
-</form>
 
 {% endblock %}

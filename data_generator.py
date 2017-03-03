@@ -52,7 +52,7 @@ def generate_videoresults():
 
     student_emails = db.session.query(Student.student_email).all()
     exams = db.session.query(Exam).filter(Exam.class_id == 1).all()
-    videos_query = db.session.query(Video).order_by(Video.order_num)
+    # videos_query = db.session.query(Video).order_by(Video.order_num)
 
     exam_order = 0
     completed_exams = []
@@ -66,11 +66,21 @@ def generate_videoresults():
 
         return start + timedelta(seconds=random_second) / 5
 
-    def find_exam_videos(exam_order, videos_query):
-        """Return list of 20 video objects corresponding to exam."""
+    # def find_exam_videos(exam_order, videos_query):
+    #     """Return list of 20 video objects corresponding to exam."""
 
-        skip = exam_order * 20
-        exam_videos = videos_query.offset(skip).limit(20).all()
+    #     skip = exam_order * 20
+    #     exam_videos = videos_query.offset(skip).limit(20).all()
+
+    #     return exam_videos
+
+    def find_exam_videos(exam):
+        """Return list of video objects corresponding to exam's exam_topic."""
+
+        exam_topic = exam.topic
+        exam_videos = db.session.query(Video).filter(Video.topic == exam_topic)\
+                                             .order_by(Video.order_num).all()
+        print "Adding videos for exam_topic: " + exam_topic
 
         return exam_videos
 
@@ -83,8 +93,9 @@ def generate_videoresults():
             start_date = prev_exam.timestamp
 
         ## identify videos assigned during exam grading period -- TO DO ##
-        exam_videos = find_exam_videos(exam_order, videos_query)
         # exam_videos = videos_query.limit(20).all()
+        # exam_videos = find_exam_videos(exam_order, videos_query)
+        exam_videos = find_exam_videos(exam)
 
         for student_email in student_emails:
 
@@ -134,10 +145,20 @@ def generate_examresults():
     exams = db.session.query(Exam).filter(Exam.class_id == 1).order_by(Exam.timestamp).all()
     completed_exams = []
 
+    def find_num_exam_videos(exam):
+        """Return number of videos that correspond to exam's exam_topic."""
+
+        exam_topic = exam.topic
+        num_exam_videos = db.session.query(Video).filter(Video.topic == exam_topic)\
+                                                 .order_by(Video.order_num).count()
+
+        return num_exam_videos
+
     for exam in exams:
 
         exam_id = exam.exam_id
         exam_date = exam.timestamp
+        # exam_topic = exam.topic
 
         if completed_exams == []:
             start_date = db.session.query(Classroom.start_date).filter(Classroom.class_id == 1).first()[0]
@@ -145,8 +166,7 @@ def generate_examresults():
             prev_exam = completed_exams[-1]
             start_date = prev_exam.timestamp
 
-        videos_count = db.session.query(Video).count()
-        print "Videos count: ", videos_count
+        num_exam_videos = find_num_exam_videos(exam)
 
         # have to query to find exam grading period
         # first_third = datetime.strptime('1/10/2017 1:00 AM', '%m/%d/%Y %I:%M %p')
@@ -172,15 +192,15 @@ def generate_examresults():
             print "Final count: ", final_count
 
             # make realistic exam scores
-            if first_third_count >= (videos_count / 4):
-                if second_third_count >= videos_count / 3:
+            if first_third_count >= (num_exam_videos / 3):
+                if second_third_count >= num_exam_videos * 2 / 3:
                     score = random.randint(90, 100)
                 else:
                     score = random.randint(75, 100)
             else:
-                if second_third_count >= (videos_count / 3):
+                if second_third_count >= (num_exam_videos * 3 / 5):
                     score = random.randint(75, 90)
-                elif final_count >= (videos_count * 2 / 3):
+                elif final_count >= (num_exam_videos * 2 / 3):
                     score = random.randint(60, 85)
                 else:
                     score = random.randint(45, 80)

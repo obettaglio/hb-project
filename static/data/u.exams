@@ -1,7 +1,7 @@
-1|Counting|1|100|09-12-2016
-2|Addition Intro|1|100|10-08-2016
-3|Place Value|1|100|10-29-2016
-4|Addition and Subtraction|1|100|11-18-2016
-5|Addition and Subtraction 2|1|100|12-15-2016
-6|Measurement and Data|1|100|01-28-2017
-7|Geometry|1|100|02-28-2017
+1|Counting|counting|1|100|09-12-2016
+2|Place Value|place_value|1|100|10-08-2016
+3|Addition|addition|1|100|10-29-2016
+4|Subtraction|subtraction|1|100|11-18-2016
+5|Addition and Subtraction 2|addition_subtraction|1|100|12-15-2016
+6|Measurement and Data|measurement_data|1|100|01-28-2017
+7|Geometry|geometry|1|100|02-28-2017
