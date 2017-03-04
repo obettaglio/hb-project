@@ -957,12 +957,17 @@ def show_student_roster():
     class_id = request.args.get('class_id')
     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
 
-    students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+    if classroom.user_email == user_email:
 
-    return render_template('student-roster.html',
-                           user_f_name=user_f_name,
-                           classroom=classroom,
-                           students=students)
+        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+
+        return render_template('student-roster.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               students=students)
+
+    else:
+        return render_template('unauthorized-attempt.html')
 
 
 @app.route('/classroom/add-student', methods=['POST'])
@@ -1019,33 +1024,38 @@ def show_exam():
     class_id = request.args.get('class_id')
     classroom = Classroom.query.filter(Classroom.class_id == class_id).first()
 
-    students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+    if classroom.user_email == user_email:
 
-    exam_id = request.args.get('exam_id')
-    exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-    examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
+        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
 
-    new_examresults = {}
+        exam_id = request.args.get('exam_id')
+        exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+        examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
 
-    for examresult in examresults:
-        student_email = examresult.student_email
-        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-        student_name = student_name[0] + " " + student_name[1]
-        new_examresults[student_email] = {'student_name': student_name,
-                                          'exam_score': examresult.score}
+        new_examresults = {}
 
-    examresults = new_examresults.values()
+        for examresult in examresults:
+            student_email = examresult.student_email
+            student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+            student_name = student_name[0] + " " + student_name[1]
+            new_examresults[student_email] = {'student_name': student_name,
+                                              'exam_score': examresult.score}
 
-    # To order by exam_score in descending order:
-    # examresults.sort()
-    # examresults.reverse()
+        examresults = new_examresults.values()
 
-    return render_template('exam-individual.html',
-                           user_f_name=user_f_name,
-                           classroom=classroom,
-                           exam=exam,
-                           examresults=examresults,
-                           students=students)
+        # To order by exam_score in descending order:
+        # examresults.sort()
+        # examresults.reverse()
+
+        return render_template('exam-individual.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               exam=exam,
+                               examresults=examresults,
+                               students=students)
+
+    else:
+        return render_template('unauthorized-attempt.html')
 
 
 # @app.route('/classroom/add-exam')
