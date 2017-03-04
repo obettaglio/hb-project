@@ -43,7 +43,7 @@ function getStudentInfo(evt) {
 
     evt.preventDefault();
 
-    var class_id = $('#class-id').attr('data-class');
+    var class_id = $('#roster-class-id').attr('data-class');
 
     var formInputs = {
         class_id,

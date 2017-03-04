@@ -94,7 +94,8 @@ d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, dat
       .attr("dx", "0.5em")
       .attr("dy", "0.71em")
       .attr("fill", "#000")
-      .text("Average Exam Score")
+      .text("Average Score")
+      .style("font-size", "16px")
       .style("text-anchor", "start");
 
   g.append("g")
@@ -107,7 +108,8 @@ d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, dat
       .attr("dx", "-0.5em")
       .attr("dy", "0.71em")
       .attr("fill", "#000")
-      .text("Average Number of Videos Watched")
+      .text("View Rate")
+      .style("font-size", "16px")
       .style("text-anchor", "end");
 
 });

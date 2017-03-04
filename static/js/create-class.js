@@ -61,7 +61,11 @@ function getStudentInfo(evt) {
 
     evt.preventDefault();
 
+    ///// HOW TO PASS CLASS_ID INTO CREATE-CLASS FORM /////
+    // var class_id = $('#create-class-id').attr('data-class');
+
     var formInputs = {
+        // class_id,
         "f_name": $("#f-name-field").val(),
         "l_name": $("#l-name-field").val(),
         "student_email": $("#student-email-field").val(),
