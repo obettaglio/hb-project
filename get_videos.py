@@ -19,8 +19,11 @@ def add_videos_by_topic(topics_lst, exam_topic_str):
     for topic in topics_lst:
         topic_videos = topics.get(topic, None)
 
+        if topic_videos is None:
+            continue
+
         for video in topic_videos:
-            print video['title']
+            # print video['title']
 
             if video['title'] not in video_titles:
                 video['exam_topic'] = exam_topic_str
@@ -28,16 +31,14 @@ def add_videos_by_topic(topics_lst, exam_topic_str):
                 print "Added: " + video['title']
                 video_titles.append(video['title'])
 
-        # print topic_videos[0]['title']
-
         # all_videos.extend(topic_videos)
 
 add_videos_by_topic(counting_topics, 'counting')
 add_videos_by_topic(place_value_topics, 'place_value')
 add_videos_by_topic(addition_topics, 'addition')
 add_videos_by_topic(subtraction_topics, 'subtraction')
-add_videos_by_topic(addition_subtraction_topics, 'addition-subtraction')
-add_videos_by_topic(measurement_data_topics, 'measurement-data')
+add_videos_by_topic(addition_subtraction_topics, 'addition_subtraction')
+add_videos_by_topic(measurement_data_topics, 'measurement_data')
 add_videos_by_topic(geometry_topics, 'geometry')
 
 print len(all_videos)

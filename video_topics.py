@@ -9,8 +9,8 @@ counting_topics = ['counting-with-small-numbers',
                    'comparing-numbers-through-10-example',
                    'count-by-category',
                    'skip-counting-by-5-example',
-                   'counting-by-tens-examples',
-                   'skip-counting-by-100-example']
+                   'skip-counting-by-100-example',
+                   'counting-by-tens-examples']
 
 
 place_value_topics = ['teens-and-ten',
@@ -36,6 +36,7 @@ addition_topics = ['addition-introduction',
                    'addition-using-groups-of-10-intro',
                    'addition-using-groups-of-10-and-100',
                    'adding-whole-numbers-by-their-place-values',
+                   'understanding-place-value-when-adding-tens',
                    'understanding-place-value-when-adding-ones',
                    'commutative-law-of-addition']
 
@@ -46,7 +47,8 @@ subtraction_topics = ['subtraction-introduction',
                       'understanding-place-value-while-subtracting-ones',
                       'subtraction-word-problems-within-10',
                       'understanding-place-value-when-subtracting-tens',
-                      'subtracting-within-20']
+                      'subtracting-within-20',
+                      'comparing-subtracting-1-and-10']
 
 
 addition_subtraction_topics = ['relating-addition-and-subtraction',
@@ -56,7 +58,12 @@ addition_subtraction_topics = ['relating-addition-and-subtraction',
                                'exercising-gorillas',
                                'comparison-word-problems',
                                'more-comparison-word-problems',
-                               'repeated-addition-example']
+                               'repeated-addition-example',
+                               'adding-two-digit-numbers-no-regrouping',
+                               'subtracting-two-digit-numbers-without-regrouping',
+                               'correct-number-lines-for-addition-and-subtraction',
+                               'adding-and-subtracting-on-number-line-word-problems',
+                               'missing-numbers-in-addition-and-subtraction-within-100']
 
 
 measurement_data_topics = ['order-by-length',

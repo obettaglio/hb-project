@@ -7,6 +7,8 @@
 
   #grouped-stacked-radio {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
     position: absolute;
     left: 10px;
     top: 10px;
@@ -29,7 +31,7 @@
     <label><input type="radio" name="mode" value="grouped"> Grouped</label>
     <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
   </form>
-  <svg width="860" height="600"></svg>
+  <svg width="760" height="600"></svg>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-queue.v3.min.js"></script>
   <script src="https://code.jquery.com/jquery.js"></script>
@@ -49,7 +51,7 @@
       numKeys++;
     }
 
-    var n = 4;       // The number of series:
+    var n = 5;       // The number of series:
                      //   examScores, numVideos, avgPoints, avgSecsWatched.
     var m = numKeys; // The number of values per series:
                      //   number of ExamResults containing this exam_id.
@@ -65,37 +67,42 @@
     // Each yz[i] is an array of m non-negative numbers representing a y-value for xz[i].
     // The y01z array has the same structure as yz, but with stacked [y₀, y₁] instead of y.
 
-    var studentNames = [],
-        examScores = [],
-        numVideos = [],
-        avgPoints = [],
-        avgSecsWatched = [];
+    var videoNames = [],
+        aViews = [],
+        bViews = [],
+        cViews = [],
+        dViews = [],
+        fViews = [];
 
     for (i = 0; i < m; ++i) {
-      studentNames[i] = dataArray[i].student_name;
-      examScores[i] = dataArray[i].exam_score;
-      numVideos[i] = dataArray[i].num_videos;
-      avgPoints[i] = dataArray[i].avg_points;
-      avgSecsWatched[i] = dataArray[i].avg_secs_watched;
+      videoNames[i] = dataArray[i].video_name;
+      aViews[i] = dataArray[i].A;
+      bViews[i] = dataArray[i].B;
+      cViews[i] = dataArray[i].C;
+      dViews[i] = dataArray[i].D;
+      fViews[i] = dataArray[i].F;
     }
 
-    var allResults = [examScores, numVideos, avgPoints, avgSecsWatched];
-    console.log(allResults);
+    console.log(videoNames);
 
-    var barLabels = ['Exam Grade',
-                     'Number of Videos Watched',
-                     'Average Points Per Video',
-                     'Average Seconds Watched']
+    var allResults = [aViews, bViews, cViews, dViews, fViews];
+    // console.log(allResults);
+
+    var barLabels = ['A',
+                     'B',
+                     'C',
+                     'D',
+                     'F']
 
     var xz = d3.range(m),
-        // xz = d3.range(m).map(function(i, data) { return studentNames[i]; }),
+    // var xz = d3.range(m).map(function(i, data) { return videoNames[i]; }),
         yz = d3.range(n).map(function(i, data) { return allResults[i]; }),
         y01z = d3.stack().keys(d3.range(n))(d3.transpose(yz)),
         yMax = d3.max(yz, function(y) { return d3.max(y); }),
         y1Max = d3.max(y01z, function(y) { return d3.max(y, function(d) { return d[1]; }); });
 
     var svg = d3.select("svg"),
-        margin = {top: 40, right: 10, bottom: 20, left: 10},
+        margin = {top: 60, right: 10, bottom: 75, left: 10},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -113,8 +120,7 @@
     //     .domain(d3.range(n))
     //     .range(d3.schemeCategory20c);
     var color = d3.scaleOrdinal()
-        .range(['#16a085', '#f1c40f', '#f39c12', '#e67e22']);
-        // '#1abc9c', 
+        .range(['#16a085', '#1abc9c', '#f1c40f', '#f39c12', '#e67e22']); 
 
     var series = g.selectAll(".series")
       .data(y01z)
@@ -138,8 +144,15 @@
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x)
-            .tickSize(0)
-            .tickPadding(6));
+            .tickSize(8)
+            .tickPadding(6))
+      .selectAll("text")
+        // .innerHTML("Hi")
+        // .html("hi")
+        .html(function(d, i) { return videoNames[i]; })
+        .attr("dx", "-2em")
+        .attr("transform", "rotate(20)")
+        .style("text-anchor", "start");
 
     // svg.append("text")      // text label for the x axis
     //       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
@@ -191,10 +204,13 @@
         .data(color.domain())
       .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        // .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(" + i * 25 + ", 0)"; });
 
     legend.append("rect")
-        .attr("x", width - 700)
+        // .attr("x", width - 700)
+        .attr("x", width - 128)
+        .attr("y", 10)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
@@ -203,13 +219,16 @@
     legend.data(barLabels);    // redefine data for text
     
     legend.append("text")
-        .attr("x", width - 676)
-        .attr("y", 9)
+        // .attr("x", width - 676)
+        .attr("x", width - 123)
+        .attr("y", 19)
         .attr("dy", ".35em")
         .style("text-anchor", "start")
+        .style("fill", "white")
+        .style("text-shadow", "1px 1px 0")
+        .style("font-weight", "bold")
         // .text(function(d) { return d; });  // set legend label
-        .text(function(d, i) { console.log(d); return d ; })
-        // .text(function(d, i) { console.log(d); return getSliceLabel(d, i); });
+        .text(function(d, i) { return d ; })
 
   }
 

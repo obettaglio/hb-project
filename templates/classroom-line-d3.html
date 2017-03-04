@@ -1,72 +1,82 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
+
 /*.axis--x path {
   display: none;
 }*/
+
 .line {
   fill: none;
-  stroke: steelblue;
   stroke-width: 1.5px;
 }
+
+.axisGreen text{
+  fill: #1abc9c;
+}
+
+.axisOrange text{
+  fill: #e67e22;
+}
+
 </style>
 <svg width="760" height="500"></svg>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
+
 var svg = d3.select("svg"),
     margin = {top: 20, right: 80, bottom: 90, left: 50},
     width = svg.attr("width") - margin.left - margin.right,
     height = svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-// var x = d3.scaleOrdinal().range([0, width]),
+
 var x = d3.scaleOrdinal(),
-    y = d3.scaleLinear().range([height, 0]),
-    z = d3.scaleOrdinal()
-        .range(['#1abc9c', '#f1c40f', '#e67e22']);
+    y0 = d3.scaleLinear().range([height, 0]),
+    y1 = d3.scaleLinear().range([height, 0]);
+    // z = d3.scaleOrdinal()
+    //     .range(['#1abc9c', '#f1c40f', '#e67e22']);
         // 2: '#16a085', 4: '#f39c12',
-var line = d3.line()
+
+var lineOne = d3.line()
     .curve(d3.curveBasis)
-    .x(function(d) { console.log(d.examName); return x(d.examName); })
-    .y(function(d) { console.log(d.dataValue); return y(d.dataValue); });
-// data format =
-// [
-//   {'id': 'avgScore',                       // each line in graph
-//    'values': [
-//               {'examName': 'Counting',     // each point in line: x-value,
-//                'dataValue': avgScore},                            y-value
-//               {'examName': 'Place value',
-//                'dataValue': avgScore}
-//              ]
-//   },
-//   {'id': 'avgNumVideos',
-//    'values': [
-//               {'examName': 'Counting',
-//                'dataValue': avgNumVideos},
-//               {'examName': 'Place value',
-//                'dataValue': avgNumVideos}
-//              ]
-//   }
-// ]
+    .x(function(d) { return x(d.examName); })
+    .y(function(d) { return y0(d.avgScore); });
+
+var lineTwo = d3.line()
+    .curve(d3.curveBasis)
+    .x(function(d) { return x(d.examName); })
+    .y(function(d) { return y1(d.avgNumVideos); });
+
 d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, data) {
   if (error) throw error;
-  var lines = data;
-  console.log(lines);
-  // var distinctExamNames = new Set();
-  // for (var i = 0; i < lines.values.length; i++) {
-  //   distinctExamNames.add(lines.values[i]['examName']);
-  // }
-  // console.log(distinctExamNames);
-  var numPoints = data[0].values.length;
+
+  var numPoints = data.length;
   var xWidth = width / numPoints;
-  // x.domain(lines.map(function(d, i) { console.log(d.values[i]['examName']); return d.values[i]['examName']; }))
-  x.domain(data[0].values.map(function(d, i) { return d.examName; }))
-      .range(data[0].values.map(function(d, i) { return i * xWidth; }));
-  y.domain([0, 100]);
+
+  x.domain(data.map(function(d, i) { return d.examName; }))
+      .range(data.map(function(d, i) { return i * xWidth; }));
+
+  y0.domain([0, 100]);
+  y1.domain([0, 20]);
   // y.domain(
     // d3.min(lines, function(c) { return d3.min(c.values, function(d) { return d.dataValue; }); }),
     // d3.max(lines, function(c) { return d3.max(c.values, function(d) { return d.dataValue; }); })
   // ]);
-  z.domain(lines.map(function(c) { return c.id; }));
+
+  // z.domain(data.map(function(d) { return d.examName; }));
+
+  g.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", lineOne)
+      .style("stroke", "#1abc9c");
+
+  g.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", lineTwo)
+      .style("stroke", "#e67e22");
+
   g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
@@ -74,35 +84,32 @@ d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, dat
     .selectAll("text")
       .attr("transform", "rotate(20)")
       .style("text-anchor", "start");
-  // g.selectAll(".tick")
-  //     .select("line")
-  //     .style("font", "14px")
-  //     .attr("transform", "translateX(20" + $(this).attr(x));
-  //     .attr("transform", "translate(20, 0)");
-  //     .attr("transform", function(d) { return "translate(" + x(d.values[i]['examName']) + ", 0)"; })
+
   g.append("g")
-      .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y))
-    // .append("text")
-    //   .attr("transform", "rotate(-90)")
-    //   .attr("y", 6)
-    //   .attr("dy", "0.71em")
-    //   .attr("fill", "#000")
-    //   .text("Average Score");
-  var singleLine = g.selectAll(".single-line")
-    .data(lines)
-    .enter().append("g")
-      .attr("class", "single-line");
-  singleLine.append("path")
-      .attr("class", "line")
-      .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return z(d.id); });
-  singleLine.append("text")
-      .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.examName) + "," + y(d.value.dataValue) + ")"; })
-      .attr("x", 3)
-      .attr("dy", "0.35em")
-      .style("font", "10px sans-serif")
-      .text(function(d) { return d.id; });
+      .attr("class", "axisGreen")
+      .call(d3.axisLeft(y0))
+    .append("text")
+      // .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dx", "0.5em")
+      .attr("dy", "0.71em")
+      .attr("fill", "#000")
+      .text("Average Exam Score")
+      .style("text-anchor", "start");
+
+  g.append("g")
+      .attr("class", "axisOrange")
+      .attr("transform", "translate(" + (width - 90) + ", 0)")
+      .call(d3.axisRight(y1))
+    .append("text")
+      // .attr("transform", "rotate(90)")
+      .attr("y", 366)
+      .attr("dx", "-0.5em")
+      .attr("dy", "0.71em")
+      .attr("fill", "#000")
+      .text("Average Number of Videos Watched")
+      .style("text-anchor", "end");
+
 });
+
 </script>

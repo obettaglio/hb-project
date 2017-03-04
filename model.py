@@ -41,6 +41,7 @@ class Student(db.Model):
     khan_username = db.Column(db.String(50), nullable=False)
     khan_id = db.Column(db.String(200), nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classrooms.class_id'), nullable=True)
+    demo = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""

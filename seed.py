@@ -1,6 +1,7 @@
 """Utility file to seed project database."""
 
 from sqlalchemy import func
+from sqlalchemy.inspection import inspect
 
 from server import app
 
@@ -9,17 +10,15 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 from model import connect_to_db, db
 
-from data_generator import (generate_students, generate_videoresults, generate_examresults)
+# from data_generator import generate_password
+from data_generator import (generate_students, generate_demo_student,
+                            generate_videoresults, generate_examresults)
 
 import json
-
-from passlib.hash import argon2
-
 import random
-
+# import string
+from passlib.hash import argon2
 from datetime import datetime, timedelta
-
-from sqlalchemy.inspection import inspect
 
 
 def load_users():
@@ -497,6 +496,7 @@ def call_all_functions():
     load_classrooms()
     # load_students()
     generate_students()
+    generate_demo_student()
     load_exams()
     # load_examresults()
     # load_exercises()

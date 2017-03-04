@@ -66,7 +66,7 @@ d3.json('/exam-timestamp-data.json?exam_id={{ exam_id }}', function(error, data)
   var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
-      .tickFormat(d3.time.format("%m/%d"));
+      .tickFormat(d3.time.format("%-m/%-d"));
 
   var yAxis = d3.svg.axis()
       .scale(y)

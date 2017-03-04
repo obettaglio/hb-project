@@ -282,8 +282,8 @@ def log_user_out():
 
 ##### JSON, D3 #####
 
-@app.route('/exam-bar-data.json')
-def jsonify_exam_bar_data():
+@app.route('/exam-bar-old-data.json')
+def jsonify_exam_bar_old_data():
     """Query database for data filtering by exam_id. Return data for bar chart as JSON.
 
     Data consists of examresult and videoresult details listed by student_email:
@@ -320,8 +320,8 @@ def jsonify_exam_bar_data():
     return jsonify(results)
 
 
-@app.route('/exam-bar-new-data.json')
-def jsonify_exam_bar_new_data():
+@app.route('/exam-bar-data.json')
+def jsonify_exam_bar_data():
     """Query database for data filtering by exam_id. Return data for new bar chart as JSON.
 
     Data consists of examresult and videoresult details listed by video_name:
@@ -638,8 +638,8 @@ def jsonify_exam_timestamp_data():
     return jsonify(results)
 
 
-@app.route('/classroom-line-data.json')
-def jsonify_classroom_line_data():
+@app.route('/classroom-line-data-singleaxis.json')
+def jsonify_classroom_line_data_for_single_axis():
     """Query database for data filtering by exam_id. Return data for line chart as JSON.
 
     Data consists of examresult and videoresult details listed by exam:
@@ -708,8 +708,8 @@ def jsonify_classroom_line_data():
     return jsonify(results)
 
 
-@app.route('/classroom-line-data-new.json')
-def jsonify_classroom_line_data_new():
+@app.route('/classroom-line-data.json')
+def jsonify_classroom_line_data():
     """Query database for data filtering by exam_id. Return data for line chart as JSON.
 
     Data consists of examresult and videoresult details listed by exam:
@@ -779,8 +779,18 @@ def jsonify_classroom_line_data_new():
     return jsonify(results)
 
 
+# @app.route('/exam-bar-old-d3')
+# def show_exam_bar_d3():
+#     """Display old d3 stacked/grouped bar chart."""
+
+#     exam_id = request.args.get('exam_id')
+
+#     return render_template('exam-bar-old-d3.html',
+#                            exam_id=exam_id)
+
+
 @app.route('/exam-bar-d3')
-def show_exam_bar_d3():
+def show_exam_bar_new_d3():
     """Display d3 stacked/grouped bar chart."""
 
     exam_id = request.args.get('exam_id')
@@ -789,44 +799,34 @@ def show_exam_bar_d3():
                            exam_id=exam_id)
 
 
-@app.route('/exam-bar-new-d3')
-def show_exam_bar_new_d3():
-    """Display new d3 stacked/grouped bar chart."""
+# @app.route('/exam-bubble-pie-d3')
+# def show_exam_bubble_pie_d3():
+#     """Display d3 bubble pie chart."""
 
-    exam_id = request.args.get('exam_id')
+#     exam_id = request.args.get('exam_id')
 
-    return render_template('exam-bar-new-d3.html',
-                           exam_id=exam_id)
-
-
-@app.route('/exam-bubble-pie-d3')
-def show_exam_bubble_pie_d3():
-    """Display d3 bubble pie chart."""
-
-    exam_id = request.args.get('exam_id')
-
-    return render_template('exam-bubble-pie-d3.html',
-                           exam_id=exam_id)
+#     return render_template('exam-bubble-pie-d3.html',
+#                            exam_id=exam_id)
 
 
-@app.route('/exam-pie-d3')
-def show_exam_pie_d3():
-    """Display d3 pie chart."""
+# @app.route('/exam-pie-d3')
+# def show_exam_pie_d3():
+#     """Display d3 pie chart."""
 
-    exam_id = request.args.get('exam_id')
+#     exam_id = request.args.get('exam_id')
 
-    return render_template('exam-pie-d3.html',
-                           exam_id=exam_id)
+#     return render_template('exam-pie-d3.html',
+#                            exam_id=exam_id)
 
 
-@app.route('/exam-scatterplot-d3')
-def show_exam_scatterplot_d3():
-    """Display d3 scatterplot chart."""
+# @app.route('/exam-scatterplot-d3')
+# def show_exam_scatterplot_d3():
+#     """Display d3 scatterplot chart."""
 
-    exam_id = request.args.get('exam_id')
+#     exam_id = request.args.get('exam_id')
 
-    return render_template('exam-scatterplot-d3.html',
-                           exam_id=exam_id)
+#     return render_template('exam-scatterplot-d3.html',
+#                            exam_id=exam_id)
 
 
 @app.route('/exam-timestamp-d3')
@@ -839,30 +839,30 @@ def show_exam_timestamp_d3():
                            exam_id=exam_id)
 
 
-@app.route('/exam-bar-percent-d3')
-def show_exam_bar_percent_d3():
-    """Display d3 vertical percent bar chart."""
+# @app.route('/exam-bar-percent-d3')
+# def show_exam_bar_percent_d3():
+#     """Display d3 vertical percent bar chart."""
 
-    return render_template('exam-bar-percent-d3.html')
+#     return render_template('exam-bar-percent-d3.html')
+
+
+# @app.route('/classroom-line-d3-singleaxis')
+# def show_classroom_line_d3_for_single_axis():
+#     """Display d3 line chart."""
+
+#     class_id = request.args.get('class_id')
+
+#     return render_template('classroom-line-d3-singleaxis.html',
+#                            class_id=class_id)
 
 
 @app.route('/classroom-line-d3')
-def show_classroom_line_d3():
-    """Display d3 line chart."""
-
-    class_id = request.args.get('class_id')
-
-    return render_template('classroom-line-d3.html',
-                           class_id=class_id)
-
-
-@app.route('/classroom-line-d3-new')
 def show_classroom_line_d3_new():
     """Display d3 line chart."""
 
     class_id = request.args.get('class_id')
 
-    return render_template('classroom-line-d3-new.html',
+    return render_template('classroom-line-d3.html',
                            class_id=class_id)
 
 

@@ -1,10 +1,11 @@
 """Generator of users, students, exam results, and Khan Academy activities."""
 
-import random
-from datetime import datetime, timedelta
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
 from model import db
+from datetime import datetime, timedelta
+import random
+import string
 
 
 f_names = ["Meggie", "Leslie", "Agne", "Kelly", "Katie", "Ahmad", "Dennis",
@@ -12,9 +13,19 @@ f_names = ["Meggie", "Leslie", "Agne", "Kelly", "Katie", "Ahmad", "Dennis",
            "Serena", "Joel", "Henry", "Conor", "Samuel", "Danielle", "Tony"]
 
 l_names = ["Smith", "Johnson", "Inge", "Glassman", "Weinberg", "Carroll",
-           "Mahnken", "Yeh", "Goodman", "Winchester", "Burton", "Conrad",
+           "Mahnken", "Young", "Goodman", "Winchester", "Burton", "Conrad",
            "Chen", "Boyette", "Lonne", "Fischbach", "Wickham", "Horvatic",
            "Yoder", "Hardin"]
+
+
+def generate_password():
+    """Generate 8-character alphanumeric password."""
+
+    chars = string.letters + string.digits
+    length = 8
+    password = ''.join(random.choice(chars) for _ in range(length))
+
+    return password
 
 
 def generate_students():
@@ -39,6 +50,27 @@ def generate_students():
 
         db.session.add(student)
 
+    db.session.commit()
+
+
+def generate_demo_student():
+    """Generate mock student in class without examresults to be used in product demo."""
+
+    student_email = 'khanstudentobbetta@genstudent.com'
+    f_name = 'Olivia'
+    l_name = 'Bettaglio'
+    khan_username = 'khanstudentobbetta'
+    class_id = 1
+    demo = True
+
+    demo_student = Student(student_email=student_email,
+                           f_name=f_name,
+                           l_name=l_name,
+                           khan_username=khan_username,
+                           class_id=class_id,
+                           demo=demo)
+
+    db.session.add(demo_student)
     db.session.commit()
 
 
@@ -172,48 +204,53 @@ def generate_examresults():
         # print "First third date: ", first_third_date, ", Second third date: ", second_third_date
 
         for student_email in student_emails:
-            videoresults_query = db.session.query(VideoResult)\
-                                           .filter(VideoResult.student_email == student_email)\
-                                           .order_by(VideoResult.timestamp)
 
-            first_third_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
-                                                          (VideoResult.timestamp < first_third_date)).count()
-            second_third_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
-                                                           (VideoResult.timestamp < second_third_date)).count()
-            final_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
-                                                    (VideoResult.timestamp < exam_date)).count()
+            demo = db.session.query(Student.demo).filter(Student.student_email == student_email).first()[0]
 
-            # print "First third: ", first_third_count
-            # print "Second third: ", second_third_count
-            # print "Final count: ", final_count
+            if demo is False:
 
-            # A-Bs
-            if first_third_count >= (num_exam_videos / 3):
-                # consistently strong
-                if second_third_count >= num_exam_videos * 2 / 3:
-                    score = random.randint(90, 100)
-                # started strong, finished weak
+                videoresults_query = db.session.query(VideoResult)\
+                                               .filter(VideoResult.student_email == student_email)\
+                                               .order_by(VideoResult.timestamp)
+
+                first_third_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
+                                                              (VideoResult.timestamp < first_third_date)).count()
+                second_third_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
+                                                               (VideoResult.timestamp < second_third_date)).count()
+                final_count = videoresults_query.filter((VideoResult.timestamp > start_date) &
+                                                        (VideoResult.timestamp < exam_date)).count()
+
+                # print "First third: ", first_third_count
+                # print "Second third: ", second_third_count
+                # print "Final count: ", final_count
+
+                # A-Bs
+                if first_third_count >= (num_exam_videos / 3):
+                    # consistently strong
+                    if second_third_count >= num_exam_videos * 2 / 3:
+                        score = random.randint(90, 100)
+                    # started strong, finished weak
+                    else:
+                        score = random.randint(80, 95)
+                # B-Fs
                 else:
-                    score = random.randint(80, 95)
-            # B-Fs
-            else:
-                # kicked their butts into gear later
-                if second_third_count >= (num_exam_videos * 2 / 3):
-                    score = random.randint(80, 90)
-                # almost finished
-                elif final_count >= (num_exam_videos * 4 / 5):
-                    score = random.randint(60, 85)
-                # didn't get close to finishing
-                else:
-                    score = random.randint(45, 80)
+                    # kicked their butts into gear later
+                    if second_third_count >= (num_exam_videos * 2 / 3):
+                        score = random.randint(80, 90)
+                    # almost finished
+                    elif final_count >= (num_exam_videos * 4 / 5):
+                        score = random.randint(60, 85)
+                    # didn't get close to finishing
+                    else:
+                        score = random.randint(45, 80)
 
-            # score = random.randint(45, 100)
+                # score = random.randint(45, 100)
 
-            examresult = ExamResult(exam_id=exam_id,
-                                    student_email=student_email,
-                                    score=score)
+                examresult = ExamResult(exam_id=exam_id,
+                                        student_email=student_email,
+                                        score=score)
 
-            db.session.add(examresult)
+                db.session.add(examresult)
 
         completed_exams.append(exam)
 
