@@ -23,6 +23,7 @@ function resetAddExamForm(result) {
     $('#exam-list').append("<p><a href='/classroom/" + result.exam_id + "'>" + result.exam_name + "</a></p>");
 
     $('#exam-name-field').val('');
+    $('#exam-timestamp-field').val('');
     $('#total-points-field').val('');
 }
 
@@ -38,6 +39,7 @@ function getExamInfo(evt) {
     var formInputs = {
         class_id,
         'exam_name': $('#exam-name-field').val(),
+        'timestamp': $('#exam-timestamp-field').val(),
         'total_points': $('#total-points-field').val()
     };
 

@@ -61,13 +61,6 @@ def index():
         #                            user_f_name=user_f_name)
 
 
-@app.route('/sign-in')
-def show_sign_in_page():
-    """Display joint login and register page."""
-
-    return render_template('sign-in.html')
-
-
 @app.route('/login')
 def show_login_page():
     """Display login form."""
@@ -872,8 +865,7 @@ def show_classroom_line_d3_new():
 def show_single_class():
     """Display class taught by user.
 
-    Include list of existing exams, link to student roster, visual data, and New Exam button.
-    >> MVP: ONLY ONE CLASSROOM PER USER <<"""
+    Include list of existing exams, link to student roster, visual data, and Add Exam button."""
 
     user_email = session['logged_in_user']
     user = db.session.query(User).filter(User.user_email == user_email).first()
@@ -884,22 +876,23 @@ def show_single_class():
     # if classroom is not None:
     class_id = request.args.get('class_id')
     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-    exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
-    return render_template('classroom.html',
-                           user_f_name=user_f_name,
-                           classroom=classroom,
-                           exams=exams)
+    # ensure user can access this classroom
+    if classroom.user_email == user_email:
+        exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
 
-    # else:
-    #     return redirect('/create-class')
+        return render_template('classroom.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               exams=exams)
+
+    else:
+        return render_template('unauthorized-attempt.html')
 
 
 @app.route('/create-class')
 def show_create_class_form():
-    """Display form to create class.
-
-    >> MVP: ONLY ONE CLASSROOM PER USER <<"""
+    """Display form to create a class."""
 
     user_email = session['logged_in_user']
     user = db.session.query(User).filter(User.user_email == user_email).first()
@@ -926,19 +919,24 @@ def show_create_class_form():
 
 @app.route('/create-class', methods=['POST'])
 def create_class():
-    """Handle form to create class and redirect to classroom page."""
+    """Handle form to create a class and redirect to user homepage."""
 
     user_email = session['logged_in_user']
     # oauth_params = session['oauth_params']
 
     name = request.form.get('class_name')
     subject = request.form.get('subject')
+    start_date = request.form.get('start_date')
 
-    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
+    if type(start_date) != datetime:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+
+    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()[0]
 
     new_class = Classroom(name=name,
                           user_email=user_email,
-                          subject_code=subject_code)
+                          subject_code=subject_code,
+                          start_date=start_date)
 
     db.session.add(new_class)
     db.session.commit()
@@ -954,8 +952,10 @@ def show_student_roster():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
+    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
+    # class_id = classroom.class_id
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
 
     students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
 
@@ -969,9 +969,10 @@ def show_student_roster():
 def add_student_to_roster():
     """Handle form to add student to class roster."""
 
-    user_email = session['logged_in_user']
-    classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    class_id = classroom.class_id
+    # user_email = session['logged_in_user']
+    # classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
+    # class_id = classroom.class_id
+    class_id = request.form.get('class_id')
 
     f_name = request.form.get('f_name')
     l_name = request.form.get('l_name')
@@ -1074,11 +1075,16 @@ def add_new_exam():
 
     class_id = request.form.get('class_id')
     name = request.form.get('exam_name')
+    timestamp = request.form.get('timestamp')
     total_points = request.form.get('total_points')
+
+    if type(timestamp) != datetime:
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%d')
 
     new_exam = Exam(name=name,
                     class_id=class_id,
-                    total_points=total_points)
+                    total_points=total_points,
+                    timestamp=timestamp)
 
     db.session.add(new_exam)
     db.session.commit()
@@ -1088,7 +1094,8 @@ def add_new_exam():
     new_exam_dict = {'exam_id': exam_id,
                      'exam_name': name,
                      'class_id': class_id,
-                     'total_points': total_points}
+                     'total_points': total_points,
+                     'timestamp': timestamp}
 
     return jsonify(new_exam_dict)
 

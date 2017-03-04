@@ -9,7 +9,7 @@
 
     <h1 id='class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }}</h1>
 
-    <h4><a href='/classroom/student-roster'>Student Roster</a></h4>
+    <h4><a href='/classroom/student-roster?class_id={{ classroom.class_id }}'>Student Roster</a></h4>
   </div>
 
   <div class='col-lg-4'>
@@ -36,6 +36,8 @@
     <form id='add-exam-form'>
         <label>Exam Name: </label>
         <input type='text' id='exam-name-field' name='exam-name'><br>
+        <label>Date: </label>
+        <input type='date' id='exam-timestamp-field' name='exam-timestamp'><br>
         <label>Total Points: </label>
         <input type='text' id='total-points-field' name='total-points'><br>
         <input type='submit' id='add-exam-submit' value='Add Exam'>

@@ -43,7 +43,10 @@ function getStudentInfo(evt) {
 
     evt.preventDefault();
 
+    var class_id = $('#class-id').attr('data-class');
+
     var formInputs = {
+        class_id,
         'f_name': $('#f-name-field').val(),
         'l_name': $('#l-name-field').val(),
         'student_email': $('#student-email-field').val(),

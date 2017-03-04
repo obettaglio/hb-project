@@ -26,7 +26,8 @@ function getClassInfo(evt) {
 
     var formInputs = {
         "class_name": $("#class-name-field").val(),
-        "subject": $("#subject-field").val()
+        "subject": $("#subject-field").val(),
+        "start_date": $("#start-date-field").val()
     };
 
     $.post("/create-class",  // post route
