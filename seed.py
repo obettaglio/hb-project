@@ -10,8 +10,8 @@ from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise
 
 from model import connect_to_db, db
 
-# from data_generator import generate_password
-from data_generator import (generate_students, generate_demo_student,
+# from seed_generator import generate_password
+from seed_generator import (generate_students, generate_demo_student,
                             generate_videoresults, generate_examresults)
 
 import json
@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 def load_users():
     """Load users from Khan Academy JSON into database."""
 
-    print 'Users'
+    print 'Loading Users'
 
     User.query.delete()
 
@@ -59,7 +59,7 @@ def load_users():
 def load_subjects():
     """Load subjects into database."""
 
-    print 'Subjects'
+    print 'Loading Subjects'
 
     Subject.query.delete()
 
@@ -78,7 +78,7 @@ def load_subjects():
 def load_classrooms():
     """Load classrooms into database."""
 
-    print 'Classrooms'
+    print 'Loading Classrooms'
 
     Classroom.query.delete()
 
@@ -106,7 +106,7 @@ def load_classrooms():
 def load_students():
     """Load students from Khan Academy JSON into database."""
 
-    print 'Students'
+    print 'Loading Students'
 
     Student.query.delete()
 
@@ -136,7 +136,7 @@ def load_students():
 def load_exams():
     """Load exams into database."""
 
-    print 'Exams'
+    print 'Loading Exams'
 
     Exam.query.delete()
 
@@ -162,7 +162,7 @@ def load_exams():
 def load_examresults():
     """Load exam results into database."""
 
-    print 'ExamResults'
+    print 'Loading ExamResults'
 
     ExamResult.query.delete()
 
@@ -201,7 +201,7 @@ def load_examresults():
 def load_exercises():
     """Load exercises from Khan Academy JSON into database."""
 
-    print 'Exercises'
+    print 'Loading Exercises'
 
     Exercise.query.delete()
 
@@ -233,7 +233,7 @@ def load_exercises():
 def load_exerciseresults():
     """Load exercise results into database."""
 
-    print 'ExerciseResults'
+    print 'Loading ExerciseResults'
 
     ExerciseResult.query.delete()
 
@@ -300,7 +300,7 @@ def load_exerciseresults():
 def load_videos():
     """Load videos from Khan Academy JSON into database."""
 
-    print 'Videos'
+    print 'Loading Videos'
 
     Video.query.delete()
 
@@ -392,7 +392,7 @@ def load_videoresults():
 
     Generate data drawing from existing student and video data."""
 
-    print 'VideoResults'
+    print 'Loading VideoResults'
 
     VideoResult.query.delete()
 
