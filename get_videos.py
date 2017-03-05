@@ -23,15 +23,13 @@ def add_videos_by_topic(topics_lst, exam_topic_str):
             continue
 
         for video in topic_videos:
-            # print video['title']
 
             if video['title'] not in video_titles:
                 video['exam_topic'] = exam_topic_str
-                all_videos.append(video)
-                print "Added: " + video['title']
-                video_titles.append(video['title'])
 
-        # all_videos.extend(topic_videos)
+                all_videos.append(video)
+                video_titles.append(video['title'])
+                print "Added: " + video['title']
 
 add_videos_by_topic(counting_topics, 'counting')
 add_videos_by_topic(place_value_topics, 'place_value')

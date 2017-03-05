@@ -1,9 +1,8 @@
 """Teacher app."""
 
 from jinja2 import StrictUndefined
-from flask import (Flask, jsonify, render_template, redirect, request, flash,
-                   session, url_for)
-from flask_debugtoolbar import DebugToolbarExtension
+from flask import Flask, jsonify, render_template, redirect, request, flash, session
+# from flask_debugtoolbar import DebugToolbarExtension
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
 from model import connect_to_db, db
@@ -51,7 +50,6 @@ def index():
 
         classrooms = db.session.query(Classroom).filter(Classroom.user_email == user_email).all()
 
-        # if classrooms is not None:
         return render_template('homepage-user.html',
                                user_f_name=user_f_name,
                                classrooms=classrooms)
@@ -275,42 +273,81 @@ def log_user_out():
 
 ##### JSON, D3 #####
 
-@app.route('/exam-bar-old-data.json')
-def jsonify_exam_bar_old_data():
-    """Query database for data filtering by exam_id. Return data for bar chart as JSON.
+@app.route('/classroom-line-d3')
+def show_classroom_line_d3_new():
+    """Display d3 line chart."""
 
-    Data consists of examresult and videoresult details listed by student_email:
-        student_name, exam_score, num_videos, avg_points, and avg_secs_watched."""
+    class_id = request.args.get('class_id')
+
+    return render_template('classroom-line-d3.html',
+                           class_id=class_id)
+
+
+@app.route('/classroom-line-data.json')
+def jsonify_classroom_line_data():
+    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+
+    Data consists of examresult and videoresult details listed by exam:
+        avg_score, avg_num_videos."""
+
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+
+    students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
+    num_students = students_query.count()
+
+    completed_exams = []
+
+    results = []
+
+    for exam in exams:
+        exam_id = exam.exam_id
+        exam_name = exam.name
+        exam_timestamp = exam.timestamp
+
+        if completed_exams == []:
+            start_date = classroom.start_date
+        else:
+            prev_exam = completed_exams[-1]
+            start_date = prev_exam.timestamp
+
+        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+        exam_percentages = []
+
+        for exam_score in exam_scores:
+            exam_score = exam_score[0]
+            exam_percentage = (float(exam_score) / total_points) * 100
+            exam_percentages.append(exam_percentage)
+
+        avg_score = float(sum(exam_percentages) / len(exam_percentages))
+
+        num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
+                                                                (VideoResult.timestamp < exam_timestamp)).count()
+        avg_num_videoresults = float(num_videoresults / num_students)
+
+        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
+        # avg_num_exerciseresults = num_exerciseresults / num_students
+
+        results.append({'examName': exam_name,
+                        'avgScore': avg_score,
+                        'avgNumVideos': avg_num_videoresults})
+
+        completed_exams.append(exam)
+
+    return jsonify(results)
+
+
+@app.route('/exam-bar-d3')
+def show_exam_bar_new_d3():
+    """Display d3 stacked/grouped bar chart."""
 
     exam_id = request.args.get('exam_id')
 
-    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-
-    results = {}
-
-    for examresult in examresults:
-        student_email, exam_score = examresult
-
-        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-        student_name = student_name[0] + ' ' + student_name[1]
-
-        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
-
-        num_videos = videoresults_query.count()
-        if num_videos:
-            avg_points = sum([vr.points for vr in videoresults_query.all()])/float(num_videos)
-            avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
-        else:
-            avg_points = 0
-            avg_secs_watched = 0
-
-        results[student_email] = {'student_name': student_name,
-                                  'exam_score': exam_score,
-                                  'num_videos': num_videos,
-                                  'avg_points': avg_points,
-                                  'avg_secs_watched': avg_secs_watched}
-
-    return jsonify(results)
+    return render_template('exam-bar-d3.html',
+                           exam_id=exam_id)
 
 
 @app.route('/exam-bar-data.json')
@@ -363,213 +400,19 @@ def jsonify_exam_bar_data():
                                           'D': 0,
                                           'F': 0}
 
-                # results[video_name]['total_views'] += 1
                 results[order_num][grade_range] += 1
 
     return jsonify(results)
 
 
-@app.route('/exam-bubble-pie-data.json')
-def jsonify_exam_bubble_pie_data():
-    """Query database for data filtering by exam_id. Return data for bubble pie chart as JSON.
-
-    Data consists of array of dictionaries containing:
-        title: video_name, data: dictionary containing:
-            label: grade_range, value: num_students."""
+@app.route('/exam-timestamp-d3')
+def show_exam_timestamp_d3():
+    """Display d3 timestamp scatterplot chart."""
 
     exam_id = request.args.get('exam_id')
 
-    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-
-    results = {}
-
-    def convert_percent_to_grade(exam_percentage):
-        if exam_percentage >= 0.9:
-            return 0
-        elif exam_percentage >= 0.8:
-            return 1
-        elif exam_percentage >= 0.7:
-            return 2
-        elif exam_percentage >= 0.6:
-            return 3
-        else:
-            return 4
-
-    for examresult in examresults:
-        student_email, exam_score = examresult
-
-        # student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-        # student_name = student_name[0] + ' ' + student_name[1]
-
-        exam_percentage = float(exam_score) / total_points
-        grade_range = convert_percent_to_grade(exam_percentage)
-
-        all_video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
-
-        for video_id in all_video_ids:
-            video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
-            # video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()[0]
-
-            if video_name not in results:
-                # results[video_name] = {'title': video_name,
-                #                        'data': {'A': {'label': 'A',
-                #                                       'value': 0},
-                #                                 'B': {'label': 'B',
-                #                                       'value': 0},
-                #                                 'C': {'label': 'C',
-                #                                       'value': 0},
-                #                                 'D': {'label': 'D',
-                #                                       'value': 0},
-                #                                 'F': {'label': 'F',
-                #                                       'value': 0}}}
-
-                results[video_name] = {'title': video_name,
-                                       'data': [['A', 0],
-                                                ['B', 0],
-                                                ['C', 0],
-                                                ['D', 0],
-                                                ['F', 0]]}
-
-            # results[video_name]['data'][grade_range]['value'] += 1
-            results[video_name]['data'][grade_range][1] += 1
-
-    results = results.values()
-
-    # for result in results:
-    #     result['data'] = result['data'].values()
-
-    return jsonify(results)
-
-
-@app.route('/exam-pie-data.json')
-def jsonify_exam_pie_data():
-    """Query database for data filtering by exam_id. Return data for pie chart as JSON.
-
-    Data consists of array of dictionaries containing:
-        num_videos_range: num_students."""
-
-    exam_id = request.args.get('exam_id')
-
-    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-
-    # results = {'0-4': {'label': '0-4',
-    #                    'value': 0},
-    #            '5-9': {'label': '5-9',
-    #                    'value': 0},
-    #            '10-14': {'label': '10-14',
-    #                      'value': 0},
-    #            '15+': {'label': '15+',
-    #                    'value': 0}}
-
-    results = {'0-4': {'label': '0-4',
-                       'value': 0,
-                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
-               '5-9': {'label': '5-9',
-                       'value': 0,
-                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
-               '10-14': {'label': '10-14',
-                         'value': 0,
-                         'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
-               '15+': {'label': '15+',
-                       'value': 0,
-                       'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}}}
-
-    def convert_percent_to_grade(exam_percentage):
-        if exam_percentage >= 0.9:
-            return 'A'
-        elif exam_percentage >= 0.8:
-            return 'B'
-        elif exam_percentage >= 0.7:
-            return 'C'
-        elif exam_percentage >= 0.6:
-            return 'D'
-        else:
-            return 'F'
-
-    def convert_num_videos_to_range(num_videos):
-        if num_videos <= 4:
-            return '0-4'
-        elif num_videos <= 9:
-            return '5-9'
-        elif num_videos <= 14:
-            return '10-14'
-        else:
-            return '15+'
-
-    for examresult in examresults:
-        student_email, exam_score = examresult
-
-        exam_percentage = float(exam_score) / total_points
-        grade_range = convert_percent_to_grade(exam_percentage)
-
-        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
-        num_videos = videoresults_query.count()
-
-        num_videos_range = convert_num_videos_to_range(num_videos)
-
-        results[num_videos_range]['value'] += 1
-        results[num_videos_range]['data'][grade_range] += 1
-
-    return jsonify(results.values())
-
-
-@app.route('/exam-scatterplot-data.json')
-def jsonify_exam_scatterplot_data():
-    """Query database for data filtering by exam_id. Return data for scatterplot chart as JSON.
-
-    Data consists of examresult and videoresult details listed by video_name:
-        video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
-
-    exam_id = request.args.get('exam_id')
-
-    total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-    examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
-
-    results = {}
-
-    def convert_percent_to_grade(exam_percentage):
-        if exam_percentage >= 0.9:
-            return 'A'
-        elif exam_percentage >= 0.8:
-            return 'B'
-        elif exam_percentage >= 0.7:
-            return 'C'
-        elif exam_percentage >= 0.6:
-            return 'D'
-        else:
-            return 'F'
-
-    for examresult in examresults:
-        student_email, exam_score = examresult
-
-        student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-        student_name = student_name[0] + ' ' + student_name[1]
-
-        exam_percentage = float(exam_score) / total_points
-        grade_range = convert_percent_to_grade(exam_percentage)
-
-        videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
-
-        num_videos = videoresults_query.count()
-        if num_videos:
-            avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
-        else:
-            avg_secs_watched = 0
-
-        results[student_email] = {'avgSecsWatched': avg_secs_watched,
-                                  'numVideos': num_videos,
-                                  'gradeRange': grade_range}
-
-    # dicts = results.values()
-    # tups = sorted([(d['gradeRange'], d) for d in dicts])
-    # results = [t[1] for t in tups]
-
-    results = results.values()
-    results = sorted(results, key=lambda d: d['gradeRange'])
-
-    return jsonify(results)
+    return render_template('exam-timestamp-d3.html',
+                           exam_id=exam_id)
 
 
 @app.route('/exam-timestamp-data.json')
@@ -631,145 +474,315 @@ def jsonify_exam_timestamp_data():
     return jsonify(results)
 
 
-@app.route('/classroom-line-data-singleaxis.json')
-def jsonify_classroom_line_data_for_single_axis():
-    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+# @app.route('/exam-bar-old-data.json')
+# def jsonify_exam_bar_old_data():
+#     """Query database for data filtering by exam_id. Return data for bar chart as JSON.
 
-    Data consists of examresult and videoresult details listed by exam:
-        avg_score, avg_num_videos."""
+#     Data consists of examresult and videoresult details listed by student_email:
+#         student_name, exam_score, num_videos, avg_points, and avg_secs_watched."""
 
-    class_id = request.args.get('class_id')
-    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+#     exam_id = request.args.get('exam_id')
 
-    students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
-    # student_emails = students_query.all()
-    num_students = students_query.count()
+#     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
-    completed_exams = []
+#     results = {}
 
-    results = [{'id': 'Average Exam Score',
-                'values': []},
-               {'id': 'Average Videos Watched',
-                'values': []}]
+#     for examresult in examresults:
+#         student_email, exam_score = examresult
 
-    for exam in exams:
-        exam_id = exam.exam_id
-        exam_name = exam.name
-        # exam_topic = exam.topic
-        exam_timestamp = exam.timestamp
+#         student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+#         student_name = student_name[0] + ' ' + student_name[1]
 
-        if completed_exams == []:
-            start_date = classroom.start_date
-        else:
-            prev_exam = completed_exams[-1]
-            start_date = prev_exam.timestamp
+#         videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
 
-        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+#         num_videos = videoresults_query.count()
+#         if num_videos:
+#             avg_points = sum([vr.points for vr in videoresults_query.all()])/float(num_videos)
+#             avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
+#         else:
+#             avg_points = 0
+#             avg_secs_watched = 0
 
-        exam_percentages = []
+#         results[student_email] = {'student_name': student_name,
+#                                   'exam_score': exam_score,
+#                                   'num_videos': num_videos,
+#                                   'avg_points': avg_points,
+#                                   'avg_secs_watched': avg_secs_watched}
 
-        for exam_score in exam_scores:
-            exam_score = exam_score[0]
-            exam_percentage = (float(exam_score) / total_points) * 100
-            exam_percentages.append(exam_percentage)
-
-        avg_score = float(sum(exam_percentages) / len(exam_percentages))
-
-        # (VideoResult.student_email in student_emails) &
-
-        ## SELECT ONLY RELATED VIDEOS WITH CORRECT EXAM_TOPIC ##
-        num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
-                                                                (VideoResult.timestamp < exam_timestamp)).count()
-        # num_videoresults = int(num_videoresults)
-        avg_num_videoresults = float(num_videoresults / num_students)
-
-        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
-        # avg_num_exerciseresults = num_exerciseresults / num_students
-
-        # update avgScore
-        results[0]['values'].append({'examName': exam_name,
-                                     'dataValue': avg_score})
-
-        # update avgNumVideos
-        results[1]['values'].append({'examName': exam_name,
-                                     'dataValue': avg_num_videoresults})
-
-        completed_exams.append(exam)
-
-    return jsonify(results)
+#     return jsonify(results)
 
 
-@app.route('/classroom-line-data.json')
-def jsonify_classroom_line_data():
-    """Query database for data filtering by exam_id. Return data for line chart as JSON.
+# @app.route('/exam-bubble-pie-data.json')
+# def jsonify_exam_bubble_pie_data():
+#     """Query database for data filtering by exam_id. Return data for bubble pie chart as JSON.
 
-    Data consists of examresult and videoresult details listed by exam:
-        avg_score, avg_num_videos."""
+#     Data consists of array of dictionaries containing:
+#         title: video_name, data: dictionary containing:
+#             label: grade_range, value: num_students."""
 
-    class_id = request.args.get('class_id')
-    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-    exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+#     exam_id = request.args.get('exam_id')
 
-    students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
-    # student_emails = students_query.all()
-    num_students = students_query.count()
+#     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+#     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
 
-    completed_exams = []
+#     results = {}
 
-    results = []
+#     def convert_percent_to_grade(exam_percentage):
+#         if exam_percentage >= 0.9:
+#             return 0
+#         elif exam_percentage >= 0.8:
+#             return 1
+#         elif exam_percentage >= 0.7:
+#             return 2
+#         elif exam_percentage >= 0.6:
+#             return 3
+#         else:
+#             return 4
 
-    for exam in exams:
-        exam_id = exam.exam_id
-        exam_name = exam.name
-        # exam_topic = exam.topic
-        exam_timestamp = exam.timestamp
+#     for examresult in examresults:
+#         student_email, exam_score = examresult
 
-        if completed_exams == []:
-            start_date = classroom.start_date
-        else:
-            prev_exam = completed_exams[-1]
-            start_date = prev_exam.timestamp
+#         # student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+#         # student_name = student_name[0] + ' ' + student_name[1]
 
-        total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
-        exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+#         exam_percentage = float(exam_score) / total_points
+#         grade_range = convert_percent_to_grade(exam_percentage)
 
-        exam_percentages = []
+#         all_video_ids = db.session.query(VideoResult.video_id).filter(VideoResult.student_email == student_email).all()
 
-        for exam_score in exam_scores:
-            exam_score = exam_score[0]
-            exam_percentage = (float(exam_score) / total_points) * 100
-            exam_percentages.append(exam_percentage)
+#         for video_id in all_video_ids:
+#             video_name = db.session.query(Video.name).filter(Video.video_id == video_id).first()[0]
+#             # video_url = db.session.query(Video.url).filter(Video.video_id == video_id).first()[0]
 
-        avg_score = float(sum(exam_percentages) / len(exam_percentages))
+#             if video_name not in results:
+#                 # results[video_name] = {'title': video_name,
+#                 #                        'data': {'A': {'label': 'A',
+#                 #                                       'value': 0},
+#                 #                                 'B': {'label': 'B',
+#                 #                                       'value': 0},
+#                 #                                 'C': {'label': 'C',
+#                 #                                       'value': 0},
+#                 #                                 'D': {'label': 'D',
+#                 #                                       'value': 0},
+#                 #                                 'F': {'label': 'F',
+#                 #                                       'value': 0}}}
 
-        # (VideoResult.student_email in student_emails) &
+#                 results[video_name] = {'title': video_name,
+#                                        'data': [['A', 0],
+#                                                 ['B', 0],
+#                                                 ['C', 0],
+#                                                 ['D', 0],
+#                                                 ['F', 0]]}
 
-        ## SELECT ONLY RELATED VIDEOS WITH CORRECT EXAM_TOPIC ##
-        num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
-                                                                (VideoResult.timestamp < exam_timestamp)).count()
-        # num_videoresults = int(num_videoresults)
-        avg_num_videoresults = float(num_videoresults / num_students)
+#             # results[video_name]['data'][grade_range]['value'] += 1
+#             results[video_name]['data'][grade_range][1] += 1
 
-        # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
-        # avg_num_exerciseresults = num_exerciseresults / num_students
+#     results = results.values()
 
-        # # update avgScore
-        # results[0]['values'].append({'examName': exam_name,
-        #                              'dataValue': avg_score})
+#     # for result in results:
+#     #     result['data'] = result['data'].values()
 
-        # # update avgNumVideos
-        # results[1]['values'].append({'examName': exam_name,
-        #                              'dataValue': avg_num_videoresults})
+#     return jsonify(results)
 
-        results.append({'examName': exam_name,
-                        'avgScore': avg_score,
-                        'avgNumVideos': avg_num_videoresults})
 
-        completed_exams.append(exam)
+# @app.route('/exam-pie-data.json')
+# def jsonify_exam_pie_data():
+#     """Query database for data filtering by exam_id. Return data for pie chart as JSON.
 
-    return jsonify(results)
+#     Data consists of array of dictionaries containing:
+#         num_videos_range: num_students."""
+
+#     exam_id = request.args.get('exam_id')
+
+#     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+#     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+#     # results = {'0-4': {'label': '0-4',
+#     #                    'value': 0},
+#     #            '5-9': {'label': '5-9',
+#     #                    'value': 0},
+#     #            '10-14': {'label': '10-14',
+#     #                      'value': 0},
+#     #            '15+': {'label': '15+',
+#     #                    'value': 0}}
+
+#     results = {'0-4': {'label': '0-4',
+#                        'value': 0,
+#                        'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
+#                '5-9': {'label': '5-9',
+#                        'value': 0,
+#                        'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
+#                '10-14': {'label': '10-14',
+#                          'value': 0,
+#                          'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}},
+#                '15+': {'label': '15+',
+#                        'value': 0,
+#                        'data': {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0}}}
+
+#     def convert_percent_to_grade(exam_percentage):
+#         if exam_percentage >= 0.9:
+#             return 'A'
+#         elif exam_percentage >= 0.8:
+#             return 'B'
+#         elif exam_percentage >= 0.7:
+#             return 'C'
+#         elif exam_percentage >= 0.6:
+#             return 'D'
+#         else:
+#             return 'F'
+
+#     def convert_num_videos_to_range(num_videos):
+#         if num_videos <= 4:
+#             return '0-4'
+#         elif num_videos <= 9:
+#             return '5-9'
+#         elif num_videos <= 14:
+#             return '10-14'
+#         else:
+#             return '15+'
+
+#     for examresult in examresults:
+#         student_email, exam_score = examresult
+
+#         exam_percentage = float(exam_score) / total_points
+#         grade_range = convert_percent_to_grade(exam_percentage)
+
+#         videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
+#         num_videos = videoresults_query.count()
+
+#         num_videos_range = convert_num_videos_to_range(num_videos)
+
+#         results[num_videos_range]['value'] += 1
+#         results[num_videos_range]['data'][grade_range] += 1
+
+#     return jsonify(results.values())
+
+
+# @app.route('/exam-scatterplot-data.json')
+# def jsonify_exam_scatterplot_data():
+#     """Query database for data filtering by exam_id. Return data for scatterplot chart as JSON.
+
+#     Data consists of examresult and videoresult details listed by video_name:
+#         video_url, total_views, A_views, B_views, C_views, D_views, and F_views."""
+
+#     exam_id = request.args.get('exam_id')
+
+#     total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+#     examresults = db.session.query(ExamResult.student_email, ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+#     results = {}
+
+#     def convert_percent_to_grade(exam_percentage):
+#         if exam_percentage >= 0.9:
+#             return 'A'
+#         elif exam_percentage >= 0.8:
+#             return 'B'
+#         elif exam_percentage >= 0.7:
+#             return 'C'
+#         elif exam_percentage >= 0.6:
+#             return 'D'
+#         else:
+#             return 'F'
+
+#     for examresult in examresults:
+#         student_email, exam_score = examresult
+
+#         student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+#         student_name = student_name[0] + ' ' + student_name[1]
+
+#         exam_percentage = float(exam_score) / total_points
+#         grade_range = convert_percent_to_grade(exam_percentage)
+
+#         videoresults_query = db.session.query(VideoResult).filter(VideoResult.student_email == student_email)
+
+#         num_videos = videoresults_query.count()
+#         if num_videos:
+#             avg_secs_watched = sum([vr.secs_watched for vr in videoresults_query.all()])/float(num_videos)
+#         else:
+#             avg_secs_watched = 0
+
+#         results[student_email] = {'avgSecsWatched': avg_secs_watched,
+#                                   'numVideos': num_videos,
+#                                   'gradeRange': grade_range}
+
+#     # dicts = results.values()
+#     # tups = sorted([(d['gradeRange'], d) for d in dicts])
+#     # results = [t[1] for t in tups]
+
+#     results = results.values()
+#     results = sorted(results, key=lambda d: d['gradeRange'])
+
+#     return jsonify(results)
+
+
+# @app.route('/classroom-line-data-singleaxis.json')
+# def jsonify_classroom_line_data_for_single_axis():
+#     """Query database for data filtering by exam_id. Return data for line chart as JSON.
+
+#     Data consists of examresult and videoresult details listed by exam:
+#         avg_score, avg_num_videos."""
+
+#     class_id = request.args.get('class_id')
+#     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+#     exams = db.session.query(Exam).filter(Exam.class_id == class_id).order_by(Exam.timestamp).all()
+
+#     students_query = db.session.query(Student.student_email).filter(Student.class_id == class_id)
+#     # student_emails = students_query.all()
+#     num_students = students_query.count()
+
+#     completed_exams = []
+
+#     results = [{'id': 'Average Exam Score',
+#                 'values': []},
+#                {'id': 'Average Videos Watched',
+#                 'values': []}]
+
+#     for exam in exams:
+#         exam_id = exam.exam_id
+#         exam_name = exam.name
+#         # exam_topic = exam.topic
+#         exam_timestamp = exam.timestamp
+
+#         if completed_exams == []:
+#             start_date = classroom.start_date
+#         else:
+#             prev_exam = completed_exams[-1]
+#             start_date = prev_exam.timestamp
+
+#         total_points = db.session.query(Exam.total_points).filter(Exam.exam_id == exam_id).first()[0]
+#         exam_scores = db.session.query(ExamResult.score).filter(ExamResult.exam_id == exam_id).all()
+
+#         exam_percentages = []
+
+#         for exam_score in exam_scores:
+#             exam_score = exam_score[0]
+#             exam_percentage = (float(exam_score) / total_points) * 100
+#             exam_percentages.append(exam_percentage)
+
+#         avg_score = float(sum(exam_percentages) / len(exam_percentages))
+
+#         # (VideoResult.student_email in student_emails) &
+
+#         ## SELECT ONLY RELATED VIDEOS WITH CORRECT EXAM_TOPIC ##
+#         num_videoresults = db.session.query(VideoResult).filter((VideoResult.timestamp > start_date) &
+#                                                                 (VideoResult.timestamp < exam_timestamp)).count()
+#         # num_videoresults = int(num_videoresults)
+#         avg_num_videoresults = float(num_videoresults / num_students)
+
+#         # num_exerciseresults = db.session.query(ExerciseResult).filter(ExerciseResult.timestamp < exam_timestamp).count()
+#         # avg_num_exerciseresults = num_exerciseresults / num_students
+
+#         # update avgScore
+#         results[0]['values'].append({'examName': exam_name,
+#                                      'dataValue': avg_score})
+
+#         # update avgNumVideos
+#         results[1]['values'].append({'examName': exam_name,
+#                                      'dataValue': avg_num_videoresults})
+
+#         completed_exams.append(exam)
+
+#     return jsonify(results)
 
 
 # @app.route('/exam-bar-old-d3')
@@ -780,16 +793,6 @@ def jsonify_classroom_line_data():
 
 #     return render_template('exam-bar-old-d3.html',
 #                            exam_id=exam_id)
-
-
-@app.route('/exam-bar-d3')
-def show_exam_bar_new_d3():
-    """Display d3 stacked/grouped bar chart."""
-
-    exam_id = request.args.get('exam_id')
-
-    return render_template('exam-bar-d3.html',
-                           exam_id=exam_id)
 
 
 # @app.route('/exam-bubble-pie-d3')
@@ -822,16 +825,6 @@ def show_exam_bar_new_d3():
 #                            exam_id=exam_id)
 
 
-@app.route('/exam-timestamp-d3')
-def show_exam_timestamp_d3():
-    """Display d3 timestamp scatterplot chart."""
-
-    exam_id = request.args.get('exam_id')
-
-    return render_template('exam-timestamp-d3.html',
-                           exam_id=exam_id)
-
-
 # @app.route('/exam-bar-percent-d3')
 # def show_exam_bar_percent_d3():
 #     """Display d3 vertical percent bar chart."""
@@ -849,16 +842,6 @@ def show_exam_timestamp_d3():
 #                            class_id=class_id)
 
 
-@app.route('/classroom-line-d3')
-def show_classroom_line_d3_new():
-    """Display d3 line chart."""
-
-    class_id = request.args.get('class_id')
-
-    return render_template('classroom-line-d3.html',
-                           class_id=class_id)
-
-
 ##### CLASSROOMS, EXAMS #####
 
 @app.route('/classroom')
@@ -871,9 +854,6 @@ def show_single_class():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-
-    # if classroom is not None:
     class_id = request.args.get('class_id')
     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
 
@@ -898,13 +878,6 @@ def show_create_class_form():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-
-    # if classroom is not None:
-    #     flash('A class currently exists for this user.')
-    #     return redirect('/')
-
-    # else:
     subjects_tup = db.session.query(Subject.name).all()
     subjects = []
 
@@ -922,7 +895,6 @@ def create_class():
     """Handle form to create a class and redirect to user homepage."""
 
     user_email = session['logged_in_user']
-    # oauth_params = session['oauth_params']
 
     name = request.form.get('class_name')
     subject = request.form.get('subject')
@@ -952,8 +924,6 @@ def show_student_roster():
     user = db.session.query(User).filter(User.user_email == user_email).first()
     user_f_name = user.f_name
 
-    # classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-    # class_id = classroom.class_id
     class_id = request.args.get('class_id')
     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
 
@@ -975,8 +945,6 @@ def add_student_to_roster():
     """Handle form to add student to class roster."""
 
     # user_email = session['logged_in_user']
-    # classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    # class_id = classroom.class_id
     class_id = request.form.get('class_id')
 
     f_name = request.form.get('f_name')
@@ -1043,7 +1011,7 @@ def show_exam():
 
         examresults = new_examresults.values()
 
-        # To order by exam_score in descending order:
+        # to order by exam_score in descending order:
         # examresults.sort()
         # examresults.reverse()
 
@@ -1114,14 +1082,7 @@ def add_new_exam():
 def add_new_score():
     """Handle form to add new score for specified exam."""
 
-    # ONLY HALFWAY DONE ISH
-
     # user_email = session['logged_in_user']
-    # classroom = Classroom.query.filter(Classroom.user_email == user_email).first()
-    # class_id = classroom.class_id
-
-    # name = request.form.get('exam-name')
-    # total_points = request.form.get('total-points')
 
     exam_id = request.form.get('exam_id')
     student_email = request.form.get('student_email')
