@@ -913,6 +913,11 @@ def create_class():
     db.session.add(new_class)
     db.session.commit()
 
+    ## HOW TO PASS NEW_CLASS_ID INTO CREATE-CLASS TO BE USED IN STUDENT-ROSTER? ##
+    # user_class_ids = db.session.query(Classroom.class_id).filter(Classroom.user_email == user_email)\
+    #                                                      .order_by(Classroom.class_id).all()
+    # new_class_id = user_class_ids[-1][0]
+
     return 'Created class.'
 
 
