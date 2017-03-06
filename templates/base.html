@@ -3,6 +3,7 @@
 <head>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Serif+Pro:400,600,700">
   <link rel="stylesheet" href='/static/index.css'>
 
   <title>{% block head %}HEAD HERE{% endblock %}</title>
@@ -51,9 +52,7 @@
     <div id='flash-msgs'></div>
   </div>
 
-  <div id='body-container' class="container">
-    {% block content %} CONTENT HERE {% endblock %}
-  </div>
+  {% block content %} CONTENT HERE {% endblock %}
 
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

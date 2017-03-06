@@ -4,82 +4,85 @@
 
 {% block content %}
 
-<div class="row">
-  <div class='col-lg-12'>
+<div id='body-container' class="container">
 
-    <h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
+  <div class="row">
+    <div class='col-lg-12'>
 
-    <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
+      <h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
 
-  </div>
-  <div class='col-lg-4'>
+      <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
 
-    <h3>Scores</h3>
+    </div>
+    <div class='col-lg-4'>
 
-    <table id='scores-table' style="width:80%">
-      <tr>
-        <th>Student</th>
-        <th>Score</th>
-      </tr>
+      <h3>Scores</h3>
 
-    {% if examresults %}
-
-        {% for examresult in examresults %}
-
+      <table id='scores-table' style="width:80%">
         <tr>
-          <td>{{ examresult.student_name }}</td>
-          <td>{{ examresult.exam_score }}</td>
+          <th>Student</th>
+          <th>Score</th>
         </tr>
 
-        {% endfor %}
+      {% if examresults %}
 
-    </table>
+          {% for examresult in examresults %}
 
-    {% else %}
+          <tr>
+            <td>{{ examresult.student_name }}</td>
+            <td>{{ examresult.exam_score }}</td>
+          </tr>
 
-    </table>
-    <p id='no-scores'>No scores yet.</p>
+          {% endfor %}
 
-    {% endif %}
+      </table>
 
-    <br>
-    <h4><a href='' id='add-score-button'>Add a New Score</a></h4>
+      {% else %}
 
-    <form id='add-score-form'>
-        <label>Student: </label>
-        <select id='student-email-field' name='student-name'>
-        {% for student in students %}
-            <option value='{{ student.student_email }}'>{{ student.f_name }} {{ student.l_name }}<br>
-        {% endfor %}
-        </select><br>
-        <label>Score: </label>
-        <input type='number' id='score-field' name='score' min='0' max='{{ exam.total_points }}'><br>
-        <input type='submit' id='add-score-submit' value='Add Score'>
-    </form>
+      </table>
+      <p id='no-scores'>No scores yet.</p>
 
-  </div>
-  <div class='col-lg-8'>
+      {% endif %}
 
-    <!-- https://bl.ocks.org/mbostock/4063318
-    https://bl.ocks.org/mbostock/4062085 -->
-    <div class='row'>
-      <div id="graph-view-button-group" class="btn-group" role="group" aria-label="...">
-        <a class="btn btn-default" id='bar-button' href="/" role="button">Bar</a>
-        <!-- <a class="btn btn-default" id='pie-button' href="/" role="button">Pie</a> -->
-        <a class="btn btn-default" id='scatterplot-button' href="/" role="button">Scatterplot</a>
-      </div>
+      <br>
+      <h4><a href='' id='add-score-button'>Add a New Score</a></h4>
+
+      <form id='add-score-form'>
+          <label>Student: </label>
+          <select id='student-email-field' name='student-name'>
+          {% for student in students %}
+              <option value='{{ student.student_email }}'>{{ student.f_name }} {{ student.l_name }}<br>
+          {% endfor %}
+          </select><br>
+          <label>Score: </label>
+          <input type='number' id='score-field' name='score' min='0' max='{{ exam.total_points }}'><br>
+          <input type='submit' id='add-score-submit' value='Add Score'>
+      </form>
+
     </div>
+    <div class='col-lg-8'>
 
-    <div class='row'>
-      <div id='exam-chart-div'>
-        <h3 class='exam-chart-title' id='bar-chart-title'>Grade Breakdown of Video Views</h3>
-        <h3 class='exam-chart-title' id='timestamp-chart-title'>Effect of Viewing Time on Grade</h3>
-        <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-        <!-- <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe> -->
-        <iframe id='timestamp-chart' class='exam-chart' src="/exam-timestamp-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+      <!-- https://bl.ocks.org/mbostock/4063318
+      https://bl.ocks.org/mbostock/4062085 -->
+      <div class='row'>
+        <div id="graph-view-button-group" class="btn-group" role="group" aria-label="...">
+          <a class="btn btn-default" id='bar-button' href="/" role="button">Bar</a>
+          <!-- <a class="btn btn-default" id='pie-button' href="/" role="button">Pie</a> -->
+          <a class="btn btn-default" id='scatterplot-button' href="/" role="button">Scatterplot</a>
+        </div>
       </div>
-    </div>
 
+      <div class='row'>
+        <div id='exam-chart-div'>
+          <h3 class='exam-chart-title' id='bar-chart-title'>Grade Breakdown of Video Views</h3>
+          <h3 class='exam-chart-title' id='timestamp-chart-title'>Effect of Viewing Time on Grade</h3>
+          <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+          <!-- <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe> -->
+          <iframe id='timestamp-chart' class='exam-chart' src="/exam-timestamp-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 

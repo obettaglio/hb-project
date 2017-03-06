@@ -4,11 +4,13 @@
 
 {% block content %}
 
-<h1 id='create-class-id' data-class="">Welcome!</h1>
+<div id='body-container' class="container">
 
-<h3 id='create-class-header'>Step 1: Create a Class</h3>
+  <h1 id='create-class-id' data-class="">Welcome!</h1>
 
-<form id='create-class-form'>
+  <h3 id='create-class-header'>Step 1: Create a Class</h3>
+
+  <form id='create-class-form'>
     <label>Class Name: </label>
     <input type='text' id='class-name-field' name='class-name'><br>
     <label>Subject: </label>
@@ -20,11 +22,11 @@
     <label>Start Date: </label>
     <input type='date' id='start-date-field' name='start-date'><br>
     <input type='submit' id='create-class-submit' value='Add Class'>
-</form>
+  </form>
 
-<h3 id='add-student-to-new-class-header'>Step 2: Create a Student Roster</h3>
+  <h3 id='add-student-to-new-class-header'>Step 2: Create a Student Roster</h3>
 
-<form id='add-student-to-new-class-form'>
+  <form id='add-student-to-new-class-form'>
     <label>First Name: </label>
     <input type='text' id='f-name-field' name='f-name'><br>
     <label>Last Name: </label>
@@ -34,9 +36,11 @@
     <label>Khan Academy Username: </label>
     <input type='text' id='khan-username-field' name='khan-username'><br>
     <input type='submit' id='add-student-to-new-class-submit' value='Add Student to Roster'>
-</form>
+  </form>
 
-<br>
-<h3 id='complete-class'>Step 3: <a href='/'>Complete Classroom</a></h3>
+  <br>
+  <h3 id='complete-class'>Step 3: <a href='/'>Complete Classroom</a></h3>
+
+</div>
 
 {% endblock %}

@@ -4,25 +4,29 @@
 
 {% block content %}
 
+<div id='body-container' class="container">
+
 <h1>Settings</h1>
 
-<div id='account-info'>
+  <div id='account-info'>
 
-	<h3>Account Info:</h3>
+    <h3>Account Info:</h3>
 
-	<form action='/settings' method='post'>
-		<label>First Name: </label>
-		<input type='text' name='f_name' value='{{ user.f_name }}' required><br>
-		<label>Last Name: </label>
-		<input type='text' name='l_name' value='{{ user.l_name }}' required><br>
-		<!-- <label>Email: </label>
-		<input type='text' name='user_email' value='{{ user.user_email }}' required><br> -->
-		<label>Zipcode: </label>
-		<input type='text' name='user_email' value='{{ user.zipcode }}'><br>
-		<label>District: </label>
-		<input type='text' name='user_email' value='{{ user.district }}'><br><br>
-		<input type='submit' class='btn btn-primary' value='Save Changes'>
-	</form>
+    <form action='/settings' method='post'>
+      <label>First Name: </label>
+      <input type='text' name='f_name' value='{{ user.f_name }}' required><br>
+      <label>Last Name: </label>
+      <input type='text' name='l_name' value='{{ user.l_name }}' required><br>
+      <!-- <label>Email: </label>
+      <input type='text' name='user_email' value='{{ user.user_email }}' required><br> -->
+      <label>Zipcode: </label>
+      <input type='text' name='user_email' value='{{ user.zipcode }}'><br>
+      <label>District: </label>
+      <input type='text' name='user_email' value='{{ user.district }}'><br><br>
+      <input type='submit' class='btn btn-primary' value='Save Changes'>
+    </form>
+
+  </div>
 
 </div>
 

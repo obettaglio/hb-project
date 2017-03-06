@@ -11,38 +11,22 @@
 
 {% block content %}
 
-<!-- <div class="backstretch" style="left: 0px; top: 0px; overflow: hidden; margin: 0px; padding: 0px; height: 1151px; width: 1362px; z-index: -999998; position: absolute;">
-  <img src="https://img.clipartfox.com/d2035a05dd58be8e3722299befbe75cf_-gallery-for-backgrounds-classroom-chalkboard-background-clipart_1600-1050.jpeg" style="position: absolute; margin: 0px; padding: 0px; border: none; width: 1726.5px; height: 1151px; max-height: none; max-width: none; z-index: -999999; left: -182.25px; top: -150px;">
-</div> -->
+<div id='homepage-container' class="container">
+  <div id='homepage-main-row' class='row'>
 
-<h1 class='homepage-main' id='homepage-title'>KhanLine</h1>
+    <h1 class='homepage-main' id='homepage-title'>KhanLine</h1>
 
-<h3 class='homepage-main'>Who are we?</h3>
-
-<p class='homepage-main' id='app-description'>Here at KhanLine, we provide a vital tool for any Khan Academy Coach... the ability to compare online progress and in-class performance.</p>
-
-<div class='container'>
-
-  <div class='col-lg-3'>
-    <a href="/register" class='btn btn-primary'>Register</a><br>
-    <p class='register-on-homepage'>We keep it simple. Just connect your Khan Academy account!</p>
-
-    <form action='/register' method='post' id='khan-register-form' class='register-on-homepage'>
-        <input type='submit' id='khan-register-submit' value='Sign in to Khan Academy'>
-    </form>
   </div>
 
-  <div class='col-lg-3'>
-    <a href="/login" class='btn btn-primary'>Sign In</a><br>
-    <form action='/login' method='post' id='login-form' class='login-on-homepage'>
-      <label>Email: </label>
-      <input type='text' name='email'><br>
-      <label>Password: </label>
-      <input type='text' name='password'><br>
-      <input type='submit' value='Sign In'>
-    </form>
-  </div>
+  <div id='homepage-second-row' class='row'>
 
+    <h2 class='homepage-second' id='desc-title'>Who are we?</h2>
+
+    <h4 class='homepage-second' id='desc-body'>At KhanLine, we provide a vital tool for any Khan Academy coach...<br>the ability to compare online progress and in-class performance.</h4>
+
+    <a href="/register" class='btn btn-primary btn-block' id='homepage-sign-up-btn'>Sign Up</a><br>
+
+  </div>
 </div>
 
 

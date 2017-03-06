@@ -4,52 +4,56 @@
 
 {% block content %}
 
-<h1 id='roster-class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }} Student Roster</h1>
+<div id='body-container' class="container">
 
-<h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
+  <h1 id='roster-class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }} Student Roster</h1>
 
-<br>
-<table id='student-roster-table' style="width:75%">
-  <tr>
-    <th>Name</th>
-    <th>Email</th> 
-    <th>Username</th>
-  </tr>
+  <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
 
-{% if students %}
-
-    {% for student in students %}
-
+  <br>
+  <table id='student-roster-table' style="width:75%">
     <tr>
-      <td>{{ student.f_name }} {{ student.l_name }}</td>
-      <td>{{ student.student_email }}</td> 
-      <td>{{ student.khan_username }}</td>
+      <th>Name</th>
+      <th>Email</th> 
+      <th>Username</th>
     </tr>
 
-    {% endfor %}
+  {% if students %}
 
-</table>
+      {% for student in students %}
 
-{% else %}
+      <tr>
+        <td>{{ student.f_name }} {{ student.l_name }}</td>
+        <td>{{ student.student_email }}</td> 
+        <td>{{ student.khan_username }}</td>
+      </tr>
 
-</table>
-<p id='no-students'>No students yet.</p>
+      {% endfor %}
 
-{% endif %}
+  </table>
 
-<br>
-<h4><a href='' id='add-student-to-roster-button'>Add a New Student</a></h4>
+  {% else %}
 
-<form id='add-student-to-roster-form'>
-  <label>First Name: </label>
-    <input type='text' id='f-name-field' name='f-name'><br>
-  <label>Last Name: </label>
-    <input type='text' id='l-name-field' name='l-name'><br>
-  <label>Email: </label>
-    <input type='text' id='student-email-field' name='student-email'><br>
-  <label>Khan Academy Username: </label>
-    <input type='text' id='khan-username-field' name='khan-username'><br>
-  <input type='submit' id='add-student-to-roster-submit' value='Add Student'>
-</form>
+  </table>
+  <p id='no-students'>No students yet.</p>
+
+  {% endif %}
+
+  <br>
+  <h4><a href='' id='add-student-to-roster-button'>Add a New Student</a></h4>
+
+  <form id='add-student-to-roster-form'>
+    <label>First Name: </label>
+      <input type='text' id='f-name-field' name='f-name'><br>
+    <label>Last Name: </label>
+      <input type='text' id='l-name-field' name='l-name'><br>
+    <label>Email: </label>
+      <input type='text' id='student-email-field' name='student-email'><br>
+    <label>Khan Academy Username: </label>
+      <input type='text' id='khan-username-field' name='khan-username'><br>
+    <input type='submit' id='add-student-to-roster-submit' value='Add Student'>
+  </form>
+
+</div>
 
 {% endblock %}

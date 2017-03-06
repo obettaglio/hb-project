@@ -11,41 +11,45 @@
 
 {% block content %}
 
-<div class='auth-form-div'>
-  <form accept-charset="UTF-8" action="/login" method="post">
-    <!-- <div style="margin:0;padding:0;display:inline">
-      <input name="utf8" type="hidden" value="✓">
-      <input name="authenticity_token" type="hidden" value="4SuFadPv+YJxIjWfw0bD2/4BxX1CVXkFLAuhA3WW4kPGZWI4t9O0d8K1kvdweYbUTyeTud34VNFy/3l9/CPQrw==">
-    </div> -->
+<div id='body-container' class="container">
 
-    <div class="auth-form-header p-0">
-        <h1>Sign In</h1>
-    </div>
+  <div class='auth-form-div'>
+    <form accept-charset="UTF-8" action="/login" method="post">
+      <!-- <div style="margin:0;padding:0;display:inline">
+        <input name="utf8" type="hidden" value="✓">
+        <input name="authenticity_token" type="hidden" value="4SuFadPv+YJxIjWfw0bD2/4BxX1CVXkFLAuhA3WW4kPGZWI4t9O0d8K1kvdweYbUTyeTud34VNFy/3l9/CPQrw==">
+      </div> -->
 
-    <div id="js-flash-container">
-    </div>
+      <div class="auth-form-header p-0">
+          <h1>Sign In</h1>
+      </div>
 
-    <div class="auth-form-body mt-3">
+      <div id="js-flash-container">
+      </div>
 
-        <label for="login_field">
-          Email address
-        </label>
-        <input autocapitalize="off" autocorrect="off" autofocus="autofocus" class="form-control input-block" id="email-field" name="email" tabindex="1" type="text">
+      <div class="auth-form-body mt-3">
 
-        <label for="password">
-          Password
-        </label>
-        <input class="form-control input-block" id="password-field" name="password" tabindex="2" type="password">
+          <label for="login_field">
+            Email address
+          </label>
+          <input autocapitalize="off" autocorrect="off" autofocus="autofocus" class="form-control input-block" id="email-field" name="email" tabindex="1" type="text">
 
-        <a href="/password-reset" class="forgot-pwd-link">Forgot password?</a>
+          <label for="password">
+            Password
+          </label>
+          <input class="form-control input-block" id="password-field" name="password" tabindex="2" type="password">
 
-        <input class="btn btn-primary btn-block" id='login-btn' data-disable-with="Signing in…" name="commit" tabindex="3" type="submit" value="Sign in">
-    </div>
-  </form>
+          <a href="/password-reset" class="forgot-pwd-link">Forgot password?</a>
 
-  <p class='alternate-auth'>
-    Not yet a user? <a href='/register'>Create an account.</a>
-  </p>
+          <input class="btn btn-primary btn-block" id='login-btn' data-disable-with="Signing in…" name="commit" tabindex="3" type="submit" value="Sign in">
+      </div>
+    </form>
+
+    <p class='alternate-auth'>
+      Not yet a user? <a href='/register'>Create an account.</a>
+    </p>
+  </div>
+
 </div>
 
 <!-- <h1>Sign in to KhanLine</h1>
