@@ -55,7 +55,7 @@ function getScoreInfo(evt) {
            );
 }
 
-function changeChartDisplay(evt, chart) {
+function changeChartDisplay(evt, chart, chart_title) {
     // prevent button from redirecting,
     // hide all charts,
     // show desired chart
@@ -64,11 +64,13 @@ function changeChartDisplay(evt, chart) {
 
     $('.exam-chart').hide();
     chart.show();
+    $('.exam-chart-title').hide();
+    chart_title.show();
 }
 
 $('#add-score-button').on('click', showAddScoreForm);
 $('#add-score-submit').on('click', getScoreInfo);
 
-$('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'))});
-$('#pie-button').on('click', function(evt) {changeChartDisplay(evt, $('#pie-chart'))});
-$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-chart'))});
+$('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'), $('#bar-chart-title'))});
+// $('#pie-button').on('click', function(evt) {changeChartDisplay(evt, $('#pie-chart'))});
+$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-chart'), $('#timestamp-chart-title'))});

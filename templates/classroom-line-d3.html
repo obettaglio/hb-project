@@ -19,6 +19,15 @@
   fill: #e67e22;
 }
 
+.grid line {
+  stroke: lightgrey;
+  opacity: 0.7;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
 </style>
 <svg width="760" height="500"></svg>
 <script src="//d3js.org/d3.v4.min.js"></script>
@@ -87,10 +96,15 @@ d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, dat
 
   g.append("g")
       .attr("class", "axisGreen")
-      .call(d3.axisLeft(y0))
+      .call(d3.axisLeft(y0)
+          .tickSize(0)
+          .tickPadding(7))
+          // .ticks(10)
+          // .tickSize(-(width - 90))
+          // .tickPadding(7))
     .append("text")
       // .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr("y", 13)
       .attr("dx", "0.5em")
       .attr("dy", "0.71em")
       .attr("fill", "#000")
@@ -101,16 +115,25 @@ d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, dat
   g.append("g")
       .attr("class", "axisOrange")
       .attr("transform", "translate(" + (width - 90) + ", 0)")
-      .call(d3.axisRight(y1))
+      .call(d3.axisRight(y1)
+          .tickSize(0)
+          .tickPadding(7))
     .append("text")
       // .attr("transform", "rotate(90)")
-      .attr("y", 366)
+      .attr("y", 365)
       .attr("dx", "-0.5em")
       .attr("dy", "0.71em")
       .attr("fill", "#000")
       .text("View Rate")
       .style("font-size", "16px")
       .style("text-anchor", "end");
+
+  g.append("g")
+      .attr("class", "grid")
+      .call(d3.axisLeft(y0)
+          .ticks(10)
+          .tickSize(-(width - 90))
+          .tickFormat(""))
 
 });
 

@@ -133,8 +133,8 @@ p.register-on-homepage {
     font-weight: bold;
 }
 
-#pie-chart,
-#timestamp-chart {
+#timestamp-chart,
+#timestamp-chart-title {
     display: none;
 }
 

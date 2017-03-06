@@ -244,6 +244,11 @@ def generate_examresults():
                     else:
                         score = random.randint(45, 80)
 
+                if num_exam_videos > 12:
+                    score = min((score + random.randint(3, 10)), 100)
+                elif num_exam_videos < 9:
+                    score = score - random.randint(3, 10)
+
                 examresult = ExamResult(exam_id=exam_id,
                                         student_email=student_email,
                                         score=score)
