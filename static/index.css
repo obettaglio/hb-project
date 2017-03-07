@@ -180,6 +180,37 @@ h4, h5, h6, p, a, li, table {
     padding-bottom: 10px;
 }
 
+.in-app-form-body {
+    padding: 20px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 70%;
+    font-size: 14px;
+}
+
+.form-control.add-score-form-control {
+    /*display: inline-block;*/
+    min-height: 0;
+    margin-bottom: 0;
+}
+
+#student-email-field {
+    display: inline-block;
+    width: 70%;
+    margin-bottom: 7px;
+}
+
+#score-field {
+    display: inline-block;
+    width: 30%;
+}
+
+#add-score-submit {
+    display: inline-block;
+    margin: 0 auto;
+    width: 45%;
+}
+
 #exam-scores-col {
     padding-top: 41px;
 }
