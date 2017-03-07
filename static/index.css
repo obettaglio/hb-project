@@ -1,6 +1,7 @@
-#body-container {
+.container.body-container {
     background: url("/static/images/crossword.png");
     border-radius: 7px;
+    min-height: 600px;
 }
 
 #add-student-to-new-class-header,
@@ -19,6 +20,7 @@
     font-family: 'Pridi', serif;
     font-size: 26px;
     font-weight: 500;
+    text-shadow: 0 -1px 0 #02120F;
 }
 
 .navbar-default .navbar-brand,
@@ -42,17 +44,20 @@
 .btn-primary:active:focus,
 .btn-primary:visited {
     background-color: #16a085;
-    border-color: #829aa8;
+    border-color: rgba(0,0,0,0.25);
+    background-image: linear-gradient(-180deg, #1dd4b0 0%, #16a085 90%);
+    font-family: 'Pridi', serif;
 }
 
 .btn-primary:hover {
     background-color: #1abc9c;
-    border-color: #829aa8;
+    border-color: rgba(0,0,0,0.25);
+    background-image: linear-gradient(-180deg, #1abd9d 0%, #16a085 90%);
 }
 
 #homepage-sign-up-btn {
-    padding: 12px 24px;
-    font-family: 'Pridi', serif;
+    padding: 12px 48px;
+    /*font-family: 'Pridi', serif;*/
     font-size: 18px;
 }
 
@@ -69,9 +74,9 @@
     padding: 10px 20px;
     margin: 0;
     text-align: center;
+    font-family: 'Pridi', serif;
     color: #fff;
     text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
-    /*background-color: #829aa8;*/
     background-color: #16a085;
     border: 1px solid #768995;
     border-radius: 3px 3px 0 0;
@@ -108,19 +113,11 @@
     display: none;
 }
 
-#graph-view-button-group {
+/*#graph-view-button-group {
     display: block;
     margin: auto;
     width: 50%;
-}
-
-#homepage-main-row {
-    background-size: cover;
-    background-image: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
-    height: 600px;
-}
+}*/
 
 h1, h2, h3 {
     font-family: 'Source Serif Pro', serif;
@@ -134,14 +131,17 @@ h4, h5, h6, p, a, li, table {
     font-family: 'Open Sans', sans-serif;
 }
 
-/*h1.homepage-second {
-    font-family: 'Pridi', serif;
-}*/
+#homepage-first-row {
+    background-size: cover;
+    background-image: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
+    border-radius: 7px;
+    height: 650px;
+}
 
 #homepage-title {
     padding: 70px;
     color: white;
-    font-family: 'Pridi';
+    font-family: 'Pridi', serif;
     font-size: 96px;
     font-weight: 500;
     text-shadow: 0 -2px 0 #02120F;
@@ -150,22 +150,34 @@ h4, h5, h6, p, a, li, table {
     text-align: center;
 }
 
-#homepage-second-row {
-    background-color: #02120F;
+#homepage-inner-div {
+    position: relative;
+    margin: -50px 250px 0 250px;
     height: 350px;
+    border-radius: 7px;
+    background-color: rgba(2, 18, 15, 0.75);
+    /*background-color: #02120F;*/
+    display: none;
 }
 
-.homepage-second {
+.homepage-inner {
     color: white;
     text-align: center;
+    /*margin: 20px 60px 0 60px;*/
 }
 
 #desc-title {
-    padding: 70px 0 10px 0;
+    padding: 40px 0 10px 0;
+    font-size: 40px;
 }
 
 #desc-body {
     padding: 10px 0 30px;
+}
+
+.classroom-list-container {
+    padding-left: 60px;
+    padding-bottom: 10px;
 }
 
 #exam-scores-col {

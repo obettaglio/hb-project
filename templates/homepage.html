@@ -12,13 +12,25 @@
 {% block content %}
 
 <div id='homepage-container' class="container">
-  <div id='homepage-main-row' class='row'>
+  <div id='homepage-first-row' class='row'>
 
-    <h1 class='homepage-main' id='homepage-title'>KhanLine</h1>
+    <div class='homepage-outer-div'>
+      <h1 class='homepage-main' id='homepage-title'>KhanLine</h1>
+    </div>
+
+    <div id='homepage-inner-div'>
+      <h1 class='homepage-inner' id='desc-title'>Who are we?</h1>
+
+      <h4 class='homepage-inner' id='desc-body'>KhanLine provides a vital tool for teachers<br>who welcome technology in the classroom:<br><br>the ability to compare online progress<br>and in-class performance.</h4>
+
+      <div class='btn-holder'>
+        <a href="/register" class='btn btn-primary' id='homepage-sign-up-btn'>Sign Up</a><br>
+      </div>
+    </div>
 
   </div>
 
-  <div id='homepage-second-row' class='row'>
+  <!-- <div id='homepage-second-row' class='row'>
 
     <h1 class='homepage-second' id='desc-title'>Who are we?</h1>
 
@@ -28,7 +40,7 @@
       <a href="/register" class='btn btn-primary homepage-btn' id='homepage-sign-up-btn'>Sign Up</a><br>
     </div>
 
-  </div>
+  </div> -->
 </div>
 
 

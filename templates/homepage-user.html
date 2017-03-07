@@ -4,32 +4,36 @@
 
 {% block content %}
 
-<div id='body-container' class="container">
+<div id='homepage-user-container' class="container body-container">
 
-	<h1>Welcome!</h1>
+    <h1>Welcome!</h1>
 
-	<h3>Your Classrooms:</h3>
+    <div class='classroom-list-container'>
 
-	<div id='classroom-list'>
+        <h3>Your Classrooms:</h3>
 
-	  {% if classrooms %}
+        <div id='classroom-list'>
 
-	    {% for classroom in classrooms %}
+          {% if classrooms %}
 
-	      <h4><a href="/classroom?class_id={{ classroom.class_id }}">{{ classroom.name }}</h4></p>
+            {% for classroom in classrooms %}
 
-	    {% endfor %}
+              <h4><a href="/classroom?class_id={{ classroom.class_id }}">{{ classroom.name }}</h4></p>
 
-	  {% else %}
+            {% endfor %}
 
-	    <p>No classrooms yet!</p>
+          {% else %}
 
-	  {% endif %}
+            <p>No classrooms yet!</p>
 
-	</div>
+          {% endif %}
 
-	<br>
-	<h4><a class='btn btn-primary' href='/create-class'>Add a New Classroom</a></h4>
+        </div>
+    </div>
+
+    <div class='classroom-list-container'>
+        <h4><a class='btn btn-primary' href='/create-class'>Add a New Classroom</a></h4>
+    </div>
 
 </div>
 
