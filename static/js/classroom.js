@@ -15,7 +15,7 @@ function resetAddExamForm(result) {
 
     console.dir(result);
 
-    $('#flash-msgs').append("<h4 class='msg'>Added exam.</h4>");
+    $('#added-exam-flash').append("<p class='msg'><br>Added exam.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);

@@ -172,6 +172,14 @@ h4, h5, h6, p, a, table {
     padding-top: 41px;
 }
 
+#curtain {
+    padding-left: 70px;
+}
+
+#chart-container {
+    display: none;
+}
+
 #timestamp-chart,
 #timestamp-chart-title {
     display: none;

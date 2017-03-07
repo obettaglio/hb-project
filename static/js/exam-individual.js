@@ -1,6 +1,18 @@
 // Adding a score to an exam
 // Changing chart display according to user command
 
+function removeLoadingGif() {
+    // remove curtain div,
+    // show chart div
+
+    setTimeout(function() {
+        $('#curtain').hide();
+        $('#chart-container').show();
+    }, 3000);
+}
+
+removeLoadingGif()
+
 function showAddScoreForm(evt) {
     // display add-score-form
 
@@ -16,7 +28,7 @@ function resetAddScoreForm(result) {
 
     console.dir(result);
 
-    $('#flash-msgs').append("<h4 class='msg'>Added score.</h4>");
+    $('#added-score-flash').append("<p class='msg'><br>Added score.</h4>");
     setTimeout(function() {
         $('.msg').remove();
     }, 2000);
@@ -31,7 +43,7 @@ function resetAddScoreForm(result) {
     $('#student-email-field').val('');  // clear val() for dropdown?
     $('#score-field').val('');
 
-    $('#exam-chart-div').load(document.URL +  ' #exam-chart-div');
+    $('#chartdiv').load(document.URL +  ' #chartdiv');
 }
 
 function getScoreInfo(evt) {

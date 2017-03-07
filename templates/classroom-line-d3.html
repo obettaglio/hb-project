@@ -1,144 +1,155 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
 
-/*.axis--x path {
-  display: none;
-}*/
+<head>
+  <title>Line Chart</title>
 
-.line {
-  fill: none;
-  stroke-width: 1.5px;
-}
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Serif+Pro|Pridi:400,500" rel="stylesheet">
 
-.axisGreen text{
-  fill: #1abc9c;
-}
+  <style>
 
-.axisOrange text{
-  fill: #e67e22;
-}
+    /*.axis--x path {
+      display: none;
+    }*/
 
-.grid line {
-  stroke: lightgrey;
-  opacity: 0.7;
-}
+    .line {
+      fill: none;
+      stroke-width: 1.5px;
+    }
 
-.grid path {
-  stroke-width: 0;
-}
+    .axisGreen text{
+      fill: #1abc9c;
+    }
 
-text {
-  font-family: 'Source Sans Pro', sans-serif;
-}
+    .axisOrange text{
+      fill: #e67e22;
+    }
 
-</style>
-<svg width="760" height="500"></svg>
-<script src="//d3js.org/d3.v4.min.js"></script>
-<script>
+    .grid line {
+      stroke: lightgrey;
+      opacity: 0.7;
+    }
 
-var svg = d3.select("svg"),
-    margin = {top: 20, right: 80, bottom: 90, left: 50},
-    width = svg.attr("width") - margin.left - margin.right,
-    height = svg.attr("height") - margin.top - margin.bottom,
-    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .grid path {
+      stroke-width: 0;
+    }
 
-var x = d3.scaleOrdinal(),
-    y0 = d3.scaleLinear().range([height, 0]),
-    y1 = d3.scaleLinear().range([height, 0]);
-    // z = d3.scaleOrdinal()
-    //     .range(['#1abc9c', '#f1c40f', '#e67e22']);
-        // 2: '#16a085', 4: '#f39c12',
+    text {
+      font-family: 'Open Sans', sans-serif;
+    }
 
-var lineOne = d3.line()
-    .curve(d3.curveBasis)
-    .x(function(d) { return x(d.examName); })
-    .y(function(d) { return y0(d.avgScore); });
+  </style>
+</head>
 
-var lineTwo = d3.line()
-    .curve(d3.curveBasis)
-    .x(function(d) { return x(d.examName); })
-    .y(function(d) { return y1(d.avgNumVideos); });
+<body>
 
-d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, data) {
-  if (error) throw error;
+  <svg width="760" height="500"></svg>
+  <script src="//d3js.org/d3.v4.min.js"></script>
+  <script>
 
-  var numPoints = data.length;
-  var xWidth = width / numPoints;
+  var svg = d3.select("svg"),
+      margin = {top: 20, right: 80, bottom: 90, left: 50},
+      width = svg.attr("width") - margin.left - margin.right,
+      height = svg.attr("height") - margin.top - margin.bottom,
+      g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  x.domain(data.map(function(d, i) { return d.examName; }))
-      .range(data.map(function(d, i) { return i * xWidth; }));
+  var x = d3.scaleOrdinal(),
+      y0 = d3.scaleLinear().range([height, 0]),
+      y1 = d3.scaleLinear().range([height, 0]);
+      // z = d3.scaleOrdinal()
+      //     .range(['#1abc9c', '#f1c40f', '#e67e22']);
+          // 2: '#16a085', 4: '#f39c12',
 
-  y0.domain([0, 100]);
-  y1.domain([0, 20]);
-  // y.domain(
-    // d3.min(lines, function(c) { return d3.min(c.values, function(d) { return d.dataValue; }); }),
-    // d3.max(lines, function(c) { return d3.max(c.values, function(d) { return d.dataValue; }); })
-  // ]);
+  var lineOne = d3.line()
+      .curve(d3.curveBasis)
+      .x(function(d) { return x(d.examName); })
+      .y(function(d) { return y0(d.avgScore); });
 
-  // z.domain(data.map(function(d) { return d.examName; }));
+  var lineTwo = d3.line()
+      .curve(d3.curveBasis)
+      .x(function(d) { return x(d.examName); })
+      .y(function(d) { return y1(d.avgNumVideos); });
 
-  g.append("path")
-      .data([data])
-      .attr("class", "line")
-      .attr("d", lineOne)
-      .style("stroke", "#1abc9c");
+  d3.json("/classroom-line-data.json?class_id={{ class_id }}", function(error, data) {
+    if (error) throw error;
 
-  g.append("path")
-      .data([data])
-      .attr("class", "line")
-      .attr("d", lineTwo)
-      .style("stroke", "#e67e22");
+    var numPoints = data.length;
+    var xWidth = width / numPoints;
 
-  g.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-    .selectAll("text")
-      .attr("transform", "rotate(20)")
-      .style("text-anchor", "start");
+    x.domain(data.map(function(d, i) { return d.examName; }))
+        .range(data.map(function(d, i) { return i * xWidth; }));
 
-  g.append("g")
-      .attr("class", "axisGreen")
-      .call(d3.axisLeft(y0)
-          .tickSize(0)
-          .tickPadding(7))
-          // .ticks(10)
-          // .tickSize(-(width - 90))
-          // .tickPadding(7))
-    .append("text")
-      // .attr("transform", "rotate(-90)")
-      .attr("y", 13)
-      .attr("dx", "0.5em")
-      .attr("dy", "0.71em")
-      .attr("fill", "#000")
-      .text("Exam Average")
-      .style("font-size", "16px")
-      .style("text-anchor", "start");
+    y0.domain([0, 100]);
+    y1.domain([0, 20]);
+    // y.domain(
+      // d3.min(lines, function(c) { return d3.min(c.values, function(d) { return d.dataValue; }); }),
+      // d3.max(lines, function(c) { return d3.max(c.values, function(d) { return d.dataValue; }); })
+    // ]);
 
-  g.append("g")
-      .attr("class", "axisOrange")
-      .attr("transform", "translate(" + (width - 90) + ", 0)")
-      .call(d3.axisRight(y1)
-          .tickSize(0)
-          .tickPadding(7))
-    .append("text")
-      // .attr("transform", "rotate(90)")
-      .attr("y", 365)
-      .attr("dx", "-0.5em")
-      .attr("dy", "0.71em")
-      .attr("fill", "#000")
-      .text("View Rate")
-      .style("font-size", "16px")
-      .style("text-anchor", "end");
+    // z.domain(data.map(function(d) { return d.examName; }));
 
-  g.append("g")
-      .attr("class", "grid")
-      .call(d3.axisLeft(y0)
-          .ticks(10)
-          .tickSize(-(width - 90))
-          .tickFormat(""))
+    g.append("path")
+        .data([data])
+        .attr("class", "line")
+        .attr("d", lineOne)
+        .style("stroke", "#1abc9c");
 
-});
+    g.append("path")
+        .data([data])
+        .attr("class", "line")
+        .attr("d", lineTwo)
+        .style("stroke", "#e67e22");
 
-</script>
+    g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+      .selectAll("text")
+        .attr("transform", "rotate(20)")
+        .style("text-anchor", "start");
+
+    g.append("g")
+        .attr("class", "axisGreen")
+        .call(d3.axisLeft(y0)
+            .tickSize(0)
+            .tickPadding(7))
+            // .ticks(10)
+            // .tickSize(-(width - 90))
+            // .tickPadding(7))
+      .append("text")
+        // .attr("transform", "rotate(-90)")
+        .attr("y", 13)
+        .attr("dx", "0.5em")
+        .attr("dy", "0.71em")
+        .attr("fill", "#000")
+        .text("Exam Average")
+        .style("font-size", "16px")
+        .style("text-anchor", "start");
+
+    g.append("g")
+        .attr("class", "axisOrange")
+        .attr("transform", "translate(" + (width - 90) + ", 0)")
+        .call(d3.axisRight(y1)
+            .tickSize(0)
+            .tickPadding(7))
+      .append("text")
+        // .attr("transform", "rotate(90)")
+        .attr("y", 365)
+        .attr("dx", "-0.5em")
+        .attr("dy", "0.71em")
+        .attr("fill", "#000")
+        .text("View Rate")
+        .style("font-size", "16px")
+        .style("text-anchor", "end");
+
+    g.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y0)
+            .ticks(10)
+            .tickSize(-(width - 90))
+            .tickFormat(""))
+
+  });
+
+  </script>
+</body>

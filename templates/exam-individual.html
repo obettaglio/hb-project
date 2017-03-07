@@ -59,6 +59,8 @@
           <input type='submit' id='add-score-submit' value='Add Score'>
       </form>
 
+      <div id='added-score-flash'></div>
+
     </div>
     <div class='col-lg-8'>
 
@@ -86,10 +88,18 @@
             <img id='chart-loading-gif' src='/static/reload.svg'>
           </div> -->
 
-          <!-- <div id='chart-container'> -->
-          <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-          <iframe id='timestamp-chart' class='exam-chart' src="/exam-timestamp-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-          <!-- </div> -->
+          <div id='chart-container'>
+            <div id='chartdiv'>
+              <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+              <iframe id='timestamp-chart' class='exam-chart' src="/exam-timestamp-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+            </div>
+          </div>
+
+          <div id='curtain'>
+            <div class='uil-reload-css' style='-webkit-transform:scale(0.6)'>
+              <div></div>
+            </div>
+          </div>
 
         </div>
       </div>
