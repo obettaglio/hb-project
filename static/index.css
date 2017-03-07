@@ -185,6 +185,12 @@ h4, h5, h6, p, a, li, table, .msg {
     padding-bottom: 10px;
 }
 
+#classroom-table td {
+    padding: 5px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
 .in-app-form-body {
     padding: 20px;
     margin-top: 5px;

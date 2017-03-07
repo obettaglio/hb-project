@@ -12,7 +12,7 @@
 
         <h3>Your Courses:</h3>
 
-        <div id='classroom-list'>
+        <!-- <div id='classroom-list'>
 
           {% if classrooms %}
 
@@ -28,7 +28,36 @@
 
           {% endif %}
 
-        </div>
+        </div> -->
+
+        <table id='classroom-table' style="width:67%">
+          <!-- <tr>
+            <th>Student</th>
+            <th>Score</th>
+          </tr> -->
+
+        {% if classrooms %}
+
+            {% for classroom in classrooms %}
+
+            <tr>
+              <td><h4><a href="/classroom?class_id={{ classroom.class_id }}">{{ classroom.name }}</h4></td>
+              <td>{{ subject_dict[classroom.subject_code] }}</td>
+              <td>{{ classroom.school }}</td>
+              <td>{{ classroom.year }}</td>
+              <td><a href='#'>Edit Course</a></td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+        {% else %}
+
+        </table>
+        <p id='no-classrooms'>No courses yet!</p>
+
+        {% endif %}
     </div>
 
     <div class='classroom-list-container'>

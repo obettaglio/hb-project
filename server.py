@@ -50,9 +50,16 @@ def index():
 
         classrooms = db.session.query(Classroom).filter(Classroom.user_email == user_email).all()
 
+        subject_dict = {}
+        subjects = db.session.query(Subject.subject_code, Subject.name).all()
+        for subject in subjects:
+            subject_dict[subject[0]] = subject[1]
+        print subject_dict
+
         return render_template('homepage-user.html',
                                user_f_name=user_f_name,
-                               classrooms=classrooms)
+                               classrooms=classrooms,
+                               subject_dict=subject_dict)
 
         # else:
         #     return render_template('homepage-user-empty.html',
