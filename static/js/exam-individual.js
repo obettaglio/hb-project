@@ -55,12 +55,15 @@ function getScoreInfo(evt) {
            );
 }
 
-function changeChartDisplay(evt, chart, chart_title) {
+function changeChartDisplay(evt, this_panel, that_panel, chart, chart_title) {
     // prevent button from redirecting,
     // hide all charts,
     // show desired chart
 
     evt.preventDefault();
+
+    this_panel.attr("class", "active")
+    that_panel.removeAttr("class")
 
     $('.exam-chart').hide();
     chart.show();
@@ -71,6 +74,8 @@ function changeChartDisplay(evt, chart, chart_title) {
 $('#add-score-button').on('click', showAddScoreForm);
 $('#add-score-submit').on('click', getScoreInfo);
 
-$('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'), $('#bar-chart-title'))});
-// $('#pie-button').on('click', function(evt) {changeChartDisplay(evt, $('#pie-chart'))});
-$('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-chart'), $('#timestamp-chart-title'))});
+// $('#bar-button').on('click', function(evt) {changeChartDisplay(evt, $('#bar-chart'), $('#bar-chart-title'))});
+// $('#scatterplot-button').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-chart'), $('#timestamp-chart-title'))});
+
+$('#bar-panel').on('click', function(evt) {changeChartDisplay(evt, $('#bar-panel'), $('#timestamp-panel'), $('#bar-chart'), $('#bar-chart-title'))});
+$('#timestamp-panel').on('click', function(evt) {changeChartDisplay(evt, $('#timestamp-panel'), $('#bar-panel'), $('#timestamp-chart'), $('#timestamp-chart-title'))});

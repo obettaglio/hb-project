@@ -11,10 +11,10 @@
 
       <h1 id='exam-id' data-exam="{{ exam.exam_id }}">{{ exam.name }}</h1>
 
-      <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
+      <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to {{ classroom.name }}</a></h4>
 
     </div>
-    <div class='col-lg-4'>
+    <div class='col-lg-4' id='exam-scores-col'>
 
       <h3>Scores</h3>
 
@@ -62,23 +62,35 @@
     </div>
     <div class='col-lg-8'>
 
-      <!-- https://bl.ocks.org/mbostock/4063318
-      https://bl.ocks.org/mbostock/4062085 -->
       <div class='row'>
-        <div id="graph-view-button-group" class="btn-group" role="group" aria-label="...">
+        <!-- <div id="graph-view-button-group" class="btn-group" role="group" aria-label="...">
           <a class="btn btn-default" id='bar-button' href="/" role="button">Bar</a>
-          <!-- <a class="btn btn-default" id='pie-button' href="/" role="button">Pie</a> -->
           <a class="btn btn-default" id='scatterplot-button' href="/" role="button">Scatterplot</a>
-        </div>
+        </div> -->
+        <ul class="nav nav-tabs">
+          <li role="presentation" id="bar-panel" class="active"><a href="#">Bar</a></li>
+          <li role="presentation" id="timestamp-panel"><a href="#">Scatterplot</a></li>
+        </ul>
       </div>
 
       <div class='row'>
         <div id='exam-chart-div'>
+
           <h3 class='exam-chart-title' id='bar-chart-title'>Grade Breakdown of Video Views</h3>
           <h3 class='exam-chart-title' id='timestamp-chart-title'>Effect of Viewing Time on Grade</h3>
+
+          <!-- <div class='uil-reload-css' style='-webkit-transform:scale(0.6)'>
+            <div></div>
+          </div> -->
+          <!-- <div id='chart-loading-div'>
+            <img id='chart-loading-gif' src='/static/reload.svg'>
+          </div> -->
+
+          <!-- <div id='chart-container'> -->
           <iframe id='bar-chart' class='exam-chart' src="/exam-bar-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
-          <!-- <iframe id='pie-chart' class='exam-chart' src="/exam-pie-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe> -->
           <iframe id='timestamp-chart' class='exam-chart' src="/exam-timestamp-d3?exam_id={{ exam.exam_id }}" width="860px" height="650px" seamless frameBorder="0" scrolling="no"></iframe>
+          <!-- </div> -->
+
         </div>
       </div>
 

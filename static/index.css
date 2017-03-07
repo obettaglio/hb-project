@@ -1,5 +1,5 @@
 #body-container {
-    background: url("/static/crossword.png");
+    background: url("/static/images/crossword.png");
     border-radius: 7px;
 }
 
@@ -16,9 +16,9 @@
 }
 
 .navbar-default .navbar-brand {
-    font-family: 'Source Serif Pro', serif;
-    font-size: 24px;
-    font-weight: 600;
+    font-family: 'Pridi', serif;
+    font-size: 26px;
+    font-weight: 500;
 }
 
 .navbar-default .navbar-brand,
@@ -39,6 +39,7 @@
 
 .btn-primary,
 .btn-primary:active,
+.btn-primary:active:focus,
 .btn-primary:visited {
     background-color: #16a085;
     border-color: #829aa8;
@@ -47,6 +48,16 @@
 .btn-primary:hover {
     background-color: #1abc9c;
     border-color: #829aa8;
+}
+
+#homepage-sign-up-btn {
+    padding: 12px 24px;
+    font-family: 'Pridi', serif;
+    font-size: 18px;
+}
+
+.btn-holder {
+    text-align: center;
 }
 
 .auth-form-div {
@@ -106,6 +117,8 @@
 #homepage-main-row {
     background-size: cover;
     background-image: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
     height: 600px;
 }
 
@@ -113,20 +126,25 @@ h1, h2, h3 {
     font-family: 'Source Serif Pro', serif;
 }
 
-h1, h2 {
+/*h1, h2 {
     font-weight: 600;
+}*/
+
+h4, h5, h6, p, a, table {
+    font-family: 'Open Sans', sans-serif;
 }
 
-h4, h5, h6, p, a {
-    font-family: 'Source Sans Pro', sans-serif;
-}
+/*h1.homepage-second {
+    font-family: 'Pridi', serif;
+}*/
 
 #homepage-title {
     padding: 70px;
     color: white;
+    font-family: 'Pridi';
     font-size: 96px;
-    font-weight: bold;
-    text-shadow: 0 -1px 0 #02120F;
+    font-weight: 500;
+    text-shadow: 0 -2px 0 #02120F;
     /*color: #02120F;*/
     /*text-shadow: 0 -1px 0 rgba(0,0,0,0.3);*/
     text-align: center;
@@ -134,7 +152,7 @@ h4, h5, h6, p, a {
 
 #homepage-second-row {
     background-color: #02120F;
-    height: 600px;
+    height: 350px;
 }
 
 .homepage-second {
@@ -143,11 +161,15 @@ h4, h5, h6, p, a {
 }
 
 #desc-title {
-    padding: 30px 0 10px 0;
+    padding: 70px 0 10px 0;
 }
 
 #desc-body {
-    padding: 0 0 15px;
+    padding: 10px 0 30px;
+}
+
+#exam-scores-col {
+    padding-top: 41px;
 }
 
 #timestamp-chart,
