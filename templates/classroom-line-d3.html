@@ -38,7 +38,7 @@
 
     text {
       font-family: 'Open Sans', sans-serif;
-      /*font-weight: bold;*/
+      /*font-family: 'Pridi', serif;*/
     }
 
   </style>
@@ -91,6 +91,13 @@
 
     // z.domain(data.map(function(d) { return d.examName; }));
 
+    g.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y0)
+            .ticks(10)
+            .tickSize(-(width - 90))
+            .tickFormat(""))
+
     g.append("path")
         .data([data])
         .attr("class", "line")
@@ -111,6 +118,14 @@
         .attr("transform", "rotate(20)")
         .style("text-anchor", "start");
 
+    g.append("text")
+        .attr("transform", "translate(" + ((width - 90) / 2) + "," + (height + 60) + ")")
+        // .attr("y", 365)
+        .attr("fill", "#000")
+        .text("Exam Name")
+        .style("font-size", "16px")
+        .style("text-anchor", "middle");
+
     g.append("g")
         .attr("class", "axisGreen")
         .call(d3.axisLeft(y0)
@@ -127,7 +142,7 @@
         .attr("fill", "#000")
         .text("Exam Average")
         .style("font-size", "16px")
-        .style("text-shadow", "0 0.5px 0.2px #02120F")
+        // .style("text-shadow", "0 0.5px 0.2px #02120F")
         .style("text-anchor", "start");
 
     g.append("g")
@@ -144,15 +159,8 @@
         .attr("fill", "#000")
         .text("View Rate")
         .style("font-size", "16px")
-        .style("text-shadow", "0 0.5px 0.2px #02120F")
+        // .style("text-shadow", "0 0.5px 0.2px #02120F")
         .style("text-anchor", "end");
-
-    g.append("g")
-        .attr("class", "grid")
-        .call(d3.axisLeft(y0)
-            .ticks(10)
-            .tickSize(-(width - 90))
-            .tickFormat(""))
 
   });
 
