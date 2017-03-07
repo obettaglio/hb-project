@@ -39,7 +39,8 @@ def generate_students():
         l_name = l_names[random_index]
         del l_names[random_index]
 
-        khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5].lower()
+        # khan_username = "khanstudent" + f_name[:2].lower() + l_name[:5].lower()
+        khan_username = f_name[:1].lower() + l_name.lower()
         student_email = khan_username + "@genstudent.com"
         # password = khan_username + str(123)
         class_id = 1
@@ -60,10 +61,10 @@ def generate_demo_student():
 
     print 'Generating Demo Student'
 
-    student_email = 'khanstudentobbetta@genstudent.com'
-    f_name = 'Olivia'
-    l_name = 'Bettaglio'
-    khan_username = 'khanstudentobbetta'
+    student_email = 'alovelace@genstudent.com'
+    f_name = 'Ada'
+    l_name = 'Lovelace'
+    khan_username = 'alovelace'
     class_id = 1
     demo = True
 
@@ -231,7 +232,7 @@ def generate_examresults():
                         score = random.randint(90, 100)
                     # started strong, finished weak
                     else:
-                        score = random.randint(80, 95)
+                        score = random.randint(80, 99)
                 # B-Fs
                 else:
                     # kicked their butts into gear later

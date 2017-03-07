@@ -23,6 +23,10 @@
     text-shadow: 0 -1px 0 #02120F;
 }
 
+/*#nav-dropdown {
+    text-shadow: 0 -0.05px 0 #02120F;
+}*/
+
 .navbar-default .navbar-brand,
 .navbar-default .navbar-nav>li>a {
     color: #fff;
@@ -127,7 +131,7 @@ h1, h2, h3 {
     font-weight: 600;
 }*/
 
-h4, h5, h6, p, a, li, table {
+h4, h5, h6, p, a, li, table, .msg {
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -211,6 +215,14 @@ h4, h5, h6, p, a, li, table {
     width: 45%;
 }
 
+.msg {
+    display: block;
+    margin-left: 70px;
+    margin-top: -40px;
+    margin-bottom: 50px;
+    /*border: 1px solid black;*/
+}
+
 #exam-scores-col {
     padding-top: 41px;
 }
@@ -256,5 +268,6 @@ h4, h5, h6, p, a, li, table {
 }
 
 .flashes {
-    min-height: 39px;
+    /*min-height: 39px;*/
+    min-height: 19px;
 }

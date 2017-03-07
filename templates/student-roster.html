@@ -6,9 +6,9 @@
 
 <div id='student-roster-container' class="container body-container">
 
-  <h1 id='roster-class-id' data-class="{{ classroom.class_id }}">{{ classroom.name }} Student Roster</h1>
+  <h1 id='roster-class-id' data-class="{{ classroom.class_id }}">Student Roster</h1>
 
-  <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to Classroom</a></h4>
+  <h4><a href='/classroom?class_id={{ classroom.class_id }}'>Back to {{ classroom.name }}</a></h4>
 
   <br>
   <table id='student-roster-table' style="width:75%">
