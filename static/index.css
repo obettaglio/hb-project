@@ -130,7 +130,7 @@ h1, h2, h3 {
     font-weight: 600;
 }*/
 
-h4, h5, h6, p, a, table {
+h4, h5, h6, p, a, li, table {
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -185,6 +185,33 @@ h4, h5, h6, p, a, table {
     display: none;
 }
 
-/*.flashes {
+.footer {
+    position: relative;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    margin-top: 40px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #586069;
+    border-top: 1px solid #eaecef;
+}
+
+.footer-links {
+    margin: 0;
+    list-style: none;
+}
+
+.footer-links li {
+    display: inline-block;
+    /*line-height: 16px;*/
+    padding-right: 10px;
+    font-size: 10px;
+}
+
+.float-right {
+    float: right !important;
+}
+
+.flashes {
     min-height: 39px;
-}*/
+}
