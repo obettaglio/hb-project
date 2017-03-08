@@ -140,7 +140,7 @@ h4, h5, h6, p, a, li, table, select, .msg {
     background-size: cover;
     background-image: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
     border-radius: 7px;
-    height: 650px;
+    height: 700px;
 }
 
 #homepage-title {
@@ -157,7 +157,7 @@ h4, h5, h6, p, a, li, table, select, .msg {
 
 #homepage-inner-div {
     position: relative;
-    margin: -50px 250px 0 250px;
+    margin: -40px 290px 0 290px;
     height: 350px;
     border-radius: 7px;
     background-color: rgba(2, 18, 15, 0.75);
@@ -173,6 +173,7 @@ h4, h5, h6, p, a, li, table, select, .msg {
 
 #desc-title {
     padding: 40px 0 10px 0;
+    text-shadow: 0 -2px 0 #02120F;
     font-size: 40px;
 }
 
@@ -193,6 +194,11 @@ h4, h5, h6, p, a, li, table, select, .msg {
     padding: 5px;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+}
+
+.classroom-chart-title {
+    /*text-align: center;*/
+    padding-left: 75px;
 }
 
 .in-app-form-body {
