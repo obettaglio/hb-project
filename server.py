@@ -6,14 +6,12 @@ from flask import Flask, jsonify, render_template, redirect, request, flash, ses
 from model import (User, Student, Subject, Classroom, Exam, ExamResult, Exercise,
                    ExerciseResult, Video, VideoResult)
 from model import connect_to_db, db
-# import ka_oauth
 from passlib.hash import argon2
 import rauth
 import os
 import random
 import string
 from datetime import datetime
-# import requests
 
 
 app = Flask(__name__)
@@ -276,6 +274,254 @@ def log_user_out():
 
     flash('Logged out')
     return redirect('/')
+
+
+##### CLASSROOMS, EXAMS #####
+
+@app.route('/classroom')
+def show_single_class():
+    """Display class taught by user.
+
+    Include list of existing exams, link to student roster, visual data, and Add Exam button."""
+
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+
+    # ensure user can access this classroom
+    if classroom.user_email == user_email:
+        exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
+
+        return render_template('classroom.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               exams=exams)
+
+    else:
+        return render_template('unauthorized-attempt.html')
+
+
+@app.route('/create-class')
+def show_create_class_form():
+    """Display form to create a class."""
+
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
+    subjects_tup = db.session.query(Subject.name).all()
+    subjects = []
+
+    for subject in subjects_tup:
+        subject = subject[0]
+        subjects.append(subject)
+
+    return render_template('create-class.html',
+                           user_f_name=user_f_name,
+                           subjects=subjects)
+
+
+@app.route('/create-class', methods=['POST'])
+def create_class():
+    """Handle form to create a class and redirect to user homepage."""
+
+    user_email = session['logged_in_user']
+
+    name = request.form.get('class_name')
+    subject = request.form.get('subject')
+    start_date = request.form.get('start_date')
+
+    if type(start_date) != datetime:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+
+    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()[0]
+
+    new_class = Classroom(name=name,
+                          user_email=user_email,
+                          subject_code=subject_code,
+                          start_date=start_date)
+
+    db.session.add(new_class)
+    db.session.commit()
+
+    ## HOW TO PASS NEW_CLASS_ID INTO CREATE-CLASS TO BE USED IN STUDENT-ROSTER? ##
+    # user_class_ids = db.session.query(Classroom.class_id).filter(Classroom.user_email == user_email)\
+    #                                                      .order_by(Classroom.class_id).all()
+    # new_class_id = user_class_ids[-1][0]
+
+    return 'Created class.'
+
+
+@app.route('/classroom/student-roster')
+def show_student_roster():
+    """Display student roster for class taught by user."""
+
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
+    class_id = request.args.get('class_id')
+    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
+
+    if classroom.user_email == user_email:
+
+        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+
+        return render_template('student-roster.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               students=students)
+
+    else:
+        return render_template('unauthorized-attempt.html')
+
+
+@app.route('/classroom/add-student', methods=['POST'])
+def add_student_to_roster():
+    """Handle form to add student to class roster."""
+
+    # user_email = session['logged_in_user']
+    class_id = request.form.get('class_id')
+
+    f_name = request.form.get('f_name')
+    l_name = request.form.get('l_name')
+    student_email = request.form.get('student_email')
+    khan_username = request.form.get('khan_username')
+
+    student_email_tup = (student_email,)
+    student_emails_list = db.session.query(Student.student_email).all()
+
+    if student_email_tup not in student_emails_list:
+        new_student = Student(student_email=student_email,
+                              f_name=f_name,
+                              l_name=l_name,
+                              khan_username=khan_username,
+                              class_id=class_id)
+
+        db.session.add(new_student)
+        db.session.commit()
+
+        full_name = f_name + " " + l_name
+        new_student_dict = {'full_name': full_name,
+                            'student_email': student_email,
+                            'khan_username': khan_username}
+
+    else:
+        # update student's class_id using SQLAlchemy
+        # db.session.execute(update(Student, values={Student.class_id: class_id}))
+        # db.session.commit()
+        pass
+
+    return jsonify(new_student_dict)
+
+
+@app.route('/classroom/exam')
+def show_exam():
+    """Display individual exam data.
+
+    Includes list of exam scores, visual analytic, and Add Score button."""
+
+    user_email = session['logged_in_user']
+    user = db.session.query(User).filter(User.user_email == user_email).first()
+    user_f_name = user.f_name
+
+    class_id = request.args.get('class_id')
+    classroom = Classroom.query.filter(Classroom.class_id == class_id).first()
+
+    if classroom.user_email == user_email:
+
+        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
+
+        exam_id = request.args.get('exam_id')
+        exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
+        examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
+
+        new_examresults = {}
+
+        for examresult in examresults:
+            student_email = examresult.student_email
+            student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+            student_name = student_name[0] + " " + student_name[1]
+            new_examresults[student_email] = {'student_name': student_name,
+                                              'exam_score': examresult.score}
+
+        examresults = new_examresults.values()
+
+        # to order by exam_score in descending order:
+        # examresults.sort()
+        # examresults.reverse()
+
+        return render_template('exam-individual.html',
+                               user_f_name=user_f_name,
+                               classroom=classroom,
+                               exam=exam,
+                               examresults=examresults,
+                               students=students)
+
+    else:
+        return render_template('unauthorized-attempt.html')
+
+
+@app.route('/classroom/add-exam', methods=['POST'])
+def add_new_exam():
+    """Handle form to add new exam under specified class."""
+
+    # user_email = session['logged_in_user']
+
+    class_id = request.form.get('class_id')
+    name = request.form.get('exam_name')
+    timestamp = request.form.get('timestamp')
+    total_points = request.form.get('total_points')
+
+    if type(timestamp) != datetime:
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%d')
+
+    new_exam = Exam(name=name,
+                    class_id=class_id,
+                    total_points=total_points,
+                    timestamp=timestamp)
+
+    db.session.add(new_exam)
+    db.session.commit()
+
+    exam_id = new_exam.exam_id
+
+    new_exam_dict = {'exam_id': exam_id,
+                     'exam_name': name,
+                     'class_id': class_id,
+                     'total_points': total_points,
+                     'timestamp': timestamp}
+
+    return jsonify(new_exam_dict)
+
+
+@app.route('/classroom/add-score', methods=['POST'])
+def add_new_score():
+    """Handle form to add new score for specified exam."""
+
+    # user_email = session['logged_in_user']
+
+    exam_id = request.form.get('exam_id')
+    student_email = request.form.get('student_email')
+    score = request.form.get('score')
+
+    examresult = ExamResult(exam_id=exam_id,
+                            student_email=student_email,
+                            score=score)
+
+    db.session.add(examresult)
+    db.session.commit()
+
+    student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
+    student_name = student_name[0] + " " + student_name[1]
+
+    new_examresult_dict = {'student_name': student_name,
+                           'score': score}
+
+    return jsonify(new_examresult_dict)
 
 
 ##### JSON, D3 #####
@@ -790,543 +1036,6 @@ def jsonify_exam_timestamp_data():
 #         completed_exams.append(exam)
 
 #     return jsonify(results)
-
-
-# @app.route('/exam-bar-old-d3')
-# def show_exam_bar_d3():
-#     """Display old d3 stacked/grouped bar chart."""
-
-#     exam_id = request.args.get('exam_id')
-
-#     return render_template('exam-bar-old-d3.html',
-#                            exam_id=exam_id)
-
-
-# @app.route('/exam-bubble-pie-d3')
-# def show_exam_bubble_pie_d3():
-#     """Display d3 bubble pie chart."""
-
-#     exam_id = request.args.get('exam_id')
-
-#     return render_template('exam-bubble-pie-d3.html',
-#                            exam_id=exam_id)
-
-
-# @app.route('/exam-pie-d3')
-# def show_exam_pie_d3():
-#     """Display d3 pie chart."""
-
-#     exam_id = request.args.get('exam_id')
-
-#     return render_template('exam-pie-d3.html',
-#                            exam_id=exam_id)
-
-
-# @app.route('/exam-scatterplot-d3')
-# def show_exam_scatterplot_d3():
-#     """Display d3 scatterplot chart."""
-
-#     exam_id = request.args.get('exam_id')
-
-#     return render_template('exam-scatterplot-d3.html',
-#                            exam_id=exam_id)
-
-
-# @app.route('/exam-bar-percent-d3')
-# def show_exam_bar_percent_d3():
-#     """Display d3 vertical percent bar chart."""
-
-#     return render_template('exam-bar-percent-d3.html')
-
-
-# @app.route('/classroom-line-d3-singleaxis')
-# def show_classroom_line_d3_for_single_axis():
-#     """Display d3 line chart."""
-
-#     class_id = request.args.get('class_id')
-
-#     return render_template('classroom-line-d3-singleaxis.html',
-#                            class_id=class_id)
-
-
-##### CLASSROOMS, EXAMS #####
-
-@app.route('/classroom')
-def show_single_class():
-    """Display class taught by user.
-
-    Include list of existing exams, link to student roster, visual data, and Add Exam button."""
-
-    user_email = session['logged_in_user']
-    user = db.session.query(User).filter(User.user_email == user_email).first()
-    user_f_name = user.f_name
-
-    class_id = request.args.get('class_id')
-    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-
-    # ensure user can access this classroom
-    if classroom.user_email == user_email:
-        exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
-
-        return render_template('classroom.html',
-                               user_f_name=user_f_name,
-                               classroom=classroom,
-                               exams=exams)
-
-    else:
-        return render_template('unauthorized-attempt.html')
-
-
-@app.route('/create-class')
-def show_create_class_form():
-    """Display form to create a class."""
-
-    user_email = session['logged_in_user']
-    user = db.session.query(User).filter(User.user_email == user_email).first()
-    user_f_name = user.f_name
-
-    subjects_tup = db.session.query(Subject.name).all()
-    subjects = []
-
-    for subject in subjects_tup:
-        subject = subject[0]
-        subjects.append(subject)
-
-    return render_template('create-class.html',
-                           user_f_name=user_f_name,
-                           subjects=subjects)
-
-
-@app.route('/create-class', methods=['POST'])
-def create_class():
-    """Handle form to create a class and redirect to user homepage."""
-
-    user_email = session['logged_in_user']
-
-    name = request.form.get('class_name')
-    subject = request.form.get('subject')
-    start_date = request.form.get('start_date')
-
-    if type(start_date) != datetime:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-
-    subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()[0]
-
-    new_class = Classroom(name=name,
-                          user_email=user_email,
-                          subject_code=subject_code,
-                          start_date=start_date)
-
-    db.session.add(new_class)
-    db.session.commit()
-
-    ## HOW TO PASS NEW_CLASS_ID INTO CREATE-CLASS TO BE USED IN STUDENT-ROSTER? ##
-    # user_class_ids = db.session.query(Classroom.class_id).filter(Classroom.user_email == user_email)\
-    #                                                      .order_by(Classroom.class_id).all()
-    # new_class_id = user_class_ids[-1][0]
-
-    return 'Created class.'
-
-
-@app.route('/classroom/student-roster')
-def show_student_roster():
-    """Display student roster for class taught by user."""
-
-    user_email = session['logged_in_user']
-    user = db.session.query(User).filter(User.user_email == user_email).first()
-    user_f_name = user.f_name
-
-    class_id = request.args.get('class_id')
-    classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-
-    if classroom.user_email == user_email:
-
-        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
-
-        return render_template('student-roster.html',
-                               user_f_name=user_f_name,
-                               classroom=classroom,
-                               students=students)
-
-    else:
-        return render_template('unauthorized-attempt.html')
-
-
-@app.route('/classroom/add-student', methods=['POST'])
-def add_student_to_roster():
-    """Handle form to add student to class roster."""
-
-    # user_email = session['logged_in_user']
-    class_id = request.form.get('class_id')
-
-    f_name = request.form.get('f_name')
-    l_name = request.form.get('l_name')
-    student_email = request.form.get('student_email')
-    khan_username = request.form.get('khan_username')
-
-    student_email_tup = (student_email,)
-    student_emails_list = db.session.query(Student.student_email).all()
-
-    if student_email_tup not in student_emails_list:
-        new_student = Student(student_email=student_email,
-                              f_name=f_name,
-                              l_name=l_name,
-                              khan_username=khan_username,
-                              class_id=class_id)
-
-        db.session.add(new_student)
-        db.session.commit()
-
-        full_name = f_name + " " + l_name
-        new_student_dict = {'full_name': full_name,
-                            'student_email': student_email,
-                            'khan_username': khan_username}
-
-    else:
-        # update student's class_id using SQLAlchemy --look up how--
-        # db.session.execute(update(Student, values={Student.class_id: class_id}))
-        # db.session.commit()
-        pass
-
-    return jsonify(new_student_dict)
-
-
-@app.route('/classroom/exam')
-def show_exam():
-    """Display individual exam data.
-
-    Includes list of exam scores, visual analytic, and Add Score button."""
-
-    user_email = session['logged_in_user']
-    user = db.session.query(User).filter(User.user_email == user_email).first()
-    user_f_name = user.f_name
-
-    class_id = request.args.get('class_id')
-    classroom = Classroom.query.filter(Classroom.class_id == class_id).first()
-
-    if classroom.user_email == user_email:
-
-        students = db.session.query(Student).filter(Student.class_id == class_id).order_by(Student.l_name).all()
-
-        exam_id = request.args.get('exam_id')
-        exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-        examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
-
-        new_examresults = {}
-
-        for examresult in examresults:
-            student_email = examresult.student_email
-            student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-            student_name = student_name[0] + " " + student_name[1]
-            new_examresults[student_email] = {'student_name': student_name,
-                                              'exam_score': examresult.score}
-
-        examresults = new_examresults.values()
-
-        # to order by exam_score in descending order:
-        # examresults.sort()
-        # examresults.reverse()
-
-        return render_template('exam-individual.html',
-                               user_f_name=user_f_name,
-                               classroom=classroom,
-                               exam=exam,
-                               examresults=examresults,
-                               students=students)
-
-    else:
-        return render_template('unauthorized-attempt.html')
-
-
-# @app.route('/classroom/add-exam')
-# def show_new_exam_form():
-#     """Display form to add new exam under specified class."""
-
-#     user_email = session['logged_in_user']
-#     user = db.session.query(User).filter(User.user_email == user_email).first()
-#     user_f_name = user.f_name
-
-#     classroom = db.session.query(Classroom).filter(Classroom.user_email == user_email).first()
-
-#     if classroom is not None:
-#         return render_template('add-exam.html',
-#                                user_f_name=user_f_name,
-#                                classroom=classroom)
-
-#     else:
-#         return redirect('/create-class')
-
-
-@app.route('/classroom/add-exam', methods=['POST'])
-def add_new_exam():
-    """Handle form to add new exam under specified class."""
-
-    # user_email = session['logged_in_user']
-
-    class_id = request.form.get('class_id')
-    name = request.form.get('exam_name')
-    timestamp = request.form.get('timestamp')
-    total_points = request.form.get('total_points')
-
-    if type(timestamp) != datetime:
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%d')
-
-    new_exam = Exam(name=name,
-                    class_id=class_id,
-                    total_points=total_points,
-                    timestamp=timestamp)
-
-    db.session.add(new_exam)
-    db.session.commit()
-
-    exam_id = new_exam.exam_id
-
-    new_exam_dict = {'exam_id': exam_id,
-                     'exam_name': name,
-                     'class_id': class_id,
-                     'total_points': total_points,
-                     'timestamp': timestamp}
-
-    return jsonify(new_exam_dict)
-
-
-@app.route('/classroom/add-score', methods=['POST'])
-def add_new_score():
-    """Handle form to add new score for specified exam."""
-
-    # user_email = session['logged_in_user']
-
-    exam_id = request.form.get('exam_id')
-    student_email = request.form.get('student_email')
-    score = request.form.get('score')
-
-    examresult = ExamResult(exam_id=exam_id,
-                            student_email=student_email,
-                            score=score)
-
-    db.session.add(examresult)
-    db.session.commit()
-
-    student_name = db.session.query(Student.f_name, Student.l_name).filter(Student.student_email == student_email).first()
-    student_name = student_name[0] + " " + student_name[1]
-
-    new_examresult_dict = {'student_name': student_name,
-                           'score': score}
-
-    return jsonify(new_examresult_dict)
-
-
-# @app.route('/classroom/<exam_id>/add-score')
-# def show_new_score_form(exam_id):
-#     """Display form to add new exam score under specified class."""
-
-#     # IN PROCESS
-
-#     students = db.session.query(Student).filter(Student.class_id == class_id).all()
-#     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-
-#     return render_template('add-score.html',
-#                            class_id=class_id,
-#                            students=students,
-#                            exam=exam)
-
-
-# @app.route('/classroom/<exam_id>/add-score', methods=['POST'])
-# def add_new_score(exam_id):
-#     """Handle form to add new exam score under specified class."""
-
-#     # IN PROCESS
-
-#     student_name = request.form.get('student-name')
-#     score = request.form.get('score')
-
-#     student_name = student_name.split(" ")
-#     f_name, l_name = student_name
-#     student = db.session.query(Student).filter((Student.f_name == f_name) &
-#                                                (Student.l_name == l_name)).first()
-#     student_id = student.student_id
-
-#     examresult = ExamResult(exam_id=exam_id,
-#                             student_id=student_id,
-#                             score=score)
-#     db.session.add(examresult)
-#     db.session.commit()
-
-#     return redirect(url_for('show_exam', class_id=class_id, exam_id=exam_id))
-
-
-# @app.route('/classes')
-# def show_classes_list():
-#     """Display list of classes taught by user.
-
-#     >> POST-MVP <<"""
-
-#     # email = request.form.get('email')
-#     if session.get('logged_in_user') and session.get('oauth_params'):
-#         user_email = session['logged_in_user']
-#         oauth_params = session['oauth_params']
-
-#         user = db.session.query(User).filter(User.user_email == user_email).first()
-
-#         # response = requests.get('https://www.khanacademy.org/api/v1/classes', params=session['oauth_params'])
-#         # response = response.json()
-
-#         classrooms = db.session.query(Classroom).join(User)\
-#                                                 .filter(User.user_email == user_email).all()
-
-#         return render_template('class-list.html',
-#                                user=user,
-#                                classrooms=classrooms)
-#     else:
-#         return render_template('unauthorized-attempt.html')
-
-
-# @app.route('/classes/add-class')
-# def show_new_class_form():
-#     """Display form to add new class.
-
-#     >> POST-MVP <<"""
-
-#     subjects_tup = db.session.query(Subject.name).all()
-#     subjects = []
-
-#     for subject in subjects_tup:
-#         subject = subject[0]
-#         subjects.append(subject)
-
-#     return render_template('add-class.html',
-#                            subjects=subjects)
-
-
-# @app.route('/classes/add-class', methods=['POST'])
-# def add_new_class():
-#     """Handle form to add new class and redirect to classes page.
-
-#     >> POST-MVP <<"""
-
-#     user_email = session['logged_in_user']
-#     # oauth_params = session['oauth_params']
-
-#     name = request.form.get('class-name')
-#     subject = request.form.get('subject')
-
-#     subject_code = db.session.query(Subject.subject_code).filter(Subject.name == subject).first()
-
-#     new_class = Classroom(name=name,
-#                           user_email=user_email,
-#                           subject_code=subject_code)
-
-#     db.session.add(new_class)
-#     db.session.commit()
-
-#     # class_id = db.session.get(Classroom.class_id).filter(Classroom.name == name).first()
-
-#     # for student in students:
-#     #     student_email = student['email']
-#     #     nickname = student['nickname']
-#     #     f_name, l_name = nickname
-#     #     khan_username = student['username']
-#     #     new_student = Student(student_email=student_email,
-#     #                           f_name=f_name,
-#     #                           l_name=l_name,
-#     #                           khan_username=khan_username,
-#     #                           class_id=class_id)
-
-#     #     db.session.add(new_student)
-
-#     # db.session.commit()
-
-#     return redirect('/classes')
-
-
-# @app.route('/classes/<class_id>')   # note: returns string of a number
-# def show_class(class_id):
-#     """Display individual class data.
-
-#     Includes list of existing exams, visual analytic, and New Exam button.
-
-#     >> POST-MVP <<"""
-
-#     classroom = db.session.query(Classroom).filter(Classroom.class_id == class_id).first()
-#     exams = db.session.query(Exam).filter(Exam.class_id == class_id).all()
-
-#     return render_template('class-individual.html',
-#                            classroom=classroom,
-#                            exams=exams)
-
-
-# @app.route('/classes/<class_id>/add-exam')
-# def show_new_exam_form(class_id):
-#     """Display form to add new exam under specified class."""
-
-#     return render_template('add-exam.html',
-#                            class_id=class_id)
-
-
-# @app.route('/classes/<class_id>/add-exam', methods=['POST'])
-# def add_new_exam(class_id):
-#     """Handle form to add new exam under specified class."""
-
-#     name = request.form.get('exam-name')
-#     total_points = request.form.get('total-points')
-
-#     exam = Exam(name=name,
-#                 class_id=class_id,
-#                 total_points=total_points)
-#     db.session.add(exam)
-#     db.session.commit()
-
-#     return redirect(url_for('show_class', class_id=class_id))
-
-
-# @app.route('/classes/<class_id>/<exam_id>')
-# def show_exam(class_id, exam_id):
-#     """Display individual exam data.
-
-#     Includes list of exam scores, visual analytic, and Add Score button."""
-
-#     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-#     examresults = db.session.query(ExamResult).filter(ExamResult.exam_id == exam_id).all()
-
-#     return render_template('exam-individual.html',
-#                            class_id=class_id,
-#                            exam=exam,
-#                            examresults=examresults)
-
-
-# @app.route('/classes/<class_id>/<exam_id>/add-score')
-# def show_new_score_form(class_id, exam_id):
-#     """Display form to add new exam score under specified class."""
-
-#     students = db.session.query(Student).filter(Student.class_id == class_id).all()
-#     exam = db.session.query(Exam).filter(Exam.exam_id == exam_id).first()
-
-#     return render_template('add-score.html',
-#                            class_id=class_id,
-#                            students=students,
-#                            exam=exam)
-
-
-# @app.route('/classes/<class_id>/<exam_id>/add-score', methods=['POST'])
-# def add_new_score(class_id, exam_id):
-#     """Handle form to add new exam score under specified class."""
-
-#     student_name = request.form.get('student-name')
-#     score = request.form.get('score')
-
-#     student_name = student_name.split(" ")
-#     f_name, l_name = student_name
-#     student = db.session.query(Student).filter((Student.f_name == f_name) &
-#                                                (Student.l_name == l_name)).first()
-#     student_id = student.student_id
-
-#     examresult = ExamResult(exam_id=exam_id,
-#                             student_id=student_id,
-#                             score=score)
-#     db.session.add(examresult)
-#     db.session.commit()
-
-#     return redirect(url_for('show_exam', class_id=class_id, exam_id=exam_id))
 
 
 #####
