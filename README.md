@@ -1,15 +1,17 @@
-#KhanLine
+# KhanLine
 
 KhanLine is a data access tool for teachers who use technology in the classroom. A teacher can easily see how online preparation on Khan Academy is related to in-class success on tests, making future lesson plans more effective than ever!
 
+To view a comprehensive screencast of KhanLine's features, [click here](https://www.youtube.com/watch?v=q1jQHC-jCOA).
 
-##Tech Stack
+
+## Tech Stack
 
 Frontend: d3.js, JavaScript, jQuery, HTML5, Bootstrap
 Backend: Python, Flask, PostgreSQL, SQLAlchemy
 APIs: Khan Academy
 
-##Features
+## Features
 
 Users register by connecting to their Khan Academy coach account.
 
@@ -19,7 +21,7 @@ Using D3, KhanLine creates tabular and visual analytics showing the relationship
 
 As a teacher adds a student's score, the graphs dynamically update with the new data.
 
-##Setup
+## Setup
 
 To run KhanLine on your local computer, please proceed with these steps.
 
@@ -68,6 +70,6 @@ Run the app:
 $ python server.py
 ```
 
-##Next Steps for KhanLine
+## Next Steps for KhanLine
 
 *Integrate Schoology's API to dynamically retreive exam score data
