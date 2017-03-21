@@ -72,4 +72,4 @@ $ python server.py
 
 ## Next Steps for KhanLine
 
-*Integrate Schoology's API to dynamically retreive exam score data
+* Integrate Schoology's API to dynamically retreive exam score data

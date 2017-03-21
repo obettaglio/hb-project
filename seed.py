@@ -28,7 +28,7 @@ def load_users():
 
     User.query.delete()
 
-    user_string = open('static/data/sample_users.json').read()
+    user_string = open('static/data/users.json').read()
     user_dict = json.loads(user_string)
 
     for user in user_dict:
@@ -110,7 +110,7 @@ def load_students():
 
     Student.query.delete()
 
-    student_string = open('static/data/sample_students.json').read()
+    student_string = open('static/data/students.json').read()
     student_dict = json.loads(student_string)
 
     for student in student_dict:
@@ -166,7 +166,7 @@ def load_examresults():
 
     ExamResult.query.delete()
 
-    examresult_string = open('static/data/sample_examresults.json').read()
+    examresult_string = open('static/data/examresults.json').read()
     examresult_dict = json.loads(examresult_string)
 
     for examresult in examresult_dict:
@@ -205,7 +205,7 @@ def load_exercises():
 
     Exercise.query.delete()
 
-    exercise_string = open('static/data/sample_exercises.json').read()
+    exercise_string = open('static/data/exercises.json').read()
     exercise_dict = json.loads(exercise_string)
 
     for exercise in exercise_dict:
@@ -304,7 +304,6 @@ def load_videos():
 
     Video.query.delete()
 
-    # video_string = open('static/data/sample_videos.json').read()
     video_string = open('static/data/videos.json').read()
     video_dicts = json.loads(video_string)
 
@@ -319,10 +318,6 @@ def load_videos():
         topic = video['exam_topic']
         length = video.get('duration', None)
         order_num = i
-
-    # for row in open('static/data/u.videos'):
-    #     row = row.rstrip()
-    #     video_id, name, url, length = row.split('|')
 
         if length:
             video = Video(video_id=video_id,
