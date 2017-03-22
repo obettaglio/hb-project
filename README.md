@@ -7,7 +7,7 @@ To view a comprehensive screencast of KhanLine's features, [click here](https://
 
 ## Tech Stack
 
-__Frontend:__ d3.js, JavaScript, jQuery, HTML5, Bootstrap<br>
+__Frontend:__ d3.js, JavaScript, jQuery, HTML5, CSS, Bootstrap<br>
 __Backend:__ Python, Flask, PostgreSQL, SQLAlchemy<br>
 __APIs:__ Khan Academy<br>
 
@@ -40,10 +40,15 @@ Clone repository:
 $ git clone https://github.com/obettaglio/khan-line.git
 ```
 
-Create and activate a virtual environment:
+Create a virtual environment in the repository:
 
 ```
 $ virtualenv env
+```
+
+Activate the virtual environment:
+
+```
 $ source env/bin/activate
 ```
 
@@ -89,7 +94,8 @@ Access the site at this local link:
 ```
 http://localhost:5000/
 ```
+<br>
 
 ## Next Steps for KhanLine
 
-* Integrate Schoology's API to dynamically retreive exam score data
+* Integrate Schoology's API to dynamically retrieve exam score data
