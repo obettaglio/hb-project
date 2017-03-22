@@ -34,19 +34,19 @@ As a teacher adds a student's score, the table and graphs dynamically update wit
 
 To run KhanLine on your local computer, please proceed with these steps.
 
-Clone repository:
+Clone git repository:
 
 ```
 $ git clone https://github.com/obettaglio/khan-line.git
 ```
 
-Create a virtual environment in the repository:
+Create a virtual environment in repository:
 
 ```
 $ virtualenv env
 ```
 
-Activate the virtual environment:
+Activate virtual environment:
 
 ```
 $ source env/bin/activate
@@ -58,14 +58,14 @@ Install dependencies:
 $ pip install -r requirements.txt
 ```
 
-Obtain a consumer key and secret from [Khan Academy's API](https://github.com/Khan/khan-api/wiki/Khan-Academy-API-Authentication). Save both to a file `secrets.sh`. The file should look like this:
+Obtain consumer key and secret from [Khan Academy's API](https://github.com/Khan/khan-api/wiki/Khan-Academy-API-Authentication). Save both to a file `secrets.sh`. The file should look like this:
 
 ```
 export KHAN_CONSUMER_KEY='abc'
 export KHAN_CONSUMER_SECRET='def'
 ```
 
-Source the new file containing API keys to the current shell:
+Source file containing API keys to the current shell:
 
 ```
 $ source secrets.sh
@@ -93,6 +93,13 @@ Access the site at this local link:
 
 ```
 http://localhost:5000/
+```
+
+Log in with a sample email and password:
+
+```
+email:  khancoachuser@gmail.com
+pass:   kha123
 ```
 <br>
 
