@@ -7,25 +7,25 @@ To view a comprehensive screencast of KhanLine's features, [click here](https://
 
 ## Tech Stack
 
-Frontend: d3.js, JavaScript, jQuery, HTML5, Bootstrap
-Backend: Python, Flask, PostgreSQL, SQLAlchemy
-APIs: Khan Academy
+__Frontend:__ d3.js, JavaScript, jQuery, HTML5, Bootstrap<br>
+__Backend:__ Python, Flask, PostgreSQL, SQLAlchemy<br>
+__APIs:__ Khan Academy<br>
 
 ## Features
 
-Users register by connecting to their Khan Academy coach account.
+Users register by connecting to their Khan Academy coach account. The register button takes them to Khan Academy's site, where they are prompted to accept the request for access.
 
-Course sections contain student and exam information.
+Course sections contain student and exam information, as well as a d3.js graph depicting video views and exam averages over time.
 
 ![Course section](/static/images/readme-images/course-section.gif)
 <br><br>
 
-Using D3, KhanLine creates tabular and visual analytics showing the relationship between student progress on Khan Academy and performance on in-class exams.
+Each exam page contains an easy-to-read list of scores on the left, as well as several visually-impressive graphs of the effects of each video within an exam topic. Using this chart, a teacher can quickly identify the videos that are most associated with success.
 
 ![Exam graph](/static/images/readme-images/exam-graph.gif)
 <br><br>
 
-As a teacher adds a student's score, the graphs dynamically update with the new data.
+As a teacher adds a student's score, the table and graphs dynamically update with the new data.
 
 ![Add score](/static/images/readme-images/add-score.gif)
 <br><br>
@@ -53,14 +53,20 @@ Install dependencies:
 $ pip install -r requirements.txt
 ```
 
-Aquire an API consumer key and secret for [Khan Academy](https://github.com/Khan/khan-api/wiki/Khan-Academy-API-Authentication). Save them to a file `secrets.sh`. The file should look like this:
+Obtain a consumer key and secret from [Khan Academy's API](https://github.com/Khan/khan-api/wiki/Khan-Academy-API-Authentication). Save both to a file `secrets.sh`. The file should look like this:
 
 ```
 export KHAN_CONSUMER_KEY='abc'
 export KHAN_CONSUMER_SECRET='def'
 ```
 
-Create database:
+Source the new file containing API keys to the current shell:
+
+```
+$ source secrets.sh
+```
+
+Create a database:
 
 ```
 $ createdb khanline
@@ -69,7 +75,6 @@ $ createdb khanline
 Create all tables and seed example data:
 
 ```
-$ python model.py
 $ python seed.py
 ```
 
@@ -77,6 +82,12 @@ Run the app:
 
 ```
 $ python server.py
+```
+
+Access the site at this local link:
+
+```
+http://localhost:5000/
 ```
 
 ## Next Steps for KhanLine
