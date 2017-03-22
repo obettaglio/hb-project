@@ -17,9 +17,18 @@ Users register by connecting to their Khan Academy coach account.
 
 Course sections contain student and exam information.
 
+![Course section](/static/images/readme-images/course-section.gif)
+<br><br>
+
 Using D3, KhanLine creates tabular and visual analytics showing the relationship between student progress on Khan Academy and performance on in-class exams.
 
+![Exam graph](/static/images/readme-images/exam-graph.gif)
+<br><br>
+
 As a teacher adds a student's score, the graphs dynamically update with the new data.
+
+![Add score](/static/images/readme-images/add-score.gif)
+<br><br>
 
 ## Setup
 
