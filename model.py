@@ -19,8 +19,6 @@ class User(db.Model):
     khan_username = db.Column(db.String(50), nullable=True)
     khan_id = db.Column(db.String(200), nullable=True)
     num_students = db.Column(db.Integer, nullable=True)
-    zipcode = db.Column(db.String(15), nullable=True)
-    district = db.Column(db.String(100), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""

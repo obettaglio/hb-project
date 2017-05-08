@@ -32,7 +32,6 @@ def load_users():
     user_dict = json.loads(user_string)
 
     for user in user_dict:
-        # user_id = user['user_id']
         user_email = user['email']
         password = user['username'][:3] + '123'
         # password = generate_password()
@@ -184,19 +183,6 @@ def load_examresults():
 
     db.session.commit()
 
-    # for row in open('static/data/u.examresults'):
-    #     row = row.rstrip()
-    #     examresult_id, exam_id, student_email, score = row.split('|')
-
-    #     examresult = ExamResult(examresult_id=examresult_id,
-    #                             exam_id=exam_id,
-    #                             student_email=student_email,
-    #                             score=score)
-
-    #     db.session.add(examresult)
-
-    # db.session.commit()
-
 
 def load_exercises():
     """Load exercises from Khan Academy JSON into database."""
@@ -214,10 +200,6 @@ def load_exercises():
         description = exercise['description']
         url = exercise['ka_url']
         is_quiz = exercise['is_quiz']
-
-    # for row in open('static/data/u.exercises'):
-    #     row = row.rstrip()
-    #     exercise_id, name, url = row.split('|')
 
         exercise = Exercise(exercise_id=exercise_id,
                             name=name,
@@ -237,24 +219,6 @@ def load_exerciseresults():
 
     ExerciseResult.query.delete()
 
-    # for row in open('static/data/u.exerciseresults'):
-    #     row = row.rstrip()
-    #     exerciseresult_id, exercise_id, student_email, timestamp, num_correct, num_done = row.split('|')
-
-    #     if type(timestamp) != datetime:
-    #         timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
-
-    #     exerciseresult = ExerciseResult(exerciseresult_id=exerciseresult_id,
-    #                                     exercise_id=exercise_id,
-    #                                     student_email=student_email,
-    #                                     timestamp=timestamp,
-    #                                     num_correct=num_correct,
-    #                                     num_done=num_done)
-
-    #     db.session.add(exerciseresult)
-
-    # db.session.commit()
-
     student_emails = db.session.query(Student.student_email).all()
     exercises = db.session.query(Exercise).all()
 
@@ -271,7 +235,6 @@ def load_exerciseresults():
     d2 = datetime.strptime('2/1/2017 4:50 AM', '%m/%d/%Y %I:%M %p')
 
     for exercise in exercises:
-        # num_problems = exercise.?
 
         for student_email in student_emails:
             exercise_id = exercise.exercise_id
@@ -290,8 +253,6 @@ def load_exerciseresults():
 
             # randomly decide whether or not to add result
             if bool(random.getrandbits(1)):
-            # random_add = random.random()
-            # if random_add < 0.67:
                 db.session.add(exerciseresult)
 
     db.session.commit()
@@ -314,7 +275,6 @@ def load_videos():
         name = video['title']
         description = video['description']
         url = video['ka_url']
-        # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
         topic = video['exam_topic']
         length = video.get('duration', None)
         order_num = i
@@ -324,7 +284,6 @@ def load_videos():
                           name=name,
                           description=description,
                           url=url,
-                          # youtube_url=youtube_url,
                           topic=topic,
                           length=length,
                           order_num=order_num)
@@ -334,52 +293,6 @@ def load_videos():
         i += 1
 
     db.session.commit()
-
-
-# def load_videoresults():
-#     """Load video results into database."""
-
-#     print 'VideoResults'
-
-#     VideoResult.query.delete()
-
-#     videoresult_string = open('static/data/sample_videoresults.json').read()
-#     videoresult_dict = json.loads(videoresult_string)
-
-#     for videoresult in videoresult_dict:
-#         student_email = videoresult['user']
-#         timestamp = videoresult['last_watched']
-#         points = videoresult['points']
-#         secs_watched = videoresult['seconds_watched']
-#         last_sec_watched = videoresult['last_second_watched']
-
-#         video = videoresult['video']
-#         # name = video['title']
-#         # description = video['description']
-#         url = video['ka_url']
-#         # youtube_url = 'https://www.youtube.com/watch?v=' + video['youtube_id']
-#         # length = video['duration']
-#         video_id = db.session.query(Video.video_id).filter(Video.url == url).first()
-
-#     # for row in open('static/data/u.videoresults'):
-#     #     row = row.rstrip()
-#     #     videoresult_id, video_id, student_id, timestamp, secs_watched, last_sec_watched = row.split('|')
-
-#         if type(timestamp) != datetime:
-#             # timestamp = datetime.strptime(timestamp, '%d-%m-%Y')
-#             timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
-#             # 2011-05-04T06:01:47Z
-
-#         videoresult = VideoResult(video_id=video_id,
-#                                   student_email=student_email,
-#                                   timestamp=timestamp,
-#                                   points=points,
-#                                   secs_watched=secs_watched,
-#                                   last_sec_watched=last_sec_watched)
-
-#         db.session.add(videoresult)
-
-#     db.session.commit()
 
 
 def load_videoresults():
@@ -425,8 +338,6 @@ def load_videoresults():
 
             # randomly decide whether or not to add result
             if bool(random.getrandbits(1)):
-            # random_add = random.random()
-            # if random_add < 0.67:
                 db.session.add(videoresult)
 
     db.session.commit()
@@ -479,8 +390,6 @@ def update_pkey_seqs():
                      "_seq', :new_id)")
             db.session.execute(query, {'new_id': max_id + 1})
             db.session.commit()
-
-    # we're done!
 
 
 def call_all_functions():
